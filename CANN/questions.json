@@ -1,0 +1,784 @@
+{
+  "questions": [
+    {
+      "question": "CANN 在 ATC 模型转换时遇到报错如何解决？",
+      "note": "intent=模型转换与推理",
+      "source_topic_id": "166",
+      "source_topic_title": "开发者子在ATC转换模型时遇到报错",
+      "source_channel": "mongodb",
+      "source_consult_count": 166,
+      "id": "q_001",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 版本与算子兼容性问题如何解决？",
+      "note": "intent=版本与兼容性",
+      "source_topic_id": "70",
+      "source_topic_title": "昇腾CANN开发者需解决CANN版本与算子兼容性问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 70,
+      "id": "q_002",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 模型转换过程中和推理过程中遇到报错如何排查？",
+      "note": "intent=模型转换与推理",
+      "source_topic_id": "32",
+      "source_topic_title": "开发者转换模型时在转换过程和推理过程中遇到报错",
+      "source_channel": "mongodb",
+      "source_consult_count": 32,
+      "id": "q_003",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 开发者如何获取 ops-nn 仓 committer 任职资格？",
+      "note": "intent=社区贡献与角色",
+      "source_topic_id": "25",
+      "source_topic_title": "昇腾CANN开发者如何获取ops-nn仓committer任职资格",
+      "source_channel": "mongodb",
+      "source_consult_count": 25,
+      "id": "q_004",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 开发者如何掌握 Triton 算子调试与性能优化实战技巧？",
+      "note": "intent=算子开发与优化",
+      "source_topic_id": "22",
+      "source_topic_title": "昇腾CANN开发者亟需掌握Triton算子调试与性能优化实战技巧",
+      "source_channel": "mongodb",
+      "source_consult_count": 22,
+      "id": "q_005",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 开发者如何参与直播答题并获取定制奖品？",
+      "note": "intent=社区活动与激励",
+      "source_topic_id": "20",
+      "source_topic_title": "昇腾CANN开发者如何参与直播答题并获取定制奖品",
+      "source_channel": "mongodb",
+      "source_consult_count": 20,
+      "id": "q_006",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 安装配置时漏装必要软件包或版本不匹配导致运行失败如何解决？",
+      "note": "intent=安装与部署",
+      "source_topic_id": "18",
+      "source_topic_title": "开发者安装配置时遇到漏装必要软件包、版本匹配等问题导致运行失败",
+      "source_channel": "mongodb",
+      "source_consult_count": 18,
+      "id": "q_007",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 中 aclrtSynchronizeStream 流同步失败（错误码 507015/507035/507046）如何解决？",
+      "note": "intent=运行时错误与调试",
+      "source_topic_id": "15",
+      "source_topic_title": "昇腾CANN开发者遇到aclrtSynchronizeStream流同步失败（错误码507015/507035/507046）的核心问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 15,
+      "id": "q_008",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 9.0.0下多个算子因ACLNN符号未导出或缺少libcust_opapi导致编译链接失败如何解决",
+      "note": "intent=编译与链接",
+      "source_topic_id": "1",
+      "source_topic_title": "CANN 9.0.0下多个算子因ACLNN符号未导出或缺少libcust_opapi导致编译链接失败",
+      "source_channel": "mongodb",
+      "source_consult_count": 15,
+      "id": "q_009",
+      "official_urls": []
+    },
+    {
+      "question": "CANN官方Docker镜像运行入门用例时遇到各种问题如何解决",
+      "note": "intent=安装与部署",
+      "source_topic_id": "2",
+      "source_topic_title": "开发者使用官方Docker镜像运行入门用例时遇到各种问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 8,
+      "id": "q_010",
+      "official_urls": []
+    },
+    {
+      "question": "CANN Flash Attention算子在Ascend950与Atlas A2间功能不一致如何解决",
+      "note": "intent=算子兼容性",
+      "source_topic_id": "3",
+      "source_topic_title": "昇腾CANN开发者如何解决Flash Attention算子在Ascend950与Atlas A2间的功能不一致问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 8,
+      "id": "q_011",
+      "official_urls": []
+    },
+    {
+      "question": "CANN stateless_dropout_gen_mask链接失败如何解决",
+      "note": "intent=编译与链接",
+      "source_topic_id": "4",
+      "source_topic_title": "昇腾CANN开发者如何解决stateless_dropout_gen_mask链接失败问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 8,
+      "id": "q_012",
+      "official_urls": []
+    },
+    {
+      "question": "CANN ATC转换模型时soc版本与设备不适配导致加载失败如何解决",
+      "note": "intent=模型转换",
+      "source_topic_id": "5",
+      "source_topic_title": "昇腾CANN开发者使用ATC转换模型时soc版本与设备不适配导致加载失败",
+      "source_channel": "mongodb",
+      "source_consult_count": 7,
+      "id": "q_013",
+      "official_urls": []
+    },
+    {
+      "question": "CANN Triton算子对bool和uint32类型输入的报错信息不准确及拦截缺失如何解决",
+      "note": "intent=算子缺陷",
+      "source_topic_id": "6",
+      "source_topic_title": "昇腾CANN开发者需解决Triton算子对bool和uint32类型输入的报错信息不准确及拦截缺失问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 7,
+      "id": "q_014",
+      "official_urls": []
+    },
+    {
+      "question": "CANN相关版本是否受Ruby json库CVE-2025-27788漏洞影响",
+      "note": "intent=安全漏洞",
+      "source_topic_id": "7",
+      "source_topic_title": "CANN相关版本是否受Ruby json库CVE-2025-27788漏洞影响待排查",
+      "source_channel": "mongodb",
+      "source_consult_count": 6,
+      "id": "q_015",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者如何通过贡献内容获取限量礼品",
+      "note": "intent=社区贡献",
+      "source_topic_id": "8",
+      "source_topic_title": "昇腾CANN开发者如何通过贡献内容获取限量礼品",
+      "source_channel": "mongodb",
+      "source_consult_count": 6,
+      "id": "q_016",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者如何参与CATLASS SIG贡献并获得维护者资格？",
+      "note": "intent=社区贡献与协作",
+      "source_topic_id": "1",
+      "source_topic_title": "昇腾CANN开发者如何参与CATLASS SIG贡献并获得维护者资格",
+      "source_channel": "mongodb",
+      "source_consult_count": 5,
+      "id": "q_017",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者如何解决算子交叉编译时CMake检测失败及依赖缺失问题？",
+      "note": "intent=编译与构建",
+      "source_topic_id": "2",
+      "source_topic_title": "昇腾CANN开发者如何解决算子交叉编译时CMake检测失败及依赖缺失问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_018",
+      "official_urls": []
+    },
+    {
+      "question": "CANN算子segsum在CANN 9.0.0上因缺少NPU binary和C API未导出导致运行与链接失败如何解决？",
+      "note": "intent=算子运行与链接",
+      "source_topic_id": "3",
+      "source_topic_title": "昇腾CANN算子segsum在CANN9.0.0上因缺少NPU binary和C API未导出导致运行与链接失败",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_019",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 9.0.0中hans_encode/decode算子API未导出导致链接失败如何解决？",
+      "note": "intent=算子运行与链接",
+      "source_topic_id": "4",
+      "source_topic_title": "CANN 9.0.0中hans_encode/decode算子API未导出导致链接失败",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_020",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者如何用MindSpore Custom原语实现动态Shape与多输入输出的Ascend C算子开发？",
+      "note": "intent=算子开发",
+      "source_topic_id": "5",
+      "source_topic_title": "昇腾CANN开发者如何用MindSpore Custom原语实现动态Shape与多输入输出的Ascend C算子开发",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_021",
+      "official_urls": []
+    },
+    {
+      "question": "昇腾310P3/310B板卡npu-smi报dcmi模块初始化失败ret=-8005如何解决？",
+      "note": "intent=硬件与驱动故障",
+      "source_topic_id": "6",
+      "source_topic_title": "昇腾310P3/310B板卡npu-smi报dcmi模块初始化失败ret=-8005如何解决",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_022",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 8.2T3下VLLM MoE算子因Triton后端不支持2D掩码和模运算导致编译失败如何解决？",
+      "note": "intent=编译与构建",
+      "source_topic_id": "7",
+      "source_topic_title": "昇腾CANN 8.2T3下VLLM MoE算子因Triton后端不支持2D掩码和模运算导致编译失败",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_023",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者签署CLA后仍无法通过校验如何解决？",
+      "note": "intent=社区贡献与协作",
+      "source_topic_id": "8",
+      "source_topic_title": "昇腾CANN开发者需解决CLA签署后仍无法通过校验的问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_024",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者如何确定StreamK在小M与大K场景下的性能收益？",
+      "note": "intent=性能调优",
+      "source_topic_id": "1",
+      "source_topic_title": "昇腾CANN开发者如何确定StreamK在小M与大K场景下的性能收益",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_025",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者如何提高Ascend950与Atlas A2/A3的模板代码复用效率？",
+      "note": "intent=开发效率",
+      "source_topic_id": "2",
+      "source_topic_title": "昇腾CANN开发者如何提高Ascend950与Atlas A2/A3的模板代码复用效率",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_026",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者如何解决dlBLAS算子报错及新算子支持问题？",
+      "note": "intent=算子开发与适配",
+      "source_topic_id": "3",
+      "source_topic_title": "昇腾CANN开发者亟需解决dlBLAS算子报错及新算子支持问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_027",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者在ATC工具转换warpPerspective算子时输入类型配置失败如何解决？",
+      "note": "intent=模型转换",
+      "source_topic_id": "4",
+      "source_topic_title": "开发者在ATC工具转换warpPerspective算子时输入类型配置失败",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_028",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者在PyTorch与NPU适配中如何排查507018/507015硬件异常错误？",
+      "note": "intent=故障排查",
+      "source_topic_id": "5",
+      "source_topic_title": "昇腾CANN开发者在PyTorch与NPU适配中如何排查507018/507015硬件异常错误",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_029",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者如何排查SenseVoiceSmall模型执行错误码500002及ACL初始化失败问题？",
+      "note": "intent=模型执行与适配",
+      "source_topic_id": "6",
+      "source_topic_title": "昇腾CANN开发者如何排查SenseVoiceSmall模型执行错误码500002及ACL初始化失败问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_030",
+      "official_urls": []
+    },
+    {
+      "question": "CANN开发者如何解决PTA调用ACL API失败问题？",
+      "note": "intent=API调用与适配",
+      "source_topic_id": "7",
+      "source_topic_title": "昇腾CANN开发者如何解决PTA调用ACL API失败问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_031",
+      "official_urls": []
+    },
+    {
+      "question": "CANN当前版本是否受CVE-2026-33210 JSON组件格式化字符串注入漏洞影响？",
+      "note": "intent=安全漏洞",
+      "source_topic_id": "8",
+      "source_topic_title": "CANN当前版本是否受CVE-2026-33210 JSON组件格式化字符串注入漏洞影响",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_032",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 在 Atlas 200 A2 推理场景中，DVPP 加速单元配置异常导致图像预处理性能不足如何解决？",
+      "note": "intent=性能调优",
+      "source_topic_id": "1",
+      "source_topic_title": "[mongodb] consult=3  Atlas 200 A2推理中DVPP加速单元配置异常导致图像预处理性能不足",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_033",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 社区邮件列表测试是否会影响社区正常沟通？",
+      "note": "intent=社区与沟通",
+      "source_topic_id": "2",
+      "source_topic_title": "[mongodb] consult=3  开发者需确认邮件列表测试是否影响CANN社区沟通",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_034",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 中 fma 与 cast 算子在非浮点及 fp16/bf16 输入时精度不达标如何解决？",
+      "note": "intent=算子精度问题",
+      "source_topic_id": "3",
+      "source_topic_title": "[mongodb] consult=3  昇腾CANN中fma与cast算子在非浮点及fp16/bf16输入时精度不达标问题亟待解决",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_035",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 开发者如何解决 Triton 编译中 libdevice 缺失及算子兼容性问题？",
+      "note": "intent=编译与兼容性",
+      "source_topic_id": "4",
+      "source_topic_title": "[mongodb] consult=3  昇腾CANN开发者如何解决Triton编译中libdevice缺失及算子兼容性问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_036",
+      "official_urls": []
+    },
+    {
+      "question": "CANNLab 无法在黄区电脑登录且跳转失效如何解决？",
+      "note": "intent=登录与访问问题",
+      "source_topic_id": "5",
+      "source_topic_title": "[mongodb] consult=3  CANNLab无法在黄区电脑登录且跳转失效",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_037",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 开发者如何实现 grouped_gemm_triton_kernel 等算子在 ARM 架构上的适配与性能优化？",
+      "note": "intent=算子适配与性能优化",
+      "source_topic_id": "6",
+      "source_topic_title": "[mongodb] consult=3  昇腾CANN开发者需实现grouped_gemm_triton_kernel等算子在ARM架构上的适配与性能优化",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_038",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 开发者如何应对 PyTorch 相关 CVE 漏洞对 CANN 兼容性的影响？",
+      "note": "intent=安全与兼容性",
+      "source_topic_id": "7",
+      "source_topic_title": "[mongodb] consult=3  CANN开发者如何应对PyTorch相关CVE漏洞的兼容性影响",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_039",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 开发者如何解决 torchrun 命令未找到的问题？",
+      "note": "intent=环境配置与命令缺失",
+      "source_topic_id": "8",
+      "source_topic_title": "[mongodb] consult=3  昇腾CANN开发者如何解决torchrun命令未找到问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_040",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 如何将 PyTorch 的 .pth 模型转换为 OM 格式并进行推理？",
+      "note": "intent=模型转换与推理",
+      "source_topic_id": "1",
+      "source_topic_title": "开发者如何将pth模型转换为OM格式并在CANN上推理",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_041",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 在 Docker 中安装 Toolkit 时提示 sha256sum 命令未找到，如何解决？",
+      "note": "intent=安装与部署",
+      "source_topic_id": "2",
+      "source_topic_title": "昇腾CANN开发者在Docker中安装Toolkit时需解决sha256sum命令未找到问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_042",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 如何应对 PyTorch 版本漏洞并确保模型运行安全？",
+      "note": "intent=安全与兼容性",
+      "source_topic_id": "3",
+      "source_topic_title": "昇腾CANN开发者如何应对PyTorch版本漏洞并确保模型运行安全",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_043",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 安装后缺失 libhccl.so 和 libacl_op.so 文件，如何解决？",
+      "note": "intent=安装与部署",
+      "source_topic_id": "4",
+      "source_topic_title": "昇腾CANN安装后缺失libhccl.so和libacl_op.so文件如何解决",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_044",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 复现 DeepSeek-V4 Flash 训练时出现段错误与显存溢出，如何解决？",
+      "note": "intent=训练与调试",
+      "source_topic_id": "5",
+      "source_topic_title": "昇腾CANN开发者复现DeepSeek-V4 Flash训练时遭遇段错误与显存溢出问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_045",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 升级后如何查证 GetWorkspaceSize 接口变更并实现跨版本兼容？",
+      "note": "intent=接口与兼容性",
+      "source_topic_id": "6",
+      "source_topic_title": "CANN升级后如何查证GetWorkspaceSize接口变更并实现跨版本兼容",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_046",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 如何获取缺失的 aclnn 算子文档及 op_api_list.md 链接？",
+      "note": "intent=文档与资源",
+      "source_topic_id": "7",
+      "source_topic_title": "昇腾CANN开发者亟需补全缺失的aclnn算子文档及op_api_list.md链接",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_047",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 如何获取特定版本的 Docker Runtime 及 Kernels 安装包？",
+      "note": "intent=安装与部署",
+      "source_topic_id": "8",
+      "source_topic_title": "昇腾CANN开发者如何获取特定版本的Docker Runtime及Kernels安装包",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_048",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 驱动下载成功但 npu-smi info 报错 dcmi module initialize failed ret is -8005 如何解决",
+      "note": "intent=安装与部署",
+      "source_topic_id": "1",
+      "source_topic_title": "310B 驱动下载成功 npu-smi info报错：dcmi module initialize failed.ret is -8005",
+      "source_channel": "forum_posts",
+      "source_consult_count": 1836,
+      "id": "q_049",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 昇腾环境下无法使用 LLamaFactory 的 QLoRA 量化微调功能如何解决",
+      "note": "intent=模型训练与微调",
+      "source_topic_id": "2",
+      "source_topic_title": "您好，想请问大家在昇腾环境下无法使用LLamaFactory中的量化微调功能QLoRA要怎么解决呀？",
+      "source_channel": "forum_posts",
+      "source_consult_count": 1820,
+      "id": "q_050",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 如何对 ONNX 模型进行 Int8 量化并编译生成 om 模型",
+      "note": "intent=模型转换与量化",
+      "source_topic_id": "3",
+      "source_topic_title": "CANN 如何对ONNX模型进行Int8量化并编译生成om",
+      "source_channel": "forum_posts",
+      "source_consult_count": 1186,
+      "id": "q_051",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 自定义算子工程报错 Synchronize stream failed error code 507035 如何解决",
+      "note": "intent=算子开发与调试",
+      "source_topic_id": "4",
+      "source_topic_title": "自定义算子工程报错Synchronize stream failed. error code is 507035",
+      "source_channel": "forum_posts",
+      "source_consult_count": 1133,
+      "id": "q_052",
+      "official_urls": []
+    },
+    {
+      "question": "CANN onnx 转 om 模型时 Warning tiling offset out of range index 32 如何解决",
+      "note": "intent=模型转换与量化",
+      "source_topic_id": "5",
+      "source_topic_title": "onnx转换为om模型时Warning: tiling offset out of range, index: 32 怎么解决",
+      "source_channel": "forum_posts",
+      "source_consult_count": 1088,
+      "id": "q_053",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 使用 ais_bench 工具运行 atc 生成的 om 模型报错如何确定是哪个算子出错",
+      "note": "intent=模型推理与调试",
+      "source_topic_id": "6",
+      "source_topic_title": "使用 ais_bench 工具运行 atc 生成的 om 模型报错，该如何确定是哪个算子报错？",
+      "source_channel": "forum_posts",
+      "source_consult_count": 795,
+      "id": "q_054",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 模型转换时 Warning tiling offset out of range 如何解决",
+      "note": "intent=模型转换与量化",
+      "source_topic_id": "7",
+      "source_topic_title": "Warning: tiling offset out of range怎么解决",
+      "source_channel": "forum_posts",
+      "source_consult_count": 737,
+      "id": "q_055",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 报错 507015 如何解决",
+      "note": "intent=通用错误排查",
+      "source_topic_id": "8",
+      "source_topic_title": "报错507015",
+      "source_channel": "forum_posts",
+      "source_consult_count": 652,
+      "id": "q_056",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 中小企业AI从业者如何快速上手并获取技术支持？",
+      "note": "intent=社区交流与咨询",
+      "source_topic_id": "1",
+      "source_topic_title": "我是一个中小企业AI从业者",
+      "source_channel": "forum_posts",
+      "source_consult_count": 580,
+      "id": "q_057",
+      "official_urls": []
+    },
+    {
+      "question": "CANN Gitee上的样例代码仓库状态多为暂停，后续在哪里能找到可用的样例代码？是否会发布yolo26的样例代码？",
+      "note": "intent=资源获取与样例代码",
+      "source_topic_id": "2",
+      "source_topic_title": "gitee上的样例代码仓库状态大部分都是暂停状态，后续在哪里找样例代码？是否会发布yolo26的样例代码？",
+      "source_channel": "forum_posts",
+      "source_consult_count": 570,
+      "id": "q_058",
+      "official_urls": []
+    },
+    {
+      "question": "CANN om模型转换时，mobilesam模型从onnx转换后出现精度问题如何解决？",
+      "note": "intent=模型转换与精度调优",
+      "source_topic_id": "3",
+      "source_topic_title": "om模型转换——mobilesam模型onnx转换（精度问题）",
+      "source_channel": "forum_posts",
+      "source_consult_count": 562,
+      "id": "q_059",
+      "official_urls": []
+    },
+    {
+      "question": "CANN Ascend是否支持sageattention？如何安装和使用sageattention？",
+      "note": "intent=算子支持与安装使用",
+      "source_topic_id": "4",
+      "source_topic_title": "Ascend是否支持sageattention，如何安装使用sageattention",
+      "source_channel": "forum_posts",
+      "source_consult_count": 522,
+      "id": "q_060",
+      "official_urls": []
+    },
+    {
+      "question": "CANN aclmdlLoadFromFile失败，错误码507018，且卸载模型时报错145003，如何排查和解决？",
+      "note": "intent=模型加载与卸载错误",
+      "source_topic_id": "5",
+      "source_topic_title": "[ERROR]   aclmdlLoadFromFile failed, errorCode is 507018   [ERROR]   unload model failed, errorCode is 145003",
+      "source_channel": "forum_posts",
+      "source_consult_count": 504,
+      "id": "q_061",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 执行build.sh时出现报错，如何定位和修复？",
+      "note": "intent=编译构建错误",
+      "source_topic_id": "6",
+      "source_topic_title": "build.sh报错",
+      "source_channel": "forum_posts",
+      "source_consult_count": 462,
+      "id": "q_062",
+      "official_urls": []
+    },
+    {
+      "question": "CANN onnx模型转为om模型后，ReduceMean算子的输出结果与预期不符，如何解决？",
+      "note": "intent=模型转换与算子精度",
+      "source_topic_id": "7",
+      "source_topic_title": "关于onnx转为om模型后，ReduceMean算子的输出问题",
+      "source_channel": "forum_posts",
+      "source_consult_count": 454,
+      "id": "q_063",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 这些文件及内容分别代表什么含义？",
+      "note": "intent=文件结构与含义说明",
+      "source_topic_id": "8",
+      "source_topic_title": "这些文件及内容是什么意义？",
+      "source_channel": "forum_posts",
+      "source_consult_count": 400,
+      "id": "q_064",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 中 ScatterElements 和 ViewCopy 算子执行速度慢如何优化？",
+      "note": "intent=算子性能优化",
+      "source_topic_id": "1",
+      "source_topic_title": "ScatterElements/ViewCopy 算子执行比较慢？",
+      "source_channel": "forum_posts",
+      "source_consult_count": 397,
+      "id": "q_065",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 中 torch.npu.config.allow_internal_format 参数的作用和使用方法是什么？",
+      "note": "intent=API与参数理解",
+      "source_topic_id": "2",
+      "source_topic_title": "如何理解torch.npu.config.allow_internal_format参数",
+      "source_channel": "forum_posts",
+      "source_consult_count": 396,
+      "id": "q_066",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 算子开发中如何高效定位内存越界问题？",
+      "note": "intent=算子开发与调试",
+      "source_topic_id": "3",
+      "source_topic_title": "CANN算子开发中如何高效定位内存越界问题？",
+      "source_channel": "forum_posts",
+      "source_consult_count": 370,
+      "id": "q_067",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 中 ONNX 模型包含自定义算子但该算子已被 CANN 支持，能否直接修改 ONNX 算子以完成 OM 转换？",
+      "note": "intent=模型转换与适配",
+      "source_topic_id": "4",
+      "source_topic_title": "含自定义算子的onnx模型，而该算子却在cann中被支持，是否可以直接对onnx中的算子进行修改，以完成后续om的转换？",
+      "source_channel": "forum_posts",
+      "source_consult_count": 370,
+      "id": "q_068",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 中 sinh 函数实现报错 [ERROR] Get Operator Workspace failed (error code 361001) 和 Run op failed 如何解决？",
+      "note": "intent=算子执行错误",
+      "source_topic_id": "5",
+      "source_topic_title": "sinh函数实现过程报错：[ERROR] Get Operator Workspace failed. error code is 361001 [ERROR] Run op failed",
+      "source_channel": "forum_posts",
+      "source_consult_count": 340,
+      "id": "q_069",
+      "official_urls": []
+    },
+    {
+      "question": "CANN ATC 模型转换后执行推理报错 Illegal instruction 如何解决？",
+      "note": "intent=推理执行错误",
+      "source_topic_id": "6",
+      "source_topic_title": "问题：ATC转换后执行推理报错Illegal instruction",
+      "source_channel": "forum_posts",
+      "source_consult_count": 331,
+      "id": "q_070",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 自定义算子运行报错 [ERROR] Synchronize stream failed (error code 507046) 如何排查？",
+      "note": "intent=算子执行错误",
+      "source_topic_id": "7",
+      "source_topic_title": "自定义算子运行出错，[ERROR]  Synchronize stream failed. error code is 507046",
+      "source_channel": "forum_posts",
+      "source_consult_count": 331,
+      "id": "q_071",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 中 ONNX 模型转换报错 No opset import for domain 'amct.customop' 如何解决？",
+      "note": "intent=模型转换与适配",
+      "source_topic_id": "8",
+      "source_topic_title": "No opset import for domain 'amct.customop'",
+      "source_channel": "forum_posts",
+      "source_consult_count": 331,
+      "id": "q_072",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 安装 Ascend-cann-toolkit_8.5.0_linux-aarch64.run 时报错如何解决？",
+      "note": "intent=安装与部署",
+      "source_topic_id": "1",
+      "source_topic_title": "安装Ascend-cann-toolkit_8.5.0_linux-aarch64.run 报错",
+      "source_channel": "forum_posts",
+      "source_consult_count": 329,
+      "id": "q_073",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 在 Ascend 官网找不到 Ascend-cann-toolkit_6.10.t03spc010b050_linux.x86_64.run 版本怎么办？",
+      "note": "intent=安装与部署",
+      "source_topic_id": "2",
+      "source_topic_title": "Ascend官网没有找到Ascend-cann-toolkit_6.10.t03spc010b050_linux.x86_64.run？",
+      "source_channel": "forum_posts",
+      "source_consult_count": 327,
+      "id": "q_074",
+      "official_urls": []
+    },
+    {
+      "question": "CANN Docker 部署 Dify 时插件安装失败如何解决？",
+      "note": "intent=安装与部署",
+      "source_topic_id": "3",
+      "source_topic_title": "Docker 部署 Dify 时插件安装失败？一招解决！",
+      "source_channel": "forum_posts",
+      "source_consult_count": 324,
+      "id": "q_075",
+      "official_urls": []
+    },
+    {
+      "question": "CANN 编译过程中出现 fatal error: acl/acl.h 如何解决？",
+      "note": "intent=编译与构建",
+      "source_topic_id": "4",
+      "source_topic_title": "编译过程中出现：fatal error: acl/acl.h",
+      "source_channel": "forum_posts",
+      "source_consult_count": 323,
+      "id": "q_076",
+      "official_urls": []
+    },
+    {
+      "question": "CANN grounding dino onnx 转 om 失败如何解决？",
+      "note": "intent=模型转换",
+      "source_topic_id": "5",
+      "source_topic_title": "grounding dino onnx转om失败",
+      "source_channel": "forum_posts",
+      "source_consult_count": 321,
+      "id": "q_077",
+      "official_urls": []
+    },
+    {
+      "question": "CANN ascend-toolkit 安装失败如何解决？",
+      "note": "intent=安装与部署",
+      "source_topic_id": "6",
+      "source_topic_title": "ascend-toolkit安装失败",
+      "source_channel": "forum_posts",
+      "source_consult_count": 304,
+      "id": "q_078",
+      "official_urls": []
+    }
+  ]
+}
