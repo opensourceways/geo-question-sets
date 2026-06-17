@@ -1,0 +1,2728 @@
+{
+  "questions": [
+    {
+      "question": "openeuler内核RAID模块处理REQ_NOWAIT标志异常导致写入性能下降和存储不稳定如何解决？",
+      "note": "intent=内核与驱动",
+      "source_topic_id": "topic_1",
+      "source_topic_title": "[mongodb] consult=8  openEuler内核RAID模块未正确处理REQ_NOWAIT标志导致写性能下降及存储不稳定",
+      "source_channel": "mongodb",
+      "source_consult_count": 8,
+      "id": "q_017",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/security/shangmi/kernel_module_signing.html",
+        "https://docs.openeuler.org/zh/docs/25.03/server/releasenotes/releasenotes/key-features.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/releasenotes/releasenotes/key_features.html",
+        "https://gitee.com/openeuler/kernel/issues/ICDC3C"
+      ],
+      "gap_status": "gap",
+      "_idx": 16,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/2566/1"
+    },
+    {
+      "question": "openeuler代码仓库如何配置Webhook以自动触发文档门禁检查流程？",
+      "note": "intent=CI/CD与开发流程",
+      "source_topic_id": "topic_4",
+      "source_topic_title": "openEuler仓库需配置Webhook以触发文档门禁检查",
+      "source_channel": "mongodb",
+      "source_consult_count": 6,
+      "id": "q_036",
+      "official_urls": [
+        "https://www.openeuler.org/zh/blog/zhengyaohui/2022-03-21-ci_guild",
+        "https://www.openeuler.org/zh/blog/overweight/2020-06-10-my-traval-of-openeuler",
+        "https://www.openeuler.org/zh/blog/liuqi/2021-11-25-jenkins-gitee-webhook"
+      ],
+      "gap_status": "gap",
+      "_idx": 35,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/146/1"
+    },
+    {
+      "question": "openeuler 6.6内核如何完善对AMD Turin与Venice处理器的硬件支持？",
+      "note": "intent=内核与硬件适配",
+      "source_topic_id": "topic_7",
+      "source_topic_title": "openEuler 6.6内核亟需完善AMD Turin与Venice处理器硬件支持",
+      "source_channel": "mongodb",
+      "source_consult_count": 6,
+      "id": "q_039",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/security/cca/cca_user_guide.html",
+        "https://docs.openeuler.org/zh/docs/25.03/server/releasenotes/releasenotes/key-features.html",
+        "https://docs.openeuler.org/zh/docs/25.03/virtualization/virtualization_platform/virtualization/introduction-to-virtulization.html",
+        "https://gitcode.com/openeuler/kernel/issues/9006",
+        "https://gitcode.com/openeuler/kernel/issues/9054",
+        "https://gitcode.com/openeuler/kernel/issues/8536"
+      ],
+      "gap_status": "gap",
+      "_idx": 38,
+      "primary_answer_url": "https://gitcode.com/openeuler/kernel/issues/9006"
+    },
+    {
+      "question": "openEuler RISC-V 架构下 sysmonitor 的 CPU 与网卡监控告警未触发如何解决？",
+      "note": "intent=系统监控与运维",
+      "source_topic_id": "topic_3",
+      "source_topic_title": "[mongodb] consult=5  openEuler RISC-V sysmonitor CPU/网卡监控告警未触发且功能缺失",
+      "source_channel": "mongodb",
+      "source_consult_count": 5,
+      "id": "q_043",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/maintenance/sysmonitor/sysmonitor_user_guide.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/virtualization/virtulization_platform/stratovirt/stratovirt_vfio_instructions.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 42,
+      "primary_answer_url": "https://gitee.com/openeuler/RISC-V/issues/ICILD1"
+    },
+    {
+      "question": "openEuler 中如何使用 ubctl 与 ub_fwctl 增强网络流量策略监控能力？",
+      "note": "intent=网络管理与工具使用",
+      "source_topic_id": "topic_7",
+      "source_topic_title": "[mongodb] consult=5  ubctl与ub_fwctl需增强网络流量策略监控能力",
+      "source_channel": "mongodb",
+      "source_consult_count": 5,
+      "id": "q_047",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/maintenance/troubleshooting/troubleshooting.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/cloud/hybrid_deployment/rubik/overview.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/releasenotes/releasenotes/key_features.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 46,
+      "primary_answer_url": "https://gitcode.com/openeuler/ubctl/issues/18"
+    },
+    {
+      "question": "openeuler openYuanrong 多语言支持与 NPU 异构资源调度如何优化配置？",
+      "note": "intent=性能优化与调度",
+      "source_topic_id": "topic_1",
+      "source_topic_title": "openYuanrong多语言支持与NPU异构资源调度需进一步优化",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_057",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/maintenance/aops/deploying-aops.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/releasenotes/releasenotes/key_features.html",
+        "https://docs.openeuler.org/zh/docs/25.03/server/releasenotes/releasenotes/key-features.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 56,
+      "primary_answer_url": "https://gitcode.com/openeuler/yuanrong/issues/52"
+    },
+    {
+      "question": "openeuler 使用 BPF 进行 cgroup detach 时遇到无效内存访问错误如何解决？",
+      "note": "intent=内核与驱动调试",
+      "source_topic_id": "topic_3",
+      "source_topic_title": "openEuler BPF cgroup detach时无效内存访问问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_059",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/cloud/hybrid_deployment/rubik/appendix.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/unifiedbus/unifiedbus/ubse/ubse_api_reference.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/hybrid_deployment/rubik/feature_introduction.html",
+        "https://gitee.com/openeuler/kernel/issues/ID5QD3",
+        "https://gitee.com/openeuler/kernel/issues/ID7DOT"
+      ],
+      "gap_status": "gap",
+      "_idx": 58,
+      "primary_answer_url": "https://gitee.com/openeuler/kernel/issues/ID5QD3"
+    },
+    {
+      "question": "openeuler A-Tune 的 atune-check 硬件检测时网卡信息缺失如何修复？",
+      "note": "intent=系统调优与硬件检测",
+      "source_topic_id": "topic_5",
+      "source_topic_title": "atune-check硬件检测逻辑需修复网卡信息缺失问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_061",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/performance/system_optimization/atune/installation_and_deployment.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/tools/community_tools/performance/system_optimization/atune/getting_to_know_a_tune.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 60,
+      "primary_answer_url": "https://gitee.com/src-openeuler/A-Tune/issues/IDDMFN"
+    },
+    {
+      "question": "openeuler DevStore 管理界面如何配置 MCP 插件版本折叠显示？",
+      "note": "intent=软件包管理与界面优化",
+      "source_topic_id": "topic_6",
+      "source_topic_title": "openEuler DevStore需支持MCP插件版本折叠显示以优化管理界面",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_062",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/devstation/devstation/DevStore/quick_start.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/devstation/devstation/oedeploy/mcp_instruction.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/releasenotes/releasenotes/key_features.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 61,
+      "primary_answer_url": "https://gitee.com/src-openeuler/devstation-config/issues/ICX4B4"
+    },
+    {
+      "question": "openeuler 内核中 idxd_free 引发 put_device 重复调用导致 use-after-free 崩溃如何排查？",
+      "note": "intent=内核崩溃与内存安全",
+      "source_topic_id": "topic_8",
+      "source_topic_title": "openEuler内核idxd_free引发put_device重复调用导致use-after-free",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_064",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/cloud/image_builder/isula_build/isula_build.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/administration/sysmaster/devmaster_install_deploy.html",
+        "https://docs.openeuler.org/en/docs/25.03/server/releasenotes/releasenotes/known-issues.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 63,
+      "primary_answer_url": "https://gitcode.com/openeuler/kernel/issues/8697"
+    },
+    {
+      "question": "openeuler 在LoongArch架构下构建lib-shim-v2缺失struct Stats定义如何修复？",
+      "note": "intent=架构适配与编译",
+      "source_topic_id": "topic_6",
+      "source_topic_title": "[mongodb] consult=4  loongarch架构下lib-shim-v2构建缺失struct Stats定义",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_070",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/virtualization/virtulization_platform/stratovirt/interconnect_isula.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/tools/community_tools/image_tailor/imagetailor_user_guide.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/releasenotes/releasenotes/key_features.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 69,
+      "primary_answer_url": "https://gitcode.com/openeuler/OmniOperator/issues/107"
+    },
+    {
+      "question": "openeuler 桌面环境显示缩放为何缺乏细粒度选项且设置响应缓慢？",
+      "note": "intent=桌面环境与用户体验",
+      "source_topic_id": "topic_8",
+      "source_topic_title": "[mongodb] consult=4  openEuler显示缩放缺乏细粒度选项且设置响应慢",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_072",
+      "official_urls": [
+        "https://www.openeuler.org/zh/blog/randy1568/flask%201-1-2-porting-guide",
+        "https://www.openeuler.org/zh/faq/system-management/",
+        "https://www.openeuler.org/zh/blog/20220705-01ziyuanliyonglv/openeuler-01ziyuanliyonglv"
+      ],
+      "gap_status": "gap",
+      "_idx": 71,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/4946/1"
+    },
+    {
+      "question": "openeuler启用IMA摘要列表时因安全属性缺失导致启动panic如何解决？",
+      "note": "intent=系统启动与安全",
+      "source_topic_id": "mongo_002",
+      "source_topic_title": "IMA摘要列表启用时因安全属性缺失导致系统启动panic",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_074",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/security/trusted_computing/ima.html",
+        "https://docs.openeuler.org/zh/docs/25.03/server/security/trusted_computing/ima.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 73,
+      "primary_answer_url": "https://gitee.com/openeuler/kernel/issues/ID21UO"
+    },
+    {
+      "question": "openeuler衍生发行版编译时clang工具链未自动适配target triples应如何配置？",
+      "note": "intent=编译与工具链配置",
+      "source_topic_id": "mongo_005",
+      "source_topic_title": "clang工具链未自动适配openEuler衍生发行版target triples",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_077",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/compiler/llvm/gnu_compatibility_user_guide.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/cloud/cluster_deployment/isulad_k8s/gitlab_deploy.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/releasenotes/releasenotes/key_features.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 76,
+      "primary_answer_url": "https://gitee.com/src-openeuler/llvm/issues/ICXMV1"
+    },
+    {
+      "question": "openeuler升级Rust 1.91后uts组件宏调用分号报错如何解决？",
+      "note": "intent=语言环境与依赖升级",
+      "source_topic_id": "mongo_006",
+      "source_topic_title": "master分支Rust 1.91升级导致uts相关组件宏调用分号报错",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_078",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/releasenotes/resolved_issues.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/releasenotes/known_issues.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/hybrid_deployment/oncn_bwm/overview.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 77,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1585/1"
+    },
+    {
+      "question": "openeuler环境下Gluten的Shuffle与Join算子不支持struct类型该如何处理？",
+      "note": "intent=大数据与AI计算",
+      "source_topic_id": "mongodb_8",
+      "source_topic_title": "[mongodb] consult=4  openEuler中Gluten Shuffle与Join算子不支持struct类型",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_088",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/maintenance/syscare/constraints.html",
+        "https://docs.openeuler.org/zh/docs/25.03/server/maintenance/syscare/constraints.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/compiler/gcc/pin_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 87,
+      "primary_answer_url": "https://gitcode.com/openeuler/OmniOperator/issues/107"
+    },
+    {
+      "question": "openeuler环境下smc_cmd命令行工具如何新增字段以扩展功能？",
+      "note": "intent=功能扩展与开发",
+      "source_topic_id": "topic_2",
+      "source_topic_title": "[mongodb] consult=4  smc_cmd需新增字段以扩展命令行功能",
+      "source_channel": "mongodb",
+      "source_consult_count": 4,
+      "id": "q_090",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/development/application_dev/building-an-rpm-package.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/development/application_dev/building_an_rpm_package.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/tools/community_tools/image_tailor/imagetailor_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 89,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3749/1"
+    },
+    {
+      "question": "openeuler环境下Spark SQL的Extract函数仅支持小时字段提取，如何扩展支持其他时间维度？",
+      "note": "intent=软件兼容与功能支持",
+      "source_topic_id": "topic_3",
+      "source_topic_title": "[mongodb] consult=3  openEuler Spark SQL Extract函数仅支持小时字段提取",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_107",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.09/server/installation_upgrade/upgrade/openeuler_2203_lts_upgrade_and_downgrade_guide.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/compiler/llvm/gnu_compatibility_user_guide.html",
+        "https://docs.openeuler.org/zh/docs/25.03/virtualization/virtualization_platform/openstack/spec/openstack-sig-tool-requirement.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 106,
+      "primary_answer_url": "https://gitcode.com/openeuler/OmniOperator/issues/338"
+    },
+    {
+      "question": "openeuler中enfs处于亚健康连接状态时出现死锁与配置失效应如何诊断？",
+      "note": "intent=存储与网络服务",
+      "source_topic_id": "topic_4",
+      "source_topic_title": "[mongodb] consult=3  enfs亚健康连接状态存在死锁与配置失效问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_108",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/server/installation_upgrade/installation/server-installation-common-issues-and-solutions.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/releasenotes/releasenotes/known_issues.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/development/distributed/hmdfs_distributed_file_system_overview.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 107,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/2566/1"
+    },
+    {
+      "question": "openeuler系统中UMQ并发操作导致进程coredump应如何定位与规避？",
+      "note": "intent=进程管理与系统稳定性",
+      "source_topic_id": "topic_8",
+      "source_topic_title": "[mongodb] consult=3  openEuler UMQ并发操作导致进程coredump",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_112",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/tools/community_tools/performance/oeaware/plugin_user_guide.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/security/trusted_computing/dim.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/cloud/cluster_deployment/isulad+k8s/overview.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 111,
+      "primary_answer_url": "https://gitcode.com/openeuler/ubs-comm/issues/84"
+    },
+    {
+      "question": "openeuler漏洞文档中的术语如何统一规范为“已修复并发布修复方案”？",
+      "note": "intent=文档与规范",
+      "source_topic_id": "mongodb_1",
+      "source_topic_title": "openEuler漏洞文档术语需统一为“已修复并发布修复方案的漏洞”",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_113",
+      "official_urls": [
+        "https://www.openeuler.org/zh/security/vulnerability-reporting/",
+        "https://www.openeuler.org/zh/news/20260123-openEuler-OpenSSF%20OSV/20260123-openEuler-OpenSSF%20OSV",
+        "https://www.openeuler.org/zh/news/20220831"
+      ],
+      "gap_status": "gap",
+      "_idx": 112,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1698/1"
+    },
+    {
+      "question": "openeuler前端组件OCascader如何补充搜索功能并解决移动端适配问题？",
+      "note": "intent=前端开发与UI组件",
+      "source_topic_id": "mongodb_3",
+      "source_topic_title": "openEuler前端组件OCascader缺乏搜索功能与移动端适配问题",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_115",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/tools/community_tools/migration_tools/migration_tools_user_guide.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/tools/community_tools/",
+        "https://docs.openeuler.org/zh/docs/25.03/server/releasenotes/releasenotes/key-features.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 114,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5171/1"
+    },
+    {
+      "question": "openeuler 22.03 LTS SP4版本中hikptool如何增强对HIP11平台的DFX调试支持？",
+      "note": "intent=调试与诊断工具",
+      "source_topic_id": "mongodb_4",
+      "source_topic_title": "openEuler 22.03 SP4 hikptool需增强HIP11平台DFX调试能力",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_116",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/network/gazelle/gazelle_user_guide.html",
+        "https://docs.openeuler.org/en/docs/25.03/cloud/container_engine/isula_container_engine/isulad-support-nri.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/releasenotes/resolved_issues.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 115,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5171/1"
+    },
+    {
+      "question": "openeuler系统中RoCE网络带宽计算精度如何优化提升至毫秒级？",
+      "note": "intent=网络与性能优化",
+      "source_topic_id": "mongodb_8",
+      "source_topic_title": "openEuler RoCE带宽计算精度需提升至毫秒级",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_120",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/releasenotes/releasenotes/key_features.html",
+        "https://docs.openeuler.org/zh/docs/25.09/server/quickstart/releasenotes/key_features.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/releasenotes/releasenotes/key_features.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 119,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/7858/1"
+    },
+    {
+      "question": "openeuler打包时spec文件中的硬编码路径如何替换为标准RPM宏？",
+      "note": "intent=软件打包与构建",
+      "source_topic_id": "1",
+      "source_topic_title": "[mongodb] consult=3  spec文件应使用标准RPM宏替代硬编码路径",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_121",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/security/trusted_computing/ima.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/tools/devops/eulermaker/merge_configs.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/tools/devops/eulermaker/merge_configs.html",
+        "https://gitcode.com/src-openeuler/httpd/issues/162",
+        "https://gitee.com/src-openeuler/httpd/issues/ICTQMO"
+      ],
+      "gap_status": "community_content",
+      "_idx": 120,
+      "primary_answer_url": "https://gitcode.com/src-openeuler/httpd/issues/162"
+    },
+    {
+      "question": "openeuler系统中CIFS客户端挂载时rsize参数为0引发空指针panic，如何在挂载阶段进行拦截或修复？",
+      "note": "intent=系统稳定性与故障排查",
+      "source_topic_id": "topic_1",
+      "source_topic_title": "cifs客户端rsize为0导致空指针panic需挂载阶段拦截",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_129",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/performance/fuse/fuse_acceleration_feature_guide.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/releasenotes/resolved_issues.html",
+        "https://docs.openeuler.org/zh/docs/25.03/server/security/secgear/introduction-to-secGear.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 128,
+      "primary_answer_url": "https://gitee.com/openeuler/kernel/issues/IC1OPD"
+    },
+    {
+      "question": "openeuler 24.03 LTS版本使用EulerMaker构建时提示pygraphviz依赖缺失导致打包失败，如何解决？",
+      "note": "intent=软件构建与打包",
+      "source_topic_id": "topic_2",
+      "source_topic_title": "openEuler EulerMaker2403构建中pygraphviz依赖缺失导致打包失败",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_130",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/tools/devops/eulermaker/eulermaker_user_guide.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/releasenotes/releasenotes/resolved_issues.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/releasenotes/resolved_issues.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 129,
+      "primary_answer_url": "https://gitee.com/openeuler/community-issue/issues/IC1JNU"
+    },
+    {
+      "question": "openeuler使用gcc-14.3编译代码时出现隐式函数声明警告，如何通过编译参数或配置进行抑制？",
+      "note": "intent=开发与编译调试",
+      "source_topic_id": "topic_6",
+      "source_topic_title": "gcc-14.3编译时隐式函数声明警告需抑制处理",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_134",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/compiler/llvm/gnu_compatibility_user_guide.html",
+        "https://docs.openeuler.org/zh/docs/25.09/server/development/llvm/llvm_for_openeuler_option_list.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/compiler/llvm/llvm_for_openeuler_option_list.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 133,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/633/1"
+    },
+    {
+      "question": "openeuler sw_64架构编译KVM时因tlbs dirty成员缺失导致失败应如何修复？",
+      "note": "intent=编译与构建",
+      "source_topic_id": "topic_1",
+      "source_topic_title": "[mongodb] consult=3  sw_64架构KVM编译因tlbs dirty成员缺失失败",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_137",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/releasenotes/releasenotes/resolved_issues.html",
+        "https://docs.openeuler.org/en/docs/25.09/server/quickstart/releasenotes/resolved_issues.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/releasenotes/key_features.html"
+      ],
+      "gap_status": "gap",
+      "_idx": 136,
+      "primary_answer_url": "https://gitee.com/openeuler/kernel/issues/ICBNJ8"
+    },
+    {
+      "question": "openeuler RDMA hns驱动报WQ MEM RECLAIM警告及内存释放风险如何规避？",
+      "note": "intent=内核与驱动调试",
+      "source_topic_id": "topic_6",
+      "source_topic_title": "[mongodb] consult=3  openEuler RDMA hns驱动存在WQ MEM RECLAIM警告与内存释放风险",
+      "source_channel": "mongodb",
+      "source_consult_count": 3,
+      "id": "q_142",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/edge_computing/ros/faqs_and_solutions.html",
+        "https://docs.openeuler.org/zh/docs/25.09/server/",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/",
+        "https://gitcode.com/openeuler/kernel/issues/8560"
+      ],
+      "gap_status": "gap",
+      "_idx": 141,
+      "primary_answer_url": "https://gitcode.com/openeuler/kernel/issues/8560"
+    },
+    {
+      "question": "openeuler在aarch64架构下如何本地编译构建qemu虚拟机环境？",
+      "note": "intent=源码编译与环境构建",
+      "source_topic_id": "forum_1",
+      "source_topic_title": "成功构建了arm64-qemu，如何本地构建",
+      "source_channel": "forum_posts",
+      "source_consult_count": 0,
+      "id": "q_158",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/virtualization/virtualization_platform/virtualization/vm_configuration.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/virtualization/virtulization_platform/virtulization/vm_configuration.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/virtualization/virtualization_platform/virtualization/introduction_to_virtulization.html",
+        "https://www.openeuler.org/zh/blog/luoyuzhe/001Auto-build-vm-enviroment/"
+      ],
+      "gap_status": "gap",
+      "_idx": 157,
+      "primary_answer_url": "https://gitee.com/openeuler/qemu/issues/IBUK85"
+    },
+    {
+      "question": "openeuler LTS 版本在 WSL 环境中如何正确安装与初始化？",
+      "note": "intent=安装与部署",
+      "source_topic_id": "forum_post_3",
+      "source_topic_title": "WSL安装LTS版本",
+      "source_channel": "forum_posts",
+      "source_consult_count": 0,
+      "id": "q_163",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/cloud/cluster_deployment/isulad_k8s/gitlab_deploy.html",
+        "https://docs.openeuler.org/en/docs/25.03/server/performance/cpu_optimization/sysboost/installation-and-deployment.html",
+        "https://www.openeuler.org/zh/wiki/install/wsl/",
+        "https://www.openeuler.org/en/wiki/install/wsl/"
+      ],
+      "gap_status": "gap",
+      "_idx": 162,
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/6045/1"
+    },
+    {
+      "id": "q_doc_001",
+      "question": "在 TaiShan 200 服务器上安装 openEuler 前，需要满足哪些硬件兼容性要求和最小配置？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/quickstart/quickstart/quick_start.html",
+      "source_heat": "high",
+      "question_type": "getting-started",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/quickstart/quickstart/quick_start.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/581/1",
+      "note": "官网文档逆向生成 (page: Viewing System Information | Quick Start | Docs | )"
+    },
+    {
+      "id": "q_doc_002",
+      "question": "我在用 QEMU 启动 openEuler RISC-V 虚拟机，怎么修改脚本来自定义 CPU 核心数和内存大小？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/installation_upgrade/installation/risc_v_qemu.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/installation_upgrade/installation/risc_v_qemu.html",
+        "https://www.openeuler.org/en/blog/phoebe/2023-09-26-Run-openEuler-RISC-V-On-Qemu"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/docs-centralized/issues/IANCGG",
+      "note": "官网文档逆向生成 (page: RISCV-OLK6.6 同源计划 | 在 QEMU 上安装 | 文档 | openEuler社区 )"
+    },
+    {
+      "id": "q_doc_003",
+      "question": "在 QEMU 上通过 UEFI 启动 openEuler RISC-V 镜像，最低需要哪个版本的 QEMU？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/server/installation_upgrade/installation/risc_v_qemu.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/server/installation_upgrade/installation/risc_v_qemu.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3427/1",
+      "note": "官网文档逆向生成 (page: Supported Features | Installing on QEMU | Docs | o)"
+    },
+    {
+      "id": "q_doc_004",
+      "question": "在openEuler上用Devstack部署OpenStack时，为了避免和devstack的pip冲突需要先卸载什么？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/virtualization/virtualization_platform/openstack/install/devstack.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/virtualization/virtualization_platform/openstack/install/devstack.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/openstack/issues/ICKO61",
+      "note": "官网文档逆向生成 (page: 使用Devstack安装OpenStack | 文档 | openEuler社区 | 使用Devst)"
+    },
+    {
+      "id": "q_doc_005",
+      "question": "我在 openEuler 社区镜像站准备下载 DevStation 安装镜像，针对 AArch64 架构要进哪个目录、选哪个 ISO 文件？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/devstation/devstation/calamares/install/installation_preparations.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/devstation/devstation/calamares/install/installation_preparations.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/devstation/devstation/calamares/install/installation_preparations.html",
+        "https://forum.openeuler.org/t/topic/6202/1"
+      ],
+      "gap_status": "community_content",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/6202/1",
+      "note": "官网文档逆向生成 (page: 8. Initial Startup Configuration | Installation Pr)"
+    },
+    {
+      "id": "q_doc_006",
+      "question": "在 openEuler 上，如何通过 dnf 安装 Roo Code，并在 vscodium 中激活它？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/devstation/devstation/roo-code/install/install_and_remove.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/devstation/devstation/roo-code/install/install_and_remove.html",
+        "https://docs.openeuler.org/en/docs/25.03/devstation/roo-code/install_and_remove.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3343/1",
+      "note": "官网文档逆向生成 (page: 1. 打开Roo Code面板 | 安装卸载指导 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_007",
+      "question": "在已有Windows的电脑上安装openEuler DevStation双系统，我需要提前划分多大的未分配磁盘空间？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/devstation/devstation/calamares/install/installation_preparations_1.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/devstation/devstation/calamares/install/installation_preparations_1.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/devstation/devstation/heolleo/install/installation_preparations_1.html",
+        "https://forum.openeuler.org/t/topic/6202/1"
+      ],
+      "gap_status": "community_content",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/6202/1",
+      "note": "官网文档逆向生成 (page: 8. Initial Startup Configuration | Installation Pr)"
+    },
+    {
+      "id": "q_doc_008",
+      "question": "在把 openEuler 22.03 LTS 升级到 SP4 时，该怎么添加新的软件源？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/installation_upgrade/upgrade/openeuler_22.03_lts_upgrade_and_downgrade_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/installation_upgrade/upgrade/openeuler_22.03_lts_upgrade_and_downgrade_guide.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/maintenance/gala/using_gala_gopher.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3177/1",
+      "note": "官网文档逆向生成 (page: 5. Downgrade Verification | openEuler 22.03 LTS Up)"
+    },
+    {
+      "id": "q_doc_009",
+      "question": "我有一台AArch64架构的服务器，想本地安装openEuler，该怎么下载对应的标准ISO镜像文件？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/quickstart/quickstart/quick_start.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/quickstart/quickstart/quick_start.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/installation_upgrade/installation/installation_preparations.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/installation_upgrade/installation/installation_preparations.html",
+        "https://docs.openeuler.org/zh/docs/25.09/server/installation_upgrade/installation/installation_preparations.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/621/1",
+      "note": "官网文档逆向生成 (page: 版本： 24.03 LTS SP3 | 快速入门 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_010",
+      "question": "ROS 环境中同时有 ROS1 和 ROS2 导致警告，怎么通过修改环境变量脚本解决？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/edge_computing/ros/faqs.html",
+      "source_heat": "high",
+      "question_type": "troubleshooting",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/edge_computing/ros/faqs.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/edge_computing/ros/faqs_and_solutions.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/ros/issues/328",
+      "note": "官网文档逆向生成 (page: Preparing the Environment | FAQs | Docs | openEule)"
+    },
+    {
+      "id": "q_doc_011",
+      "question": "为什么kvmtop工具第一次显示的结果波动特别大？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/virtualization/virtulization_platform/virtulization/faqs_and_solutions.html",
+      "source_heat": "high",
+      "question_type": "troubleshooting",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/virtualization/virtulization_platform/virtulization/faqs_and_solutions.html",
+        "https://docs.openeuler.org/en/docs/25.03/virtualization/virtualization_platform/virtualization/appendix.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/yuanrong-datasystem/issues/66",
+      "note": "官网文档逆向生成 (page: 问题3：使用kvmtop工具第一次显示的结果为间隔0.05秒的两次采样计算得到的结果，波动较大 | )"
+    },
+    {
+      "id": "q_doc_012",
+      "question": "openEuler人才认证从2024年8月起改由哪个组织负责了，原来的Talent-and-Service SIG还管吗？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://www.openeuler.org/zh/talent-assessment/",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://www.openeuler.org/zh/talent-assessment/",
+        "https://www.openeuler.org/en/talent-assessment/"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1698/1",
+      "note": "官网文档逆向生成 (page: 人才认证 | openEuler 人才认证与生态就业 | openEuler社区官网)"
+    },
+    {
+      "id": "q_doc_013",
+      "question": "我的鲲鹏服务器没有预装TrustZone套件，只升级BIOS和固件能安装secGear吗？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/secgear/secgear_installation.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/secgear/secgear_installation.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5080/1",
+      "note": "官网文档逆向生成 (page: MindSpore基于TEE的纵向联邦特征保护 | 安装 secGear | 文档 | openEu)"
+    },
+    {
+      "id": "q_doc_014",
+      "question": "在 openEuler 上如何基于 iSulad 容器引擎来部署 Kubernetes 集群？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/cloud/cluster_deployment/isulad+k8s/overview.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3802/1",
+      "note": "官网文档逆向生成 (page: NestOS是为容器化设计的轻量级操作系统，采用双分区院子更新，确保安全可靠 | 云原生 | 文档 )"
+    },
+    {
+      "id": "q_doc_015",
+      "question": "我想在openEuler社区发布一篇技术博客，需要先完成哪些前置步骤？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://www.openeuler.org/en/interaction/post-blog/",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://www.openeuler.org/en/interaction/post-blog/",
+        "https://www.openeuler.org/zh/interaction/post-blog/",
+        "https://forum.openeuler.org/t/topic/2664/1"
+      ],
+      "gap_status": "community_content",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/2664/1",
+      "note": "官网文档逆向生成 (page: Instructions to Post a Blog | openEuler | Instruct)"
+    },
+    {
+      "id": "q_doc_016",
+      "question": "在 openEuler 中，VSCodium 的 Roo Code 插件可以自动完成哪些具体的开发任务？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.03/devstation/roo-code/roo_code.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/devstation/roo-code/roo_code.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/devstation/devstation/roo-code/manual/create_your_first_task.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/open-source-summer/issues/IC30NI",
+      "note": "官网文档逆向生成 (page: Roo Code Overview | Docs | openEuler | Roo Code Ov)"
+    },
+    {
+      "id": "q_doc_017",
+      "question": "openEuler 的 Kubernetes 自动部署工具提供了哪两种部署模式？在无法访问外网时应该选用哪种",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.03/cloud/cluster_deployment/kubernetes/eggo-tool-introduction.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/cloud/cluster_deployment/kubernetes/eggo-tool-introduction.html",
+        "https://docs.openeuler.org/zh/docs/25.03/cloud/cluster_deployment/kubernetes/eggo-automatic-deployment.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/cloud/cluster_deployment/kubernetes/eggo_tool_introduction.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1821/1",
+      "note": "官网文档逆向生成 (page: Issue 2: Unable to Install Kubernetes RPM Packages)"
+    },
+    {
+      "id": "q_doc_018",
+      "question": "在 openEuler 上安装 oncn-bwm 工具需要满足哪些环境要求？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/cloud/hybrid_deployment/oncn_bwm/overview.html",
+      "source_heat": "high",
+      "question_type": "getting-started",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/cloud/hybrid_deployment/oncn_bwm/overview.html",
+        "https://docs.openeuler.org/zh/docs/25.03/cloud/hybrid_deployment/oncn-bwm/overview.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3722/1",
+      "note": "官网文档逆向生成 (page: Installation | oncn-bwm User Guide | Docs | openEu)"
+    },
+    {
+      "id": "q_doc_019",
+      "question": "在 openEuler 上部署 Rubik 之前，需要预先完成哪些环境准备工作？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.03/cloud/hybrid_deployment/rubik/installation-and-deployment.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/cloud/hybrid_deployment/rubik/installation-and-deployment.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3722/1",
+      "note": "官网文档逆向生成 (page: Test Results | Installation and Deployment | Docs )"
+    },
+    {
+      "id": "q_doc_020",
+      "question": "KubeOS 工具支持哪些硬件架构？部署前对操作系统版本有什么要求？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.03/cloud/kubeos/kubeos/installation-and-deployment.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/cloud/kubeos/kubeos/installation-and-deployment.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/cloud/kubeos/kubeos/usage_instructions.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5330/1",
+      "note": "官网文档逆向生成 (page: Usage Description | Installation and Deployment | )"
+    },
+    {
+      "id": "q_doc_021",
+      "question": "在 openEuler 上安装 isula-build 后，配置文件 /etc/isula-build/configuration.toml 里的 debug 选项是做什么用的？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/image_builder/isula_build/isula_build.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/image_builder/isula_build/isula_build.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/748/1",
+      "note": "官网文档逆向生成 (page: 安装 | 文档 | openEuler社区 | 安装 | 文档 | openEuler社区)"
+    },
+    {
+      "id": "q_doc_022",
+      "question": "在 openEuler 上用 yum 安装 isula-build 之前需要如何配置？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.03/cloud/image_builder/isula-build/isula-build.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/cloud/image_builder/isula-build/isula-build.html",
+        "https://docs.openeuler.org/zh/docs/25.09/cloud/image_builder/isula_build/isula_build.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/4316/1",
+      "note": "官网文档逆向生成 (page: Installation | Docs | openEuler | Installation | D)"
+    },
+    {
+      "id": "q_doc_023",
+      "question": "在openEuler环境中部署了在线和离线混合业务，我需要一个能设置pod网络优先级和离线带宽范围的工具，这个工具叫什么，还支持哪些功能？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.03/cloud/hybrid_deployment/oncn-bwm/overview.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/cloud/hybrid_deployment/oncn-bwm/overview.html",
+        "https://docs.openeuler.org/zh/docs/25.03/cloud/hybrid_deployment/oncn-bwm/overview.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/hybrid_deployment/oncn_bwm/overview.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3722/1",
+      "note": "官网文档逆向生成 (page: Installation | oncn-bwm User Guide | Docs | openEu)"
+    },
+    {
+      "id": "q_doc_024",
+      "question": "openEuler 官方文档里的应用开发指南，针对 Java 开发者推荐了哪两种代码编译和运行方式？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/server/development/application_dev/application-development.html",
+      "source_heat": "high",
+      "question_type": "getting-started",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/development/application_dev/application-development.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/development/application_dev/preparations_for_development_environment.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1056/1",
+      "note": "官网文档逆向生成 (page: LLVM/Clang多版本安装 | 应用开发指南 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_025",
+      "question": "我的 openEuler 默认的 LLVM 版本较低，怎样才能装上更新版本的 LLVM/Clang 工具链？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/development/application_dev/using_clang_for_compilation.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/development/application_dev/using_clang_for_compilation.html",
+        "https://forum.openeuler.org/t/topic/5885/1"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5885/1",
+      "note": "官网文档逆向生成 (page: LLVM/Clang多版本安装 | 使用LLVM/Clang编译 | 文档 | openEuler社)"
+    },
+    {
+      "id": "q_doc_026",
+      "question": "使用SysCare在openEuler上制作热补丁，对编译器和调试信息格式有哪些具体要求？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.09/server/maintenance/syscare/constraints.html",
+      "source_heat": "high",
+      "question_type": "reference",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.09/server/maintenance/syscare/constraints.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/maintenance/syscare/using_syscare.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/src-openeuler/syscare/issues/ICYTCG",
+      "note": "官网文档逆向生成 (page: 安装SysCare核心组件 | 约束限制 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_027",
+      "question": "我想用 syscare build 命令给内核打热补丁，需要提前准备哪些软件包，用 yumdownloader 怎么下载？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/maintenance/syscare/using_syscare.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/maintenance/syscare/using_syscare.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/615/1",
+      "note": "官网文档逆向生成 (page: 安装SysCare核心组件 | 使用SysCare | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_028",
+      "question": "在 openEuler 中安装 safeguard 时，如何通过修改 GRUB 配置将 bpf 添加到内核的 lsm 启动参数里？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/security/safeguard/install_safeguard.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/security/safeguard/install_safeguard.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/security/safeguard/install_safeguard.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/19235/1",
+      "note": "官网文档逆向生成 (page: Configuration Items | Installation | Docs | openEu)"
+    },
+    {
+      "id": "q_doc_029",
+      "question": "在openEuler系统中编译GCC插件客户端前，需要通过yum安装哪些依赖软件？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/compiler/gcc/pin_user_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/compiler/gcc/pin_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/2708/1",
+      "note": "官网文档逆向生成 (page: GCC14副版本编译工具链 | 安装与部署 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_030",
+      "question": "openEuler上运行train命令训练模型时提示training data failed，这是什么原因？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/tools/community_tools/atune/installation_and_deployment.html",
+      "source_heat": "high",
+      "question_type": "troubleshooting",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/tools/community_tools/atune/installation_and_deployment.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/libkperf/issues/IC7PIO",
+      "note": "官网文档逆向生成 (page: Common Issues and Solutions | Installation and Dep)"
+    },
+    {
+      "id": "q_doc_031",
+      "question": "当Windows下运行config-env.bat配置环境变量失败时，需要手动把哪两个目录加入PATH？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.09/tools/community_tools/eulerlauncher/win_user_manual.html",
+      "source_heat": "high",
+      "question_type": "troubleshooting",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.09/tools/community_tools/eulerlauncher/win_user_manual.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/18933/1",
+      "note": "官网文档逆向生成 (page: 使用EulerLauncher | 在Windows下安装与运行EulerLauncher | 文档)"
+    },
+    {
+      "id": "q_doc_032",
+      "question": "在 openEuler 上安装 DDE 桌面后，为什么无法用 root 用户登录？默认的登录账户是什么？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/tools/desktop/dde/dde_installation.html",
+      "source_heat": "high",
+      "question_type": "troubleshooting",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/tools/desktop/dde/dde_installation.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/tools/desktop/dde/dde_installation.html",
+        "https://forum.openeuler.org/t/topic/5971/1"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1730/1",
+      "note": "官网文档逆向生成 (page: Keyboard Interaction | DDE Installation | Docs | o)"
+    },
+    {
+      "id": "q_doc_033",
+      "question": "openEuler 这个开源操作系统主要覆盖哪些应用场景？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://www.openeuler.org/zh/community/contribution/detail",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://www.openeuler.org/zh/community/contribution/detail",
+        "https://docs.openeuler.org/"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1056/1",
+      "note": "官网文档逆向生成 (page: OpenAtom openEuler (简称 openEuler) 是由开放原子开源基金会孵化及运营)"
+    },
+    {
+      "id": "q_doc_034",
+      "question": "想在 openEuler 上学习 kdump，不知道官方技术教程里有没有关于 kdump 工作原理的课程？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://www.openeuler.org/zh/community/program/technical-tutorial/",
+      "source_heat": "high",
+      "question_type": "reference",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://www.openeuler.org/zh/community/program/technical-tutorial/"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/2998/1",
+      "note": "官网文档逆向生成 (page: 技术教程 | 课程中心 | openEuler社区官网 | 技术教程 | 课程中心 | openEu)"
+    },
+    {
+      "id": "q_doc_035",
+      "question": "openEuler SIG Gathering 2024设置了哪六个专题研讨方向？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://www.openeuler.org/en/interaction/summit-list/sig-gathering-2024/",
+      "source_heat": "high",
+      "question_type": "reference",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://www.openeuler.org/en/interaction/summit-list/sig-gathering-2024/",
+        "https://www.openeuler.org/zh/interaction/summit-list/sig-gathering-2024/"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/444/1",
+      "note": "官网文档逆向生成 (page: Introduction | SIG Gathering 2024 | openEuler)"
+    },
+    {
+      "id": "q_doc_036",
+      "question": "在 openEuler 上安装 KAE 加速引擎前，如何确认 OpenSSL 版本是否满足最低要求？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/server/performance/cpu_optimization/kae/using-the-kae.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/performance/cpu_optimization/kae/using-the-kae.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1170/1",
+      "note": "官网文档逆向生成 (page: 安装、升级和卸载 | 使用KAE加速引擎 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_037",
+      "question": "在 openEuler 上部署 K3s server 节点时，如何跳过下载步骤直接使用已安装的 RPM 包进行安装？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/edge_computing/k3s/k3s_deployment_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/edge_computing/k3s/k3s_deployment_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3526/1",
+      "note": "官网文档逆向生成 (page: 版本： 24.03 LTS SP3 | K3s部署指南 | 文档 | openEuler社区 [md)"
+    },
+    {
+      "id": "q_doc_038",
+      "question": "在 openEuler 上部署 K3s 时，使用社区 RPM 包安装和官方二进制安装脚本有什么不同？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/edge_computing/k3s/k3s_deployment_guide.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/edge_computing/k3s/k3s_deployment_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3463/1",
+      "note": "官网文档逆向生成 (page: 在k3s上部署第一个nginx服务 | K3s部署指南 | 文档 | openEuler社区 [md)"
+    },
+    {
+      "id": "q_doc_039",
+      "question": "openEuler社区推出的UniProton操作系统主要面向什么场景，设计目标是什么？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/embedded/uniproton/overview.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/embedded/uniproton/overview.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/embedded/uniproton/overview.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5119/1",
+      "note": "官网文档逆向生成 (page: UniProton接口说明 | UniProton用户指南 | 文档 | openEuler社区 [)"
+    },
+    {
+      "id": "q_doc_040",
+      "question": "openEuler社区的UniProton嵌入式操作系统编译文档在哪里查看？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/embedded/uniproton/overview.html",
+      "source_heat": "high",
+      "question_type": "reference",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/embedded/uniproton/overview.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/embedded/uniproton/overview.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/embedded/uniproton/overview.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/737/1",
+      "note": "官网文档逆向生成 (page: UniProton Interfaces | UniProton User Guide | Docs)"
+    },
+    {
+      "id": "q_doc_041",
+      "question": "openEuler上启动atuned服务提示Job for atuned.service failed because a timeout was exceeded，是什么原因？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.09/server/atune/appendix.html",
+      "source_heat": "high",
+      "question_type": "troubleshooting",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.09/server/atune/appendix.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/performance/system_optimization/atune/faqs_and_solutions.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/RISC-V/issues/IATCBV",
+      "note": "官网文档逆向生成 (page: 问题2：atune-adm无法连接atuned服务 | 附录 | 文档 | openEuler社区)"
+    },
+    {
+      "id": "q_doc_042",
+      "question": "在openEuler中使用free -m命令查看内存时，输出中的buff/cache和available有什么不同？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.03/server/memory_storage/overview.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/server/memory_storage/overview.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/administration/administrator/memory_management.html",
+        "https://forum.openeuler.org/t/topic/3308/1"
+      ],
+      "gap_status": "community_content",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3308/1",
+      "note": "官网文档逆向生成 (page: Memory Management | Docs | openEuler | Memory Mana)"
+    },
+    {
+      "id": "q_doc_043",
+      "question": "在多线程中并发调用 secGear 的 cc_enclave_create 创建 enclave 时，为什么会概率性失败？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/secgear/api_reference.html",
+      "source_heat": "high",
+      "question_type": "troubleshooting",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/secgear/api_reference.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/security/secgear/api_reference.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3003/1",
+      "note": "官网文档逆向生成 (page: MindSpore基于TEE的纵向联邦特征保护 | 接口说明 | 文档 | openEuler社区 )"
+    },
+    {
+      "id": "q_doc_044",
+      "question": "使用docker-compose在openEuler上部署A-Ops时，文档建议的两台机器中，主机A需要运行哪些服务？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/aops/quick_deployment_of_aops.html",
+      "source_heat": "high",
+      "question_type": "reference",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/aops/quick_deployment_of_aops.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/maintenance/aops/quick_deployment_of_aops.html",
+        "https://forum.openeuler.org/t/topic/355/1"
+      ],
+      "gap_status": "community_content",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/355/1",
+      "note": "官网文档逆向生成 (page: gala-ragdoll User Guide | One-Click Deployment of )"
+    },
+    {
+      "id": "q_doc_045",
+      "question": "在 openEuler 的 Kubernetes 自动化部署架构中，eggops 模块的作用是什么？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/cloud/cluster_deployment/kubernetes/eggo-automatic-deployment.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/cloud/cluster_deployment/kubernetes/eggo-automatic-deployment.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/355/1",
+      "note": "官网文档逆向生成 (page: 加入集群（仅工作节点需要） | 自动化部署 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_046",
+      "question": "在Dockerfile中用什么指令来指定维护者的姓名和联系方式？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/container_engine/docker_engine/image_management_2.html",
+      "source_heat": "high",
+      "question_type": "reference",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/container_engine/docker_engine/image_management_2.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1301/1",
+      "note": "官网文档逆向生成 (page: pause-unpause | 镜像管理 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_047",
+      "question": "使用isula-build的ctr-img build命令构建镜像时，怎么固定时间戳来实现二进制一致性？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/cloud/image_builder/isula-build/isula-build-appendix.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/cloud/image_builder/isula-build/isula-build-appendix.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/cloud/image_builder/isula_build/isula_build_appendix.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/4316/1",
+      "note": "官网文档逆向生成 (page: 与“docker build”差异 | 附录 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_048",
+      "question": "在 Kuasar 的 stratovirt 配置文件中，vcpus 和 memory_in_mb 参数的默认值分别是多少？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.09/cloud/container_runtime/kuasar/kuasar_appendix.html",
+      "source_heat": "high",
+      "question_type": "reference",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.09/cloud/container_runtime/kuasar/kuasar_appendix.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/cloud/container_runtime/kuasar/kuasar_appendix.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/cloud/container_runtime/kuasar/kuasar_appendix.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/yuanrong-datasystem/issues/344",
+      "note": "官网文档逆向生成 (page: iSulad+Kuasar机密容器部署指南 | 附录 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_049",
+      "question": "使用 docker run 启动安全容器时，为什么不能用 -p 暴露端口，网络参数应该怎么设置？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/cloud/container_form/secure_container/managing-the-lifecycle-of-a-secure-container.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/cloud/container_form/secure_container/managing-the-lifecycle-of-a-secure-container.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/cloud/container_form/secure_container/managing_the_lifecycle_of_a_secure_container.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/nestos-assembler/issues/ICM6X7",
+      "note": "官网文档逆向生成 (page: configuration-toml配置说明 | 管理安全容器的生命周期 | 文档 | openEu)"
+    },
+    {
+      "id": "q_doc_050",
+      "question": "在 openEuler 系统容器中同时使用 -e 参数和 --env-target-file 时，若目标文件已有同名变量，哪个会生效？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/cloud/container_form/system_container/environment_variable_persisting.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/cloud/container_form/system_container/environment_variable_persisting.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/src-openeuler/acl/issues/14",
+      "note": "官网文档逆向生成 (page: Command Line Interface List | Environment Variable)"
+    },
+    {
+      "id": "q_doc_051",
+      "question": "openEuler 的 Kmesh 是什么？Kmesh 用户指南主要面向哪些用户，需要具备什么 Linux 基础知识？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/cloud/kmesh/kmesh/overview.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/cloud/kmesh/kmesh/overview.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/cloud/kmesh/kmesh/overview.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/6045/1",
+      "note": "官网文档逆向生成 (page: Using O&M Commands | Kmesh User Guide | Docs | ope)"
+    },
+    {
+      "id": "q_doc_052",
+      "question": "在 KubeOS 镜像创建工具 kbimg 中，要生成物理机安装所需的镜像和文件，应该使用哪个命令？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/cloud/kubeos/kubeos/kubeos_image_creation.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/cloud/kubeos/kubeos/kubeos_image_creation.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5330/1",
+      "note": "官网文档逆向生成 (page: Usage Description | KubeOS Image Creation | Docs |)"
+    },
+    {
+      "id": "q_doc_053",
+      "question": "在 openEuler 云环境中，如何启动并检查 kmesh-daemon 服务是否正在运行？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/cloud/kmesh/kmesh/appendixes.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/cloud/kmesh/kmesh/appendixes.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/cloud/kmesh/kmesh/installation_and_deployment.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/6045/1",
+      "note": "官网文档逆向生成 (page: kmesh-daemon使用 | 附录 | 文档 | openEuler社区)"
+    },
+    {
+      "id": "q_doc_054",
+      "question": "我装好了 Kuasar，想用 crictl 启动一个 vmm 类型的沙箱 Pod，具体应该执行什么命令？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/cloud/container_runtime/kuasar/kuasar_usage.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/cloud/container_runtime/kuasar/kuasar_usage.html",
+        "https://www.openeuler.org/en/blog/20231027-23.09/20231027-23.09",
+        "https://www.openeuler.org/zh/blog/20231027-23.09/20231027-23.09"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5330/1",
+      "note": "官网文档逆向生成 (page: Usage Instructions | Usage Instructions | Docs | o)"
+    },
+    {
+      "id": "q_doc_055",
+      "question": "在系统容器中，如果同时通过 daemon 配置文件和命令行 --cgroup-parent 参数指定了不同的 cgroup 父路径，实际会以哪个为准？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/cloud/container_form/system_container/configurable_cgroup_path.html",
+      "source_heat": "high",
+      "question_type": "troubleshooting",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/cloud/container_form/system_container/configurable_cgroup_path.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/rubik/issues/ID77UU",
+      "note": "官网文档逆向生成 (page: Command Line Interface List | Configurable Cgroup )"
+    },
+    {
+      "id": "q_doc_056",
+      "question": "部署 Rubik 时，想要开启抢占功能应该在 ConfigMap 里怎么配置 enabledFeatures？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/cloud/hybrid_deployment/rubik/appendix.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/cloud/hybrid_deployment/rubik/appendix.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/hybrid_deployment/rubik/installation_and_deployment.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/ubturbo/issues/17",
+      "note": "官网文档逆向生成 (page: File Permissions | Appendix | Docs | openEuler [md)"
+    },
+    {
+      "id": "q_doc_057",
+      "question": "安全容器和普通 Linux 容器的隔离机制有什么不同？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/cloud/container_form/secure_container/overview.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/cloud/container_form/secure_container/overview.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/cloud/container_form/secure_container/overview.html",
+        "https://www.openeuler.org/zh/blog/20230428-isulad/20230428-isulad"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/yuanrong/issues/51",
+      "note": "官网文档逆向生成 (page: configuration.toml | Secure Container | Docs | ope)"
+    },
+    {
+      "id": "q_doc_058",
+      "question": "Dockerfile 中的 RUN 命令有哪两种执行格式？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/cloud/container_engine/docker_engine/image_management_2.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/cloud/container_engine/docker_engine/image_management_2.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/container_engine/docker_engine/image_management_2.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5185/1",
+      "note": "官网文档逆向生成 (page: pause/unpause | Image Management | Docs | openEule)"
+    },
+    {
+      "id": "q_doc_059",
+      "question": "NestOS除了支持Docker和iSula，还默认集成了哪些容器运行时？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/cloud/nestos/nestos/overview.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/cloud/nestos/nestos/overview.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/cloud/nestos/nestos/overview.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3802/1",
+      "note": "官网文档逆向生成 (page: System Initialization (Ignition) | NestOS User Gui)"
+    },
+    {
+      "id": "q_doc_060",
+      "question": "我想使用isula-build构建OCI格式的容器镜像，应该如何启用这个实验性功能？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/cloud/image_builder/isula_build/overview.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/cloud/image_builder/isula_build/overview.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/cloud/image_builder/isula_build/isula_build.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/4235/1",
+      "note": "官网文档逆向生成 (page: File and Permission | Container Image Building | D)"
+    },
+    {
+      "id": "q_doc_061",
+      "question": "在 Kubernetes 上部署 gitlab-runner，Deployment 的 YAML 里应该挂载哪些卷来指定 runner 配置和 CA 证书？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/cluster_deployment/isulad_k8s/gitlab_runner_deploy.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/cloud/cluster_deployment/isulad_k8s/gitlab_runner_deploy.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/cloud/cluster_deployment/isulad_k8s/gitlab_runner_deploy.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5330/1",
+      "note": "官网文档逆向生成 (page: 在manager节点进行如下操作添加gitlab容器的dns记录 | gitlab runner部署)"
+    },
+    {
+      "id": "q_doc_062",
+      "question": "sysBoost 优化后的二进制文件如果导致应用崩溃，它是怎么处理的？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/performance/sysboost/getting_to_know_sysboost.html",
+      "source_heat": "high",
+      "question_type": "troubleshooting",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/performance/sysboost/getting_to_know_sysboost.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/762/1",
+      "note": "官网文档逆向生成 (page: sysBoost支持的功能特性 | 认识sysBoost | 文档 | openEuler社区 [m)"
+    },
+    {
+      "id": "q_doc_063",
+      "question": "在 openEuler 上配置 PostgreSQL 数据库服务器时，如何关闭防火墙和禁用 SELinux？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/administration/administrator/setting_up_the_database_server.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/administration/administrator/setting_up_the_database_server.html",
+        "https://forum.openeuler.org/t/topic/882/1"
+      ],
+      "gap_status": "community_content",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/882/1",
+      "note": "官网文档逆向生成 (page: Memory Management | Setting Up the Database Server)"
+    },
+    {
+      "id": "q_doc_064",
+      "question": "使用nvwa工具热升级openEuler内核时，/boot目录下的内核镜像和根文件系统文件必须按照什么格式命名？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/maintenance/kernel_live_upgrade/usage_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/maintenance/kernel_live_upgrade/usage_guide.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/maintenance/kernel_live_upgrade/usage_guide.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/server/maintenance/kernel_live_upgrade/usage_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/19235/1",
+      "note": "官网文档逆向生成 (page: Generated Log Information | How to Run | Docs | op)"
+    },
+    {
+      "id": "q_doc_065",
+      "question": "在哪些典型的应用场景中，PGO 能带来显著的性能提升，具体提升幅度大约是多少？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/development/llvm/llvm_pgo_user_guide.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/development/llvm/llvm_pgo_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/open-source-summer/issues/IC3T8P",
+      "note": "官网文档逆向生成 (page: LLVM for openEuler Optimization Options | LLVM PGO)"
+    },
+    {
+      "id": "q_doc_066",
+      "question": "在 openEuler 上搭建 PostgreSQL 数据库服务器时，它的架构由哪些主要进程组成？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/administration/administrator/setting_up_the_database_server.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/administration/administrator/setting_up_the_database_server.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5217/1",
+      "note": "官网文档逆向生成 (page: Setting Up the Database Server | Docs | openEuler )"
+    },
+    {
+      "id": "q_doc_067",
+      "question": "IMA的评估（appraise）模式和度量（measure）模式在对文件访问的控制上有什么不同？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/server/security/trusted_computing/ima.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/security/trusted_computing/ima.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/security/shangmi/file_integrity_protection.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/kernel/issues/ICYOMF",
+      "note": "官网文档逆向生成 (page: 可信平台控制模块（TPCM） | 内核完整性度量（IMA） | 文档 | openEuler社区 [)"
+    },
+    {
+      "id": "q_doc_068",
+      "question": "使用nvwa update热升级内核时，boot目录下的vmlinuz和initramfs文件必须按什么格式命名？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/maintenance/kernel_live_upgrade/usage_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/maintenance/kernel_live_upgrade/usage_guide.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/maintenance/kernel_live_upgrade/usage_guide.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/maintenance/kernel_live_upgrade/usage_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/886/1",
+      "note": "官网文档逆向生成 (page: Generated Log Information | Usage Guide | Docs | o)"
+    },
+    {
+      "id": "q_doc_069",
+      "question": "openEuler 的 RPM 软件包和内核模块分别使用哪种签名机制？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/security/cert_signature/introduction_to_signature_certificates.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/security/cert_signature/introduction_to_signature_certificates.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/4018/1",
+      "note": "官网文档逆向生成 (page: 版本： 24.03 LTS SP2 | 签名证书介绍 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_070",
+      "question": "在 openEuler 中，如何修改 sysmonitor 的关键进程监控周期，比如改成 10 秒？需要改动哪个配置文件里的哪个配置项？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/maintenance/sysmonitor/sysmonitor_user_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/maintenance/sysmonitor/sysmonitor_user_guide.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/maintenance/sysmonitor/sysmonitor_user_guide.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/server/maintenance/sysmonitor/sysmonitor_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/7858/1",
+      "note": "官网文档逆向生成 (page: 本地磁盘 io 延时监控 | sysmonitor | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_071",
+      "question": "用imageTailor裁剪openEuler的DPU-OS镜像时，修改product.conf要添加哪一行配置？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/server/diversified_computing/dpu_os/dpu-os-tailoring-guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/diversified_computing/dpu_os/dpu-os-tailoring-guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3373/1",
+      "note": "官网文档逆向生成 (page: 在VirtualBox上部署DPU-OS | DPU-OS裁剪指导 | 文档 | openEuler)"
+    },
+    {
+      "id": "q_doc_072",
+      "question": "为什么用LLVM编译并开启-Werror后，原本GCC能通过的代码会报错导致构建失败？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/development/llvm/gnu_compatibility_user_guide.html",
+      "source_heat": "high",
+      "question_type": "troubleshooting",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/development/llvm/gnu_compatibility_user_guide.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/compiler/llvm/llvm_for_openeuler_option_list.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/compiler/llvm/gnu_compatibility_user_guide.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/compiler/llvm/gnu_compatibility_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/open-source-summer/issues/IC3XFV",
+      "note": "官网文档逆向生成 (page: LLVM for openEuler Optimization Options | GNU Comp)"
+    },
+    {
+      "id": "q_doc_073",
+      "question": "openEuler 编译优化中用到的 mold 链接器和传统的 ld、gold 相比，是靠哪些技术提升链接效率的？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/development/gcc/compile_time_optimization_user_guide.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/development/gcc/compile_time_optimization_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3333/1",
+      "note": "官网文档逆向生成 (page: Future Plans | Background | Docs | openEuler [md])"
+    },
+    {
+      "id": "q_doc_074",
+      "question": "在 openEuler 系统中，如何使用 openssl 命令行完成对文件的 SM2 签名和基于 SM3 摘要的验签操作？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/server/security/shangmi/algorithm-library.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/security/shangmi/algorithm-library.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5080/1",
+      "note": "官网文档逆向生成 (page: libuser配置用户口令加密 | 算法库 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_075",
+      "question": "在Flink流处理中，openEuler提供的自动化UDF原生编译系统被称为什么？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/development/unt/unt_guide.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/development/unt/unt_guide.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/development/unt/unt_guide.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/releasenotes/releasenotes/key_features.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/open-source-summer/issues/IC57L2",
+      "note": "官网文档逆向生成 (page: Native Specifications | UNT User Guide | Docs | op)"
+    },
+    {
+      "id": "q_doc_076",
+      "question": "在utshell脚本中，我定义了一个函数，需要传递并访问第10个参数，应该怎么写？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/administration/compa_command/utshell_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/administration/compa_command/utshell_guide.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/administration/compa_command/utshell_guide.html",
+        "https://forum.openeuler.org/t/topic/7670/1"
+      ],
+      "gap_status": "community_content",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/7670/1",
+      "note": "官网文档逆向生成 (page: 版本： 24.03 LTS SP1 | utshell 用户手册 | 文档 | openEuler社)"
+    },
+    {
+      "id": "q_doc_077",
+      "question": "如何配置openEuler系统，使用户连续3次登录失败后账户被自动锁定？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.03/server/security/secharden/account-passwords.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/server/security/secharden/account-passwords.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/2811/1",
+      "note": "官网文档逆向生成 (page: umask Values | Account Passwords | Docs | openEule)"
+    },
+    {
+      "id": "q_doc_078",
+      "question": "在容器里部署软总线客户端时，除了安装 dsoftbus 服务，还需要把什么驱动和 SDK 映射到容器中？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/development/distributed/dsoftbus_application_based_on_containers.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/development/distributed/dsoftbus_application_based_on_containers.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/development/distributed/dsoftbus_application_based_on_containers.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/6405/1",
+      "note": "官网文档逆向生成 (page: hmdfs 分布式文件系统概述 | 基于容器的软总线应用指南 | 文档 | openEuler社区 )"
+    },
+    {
+      "id": "q_doc_079",
+      "question": "在 openEuler 上部署 A-Ops 时，aops-tools 安装后自带的 aops-basedatabase 脚本怎么用来安装 MySQL？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.03/server/maintenance/aops/deploying-aops.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/server/maintenance/aops/deploying-aops.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/355/1",
+      "note": "官网文档逆向生成 (page: Automated O&M Service | Deploying A-Ops | Docs | o)"
+    },
+    {
+      "id": "q_doc_080",
+      "question": "我想用gala-anteater做异常检测，它的配置文件中如何设置数据源为Prometheus？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/maintenance/gala/using_gala_anteater.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/server/maintenance/gala/using_gala_anteater.html",
+        "https://docs.openeuler.org/en/docs/25.09/server/maintenance/gala_anteater/user_manual.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1088/1",
+      "note": "官网文档逆向生成 (page: gala-inference | Using gala-anteater | Docs | open)"
+    },
+    {
+      "id": "q_doc_081",
+      "question": "openEuler 中使用 nmcli 配置网络时，OBJECT 参数可以取哪些值",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/network/network_config/network_configuration.html",
+      "source_heat": "high",
+      "question_type": "reference",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/network/network_config/network_configuration.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/network/network_config/network_configuration.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/server/network/network_config/network_configuration.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3204/1",
+      "note": "官网文档逆向生成 (page: IPv6 Differences (vs IPv4) | Configuring the Netwo)"
+    },
+    {
+      "id": "q_doc_082",
+      "question": "secGear codegener 工具解析 EDL 文件时，如果方法没有加 public 关键字，默认是公有还是私有？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/security/secgear/using_secgear_tools.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/security/secgear/using_secgear_tools.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/server/security/secgear/using_secgear_tools.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/openssl/issues/IC4M0X",
+      "note": "官网文档逆向生成 (page: TEE-based MindSpore Feature Protection | secGear T)"
+    },
+    {
+      "id": "q_doc_083",
+      "question": "GMEM 与 Linux HMM 相比，在解决异构加速器内存管理问题上有什么优势？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/memory_storage/gmem/introduction_to_gmem.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/memory_storage/gmem/introduction_to_gmem.html",
+        "https://docs.openeuler.org/zh/docs/25.09/server/storage/gmem/introduction_to_gmem.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/4697/1",
+      "note": "官网文档逆向生成 (page: Available APIs | Introduction to GMem | Docs | ope)"
+    },
+    {
+      "id": "q_doc_084",
+      "question": "openEuler的内核可信根框架目前南向支持哪些硬件可信根？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/security/trusted_computing/kernel_root_of_trust_framework.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/server/security/trusted_computing/kernel_root_of_trust_framework.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/security/trusted_computing/kernel_root_of_trust_framework.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/2227/1",
+      "note": "官网文档逆向生成 (page: 解释器类应用程序完整性保护用户文档 | 内核可信根框架 | 文档 | openEuler社区 [md)"
+    },
+    {
+      "id": "q_doc_085",
+      "question": "在HSAK的nvme.conf.in文件中，E2eDif参数设置为1和2有什么区别？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/storage/hsak/development_with_hsak.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/storage/hsak/development_with_hsak.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/kernel/issues/8381",
+      "note": "官网文档逆向生成 (page: MEDIA_DATA_INTERGRITY_ERROR | Development with HSA)"
+    },
+    {
+      "id": "q_doc_086",
+      "question": "在openEuler上使用GMEM申请异构内存时，mmap调用需要设置哪些标志位和参数？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/storage/gmem/usage_instructions.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/storage/gmem/usage_instructions.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/memory_storage/gmem/usage_instructions.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/4586/1",
+      "note": "官网文档逆向生成 (page: Available APIs | Usage Instructions | Docs | openE)"
+    },
+    {
+      "id": "q_doc_087",
+      "question": "在 openEuler 中如何临时将 SELinux 设置为 permissive 模式而不重启系统？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.09/server/security/secharden/selinux_configuration.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.09/server/security/secharden/selinux_configuration.html",
+        "https://forum.openeuler.org/t/topic/629/1"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/629/1",
+      "note": "官网文档逆向生成 (page: 限制sudo命令的使用权限 | SELinux配置 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_088",
+      "question": "sysMaster 中的 sysmaster-init 组件具体负责哪些功能？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/server/administration/sysmaster/overview.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/server/administration/sysmaster/overview.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/administration/sysmaster/overview.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/567/1",
+      "note": "官网文档逆向生成 (page: NIC Configuration | sysMaster User Guide | Docs | )"
+    },
+    {
+      "id": "q_doc_089",
+      "question": "qtfs 共享文件系统项目支持哪些特殊文件系统的共享？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/diversified_computing/dpu_offload/qtfs_architecture_and_usage.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/diversified_computing/dpu_offload/qtfs_architecture_and_usage.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/diversified_computing/dpu_offload/qtfs_architecture_and_usage.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/diversified_computing/dpu_offload/qtfs_architecture_and_usage.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/787/1",
+      "note": "官网文档逆向生成 (page: 4.4 拉起dockerd和containerd | qtfs | 文档 | openEuler社区)"
+    },
+    {
+      "id": "q_doc_090",
+      "question": "devmaster 的配置文件 /etc/devmaster/config.toml 中，如何将日志级别设置为 debug？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/server/administration/sysmaster/devmaster_usage.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/administration/sysmaster/devmaster_usage.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/server/administration/sysmaster/devmaster_usage.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/umdk/issues/409",
+      "note": "官网文档逆向生成 (page: 版本： 25.03 | 使用说明 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_091",
+      "question": "如何用 libstorage-list 命令查看特定 PCI 地址的磁盘信息？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/storage/hsak/hsak_tool_usage.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/storage/hsak/hsak_tool_usage.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/server/memory_storage/hsak/hsak_tools_usage.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/src-openeuler/glib2/issues/ICO7XF",
+      "note": "官网文档逆向生成 (page: MEDIA_DATA_INTERGRITY_ERROR | Command-Line Interfa)"
+    },
+    {
+      "id": "q_doc_092",
+      "question": "在openEuler上，怎样用LVM把新磁盘创建为PV，添加到已有VG，并扩展LV容量？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/storage/lvm/managing_drives_through_lvm.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/storage/lvm/managing_drives_through_lvm.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/4835/1",
+      "note": "官网文档逆向生成 (page: Creating and Mounting a File System | Managing Dri)"
+    },
+    {
+      "id": "q_doc_093",
+      "question": "在openEuler上使用ftrace之前，需要在内核中编译进去哪两个关键选项？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/server/maintenance/common_tools/commonly-used-tools.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/maintenance/common_tools/commonly-used-tools.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3855/1",
+      "note": "官网文档逆向生成 (page: 版本： 25.03 | 常用工具 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_094",
+      "question": "容器管理面卸载到DPU时，传统的源码拆分方式和无感卸载方案有什么主要区别？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/server/diversified_computing/dpu_offload/imperceptible-container-management-plane-offload.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/diversified_computing/dpu_offload/imperceptible-container-management-plane-offload.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/ubs-engine/issues/42",
+      "note": "官网文档逆向生成 (page: 容器管理面无感卸载部署指导 | 容器管理面无感卸载介绍 | 文档 | openEuler社区 [md)"
+    },
+    {
+      "id": "q_doc_095",
+      "question": "openEuler HA集群管理平台的默认登录用户名是什么？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/high_availability/ha/ha_usecase_examples.html",
+      "source_heat": "high",
+      "question_type": "getting-started",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/high_availability/ha/ha_usecase_examples.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5072/1",
+      "note": "官网文档逆向生成 (page: HA MySQL Configuration Example | HA Usage Examples)"
+    },
+    {
+      "id": "q_doc_096",
+      "question": "BiSheng-Autotuner初始编译阶段生成的YAML文件包含了哪些可调优结构？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/development/bisheng_autotuner/bisheng_autotuner_user_guide.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/development/bisheng_autotuner/bisheng_autotuner_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/src-openeuler/llvm/issues/ICU0YZ",
+      "note": "官网文档逆向生成 (page: BiSheng-Autotuner 使用 | BiSheng-Autotuner 使用手册 | 文档)"
+    },
+    {
+      "id": "q_doc_097",
+      "question": "在 openEuler 上想用 ftrace 追踪内核函数，怎么开启相关内核选项并找到 tracing 目录？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/maintenance/common_tools/commonly_used_tools.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/maintenance/common_tools/commonly_used_tools.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/A-Tune-Collector/issues/IDBS8S",
+      "note": "官网文档逆向生成 (page: Version: 24.03 LTS SP2 | Commonly Used Tools | Doc)"
+    },
+    {
+      "id": "q_doc_098",
+      "question": "在ARM64平台的多虚机场景下，启用TLBi优化需要配置哪些内核编译选项和启动参数？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/server/performance/tlbi/tlbi-optimization-feature-usage-guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/server/performance/tlbi/tlbi-optimization-feature-usage-guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/community-issue/issues/IBXXF8",
+      "note": "官网文档逆向生成 (page: 版本： 25.03 | TLBi优化 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_099",
+      "question": "在 openEuler 上通过 RPM 构建方式安装 ANNC 前，需要先用 yum 安装哪些 rpmbuild 和 rpmdevtools 相关的工具？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/development/annc/annc_user_manual.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/development/annc/annc_user_manual.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/server/development/annc/annc_user_manual.html",
+        "https://forum.openeuler.org/t/topic/1392/1"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/1392/1",
+      "note": "官网文档逆向生成 (page: 3 Usage Process | ANNC User Manual | Docs | openEu)"
+    },
+    {
+      "id": "q_doc_100",
+      "question": "CPU 的物理核和逻辑核有什么区别？启用超线程后二者关系如何？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/server/performance/system_resource/system_resources_and_performance.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/server/performance/system_resource/system_resources_and_performance.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/server/performance/system_resource/system_resources_and_performance.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/451/1",
+      "note": "官网文档逆向生成 (page: Version: 25.09 | System Resources and Performance )"
+    },
+    {
+      "id": "q_doc_101",
+      "question": "在UKUI桌面，怎样查看当前操作系统的版本和内核版本？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/tools/desktop/ukui/ukui_user_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/tools/desktop/ukui/ukui_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/921/1",
+      "note": "官网文档逆向生成 (page: 版本： 22.03 LTS SP4 | UKUI 用户指南 | 文档 | openEuler社区 [)"
+    },
+    {
+      "id": "q_doc_102",
+      "question": "ROS的同步RPC通信是基于什么实现的？异步数据流通信呢？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/tools/application/ros/getting_to_know_ros.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/tools/application/ros/getting_to_know_ros.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/edge_computing/ros/getting_to_know_ros.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/edge_computing/ros/getting_to_know_ros.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/gazelle/issues/IBJMWJ",
+      "note": "官网文档逆向生成 (page: Testing the Service Communication Node | Understan)"
+    },
+    {
+      "id": "q_doc_103",
+      "question": "openEuler 镜像太大，我只想安装部分 RPM 包，怎么用 isocut 工具定制一个精简 ISO？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/tools/community_tools/isocut/isocut_user_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/tools/community_tools/isocut/isocut_user_guide.html",
+        "https://www.openeuler.org/zh/blog/20250716-isocut-user-guide/20250716-isocut-user-guide",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/tools/community_tools/isocut/isocut_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/4235/1",
+      "note": "官网文档逆向生成 (page: Tailoring and Customizing an Image | isocut User G)"
+    },
+    {
+      "id": "q_doc_104",
+      "question": "CPDS 系统中 cpds-detector 检测节点异常时使用的是哪个组件下发的规则？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.03/tools/cloud/cpds/usage-instructions.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.03/tools/cloud/cpds/usage-instructions.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/tools/cloud/cpds/usage_instructions.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/yuanrong-datasystem/issues/582",
+      "note": "官网文档逆向生成 (page: 使用手册 | Docs | openEuler | 使用手册 | Docs | openEuler )"
+    },
+    {
+      "id": "q_doc_105",
+      "question": "在openEuler环境下打包RPM时，如果某个软件包需要更换或取消mold链接器，应该在spec文件中如何设置？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/tools/community_tools/compiler/compile_time_optimization_user_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/tools/community_tools/compiler/compile_time_optimization_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5885/1",
+      "note": "官网文档逆向生成 (page: GCC14副版本编译工具链 | 背景 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_106",
+      "question": "PilotGo-agent装好之后，要改哪个配置文件来设置它要连接的服务端IP？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/tools/cloud/pilotgo/usage_instructions.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/tools/cloud/pilotgo/usage_instructions.html",
+        "https://gitee.com/openeuler/PilotGo/issues/IBTKI7"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitee.com/openeuler/PilotGo/issues/ICAUWT",
+      "note": "官网文档逆向生成 (page: 3 PilotGo平台插件使用说明 | PilotGo平台使用手册 | 文档 | openEuler)"
+    },
+    {
+      "id": "q_doc_107",
+      "question": "我正在学习GNOME桌面环境的组件，请问GNOME里负责多媒体处理的框架叫什么？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/tools/desktop/gnome/gnome_userguide.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/tools/desktop/gnome/gnome_userguide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/19231/1",
+      "note": "官网文档逆向生成 (page: 4. Common System Settings and App Examples | GNOME)"
+    },
+    {
+      "id": "q_doc_108",
+      "question": "openEuler 的 imageTailor 工具提供了哪些镜像定制功能，主要为了解决什么问题？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/tools/community_tools/image_tailor/imagetailor_user_guide.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/tools/community_tools/image_tailor/imagetailor_user_guide.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/tools/community_tools/image_tailor/imagetailor_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3067/1",
+      "note": "官网文档逆向生成 (page: Image Customization | ImageTailor User Guide | Doc)"
+    },
+    {
+      "id": "q_doc_109",
+      "question": "在 openEuler 虚拟化环境中，什么时候需要为虚拟机配置 PCIe 控制器？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/virtualization/virtulization_platform/virtulization/managing_devices.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/virtualization/virtulization_platform/virtulization/managing_devices.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/virtualization/virtualization_platform/virtualization/managing_devices.html",
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP1/virtualization/virtualization_platform/virtualization/managing_devices.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/939/1",
+      "note": "官网文档逆向生成 (page: Managing Devices | Docs | openEuler | Managing Dev)"
+    },
+    {
+      "id": "q_doc_110",
+      "question": "在openEuler上为StratoVirt配置设备直通前，怎么确认主机的IOMMU功能已经打开了？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/virtualization/virtulization_platform/stratovirt/stratovirt_vfio_instructions.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/virtualization/virtulization_platform/stratovirt/stratovirt_vfio_instructions.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/2562/1",
+      "note": "官网文档逆向生成 (page: SR-IOV Passthrough | StratoVirt VFIO User Guide | )"
+    },
+    {
+      "id": "q_doc_111",
+      "question": "物理机硬件更换或软件升级时，openEuler 的什么技术能让 VM 保持业务不中断？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/virtualization/virtualization_platform/virtualization/vm_live_migration.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/virtualization/virtualization_platform/virtualization/vm_live_migration.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/virtualization/virtualization_platform/virtualization/vm_live_migration.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/virtualization/virtualization_platform/virtualization/vm_live_migration.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3943/1",
+      "note": "官网文档逆向生成 (page: Issue 2: Hot Patch Created with LibcarePlus Is Loa)"
+    },
+    {
+      "id": "q_doc_112",
+      "question": "我在 openEuler 上准备用 StratoVirt 启动虚拟机，需要 mmio 设备 /dev/vhost-vsock，怎么检查它是否存在并创建？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/virtualization/virtulization_platform/stratovirt/prepare_env.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP2/virtualization/virtulization_platform/stratovirt/prepare_env.html",
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/virtualization/virtualization_platform/stratovirt/prepare_env.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/617/1",
+      "note": "官网文档逆向生成 (page: StratoVirt VFIO 使用说明 | 准备环境 | 文档 | openEuler社区 [md)"
+    },
+    {
+      "id": "q_doc_113",
+      "question": "在 openEuler 上搭建 iSula 安全容器环境时，怎么安装 iSulad 和 kata-containers，并配置 devicemapper 存储设备？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/virtualization/virtualization_platform/stratovirt/interconnect_isula.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/22.03_LTS_SP4/virtualization/virtualization_platform/stratovirt/interconnect_isula.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/6428/1",
+      "note": "官网文档逆向生成 (page: SR-IOV Passthrough | Connecting to the iSula Secur)"
+    },
+    {
+      "id": "q_doc_114",
+      "question": "我正在准备安装 openEuler DevStation，听说有个叫 calamares 的工具，它具体是做什么用的？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/devstation/devstation/calamares/calamares_introduction.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/devstation/devstation/calamares/calamares_introduction.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP2/devstation/devstation/calamares/calamares_introduction.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3722/1",
+      "note": "官网文档逆向生成 (page: 8. Initial Startup Configuration | Introduction to)"
+    },
+    {
+      "id": "q_doc_115",
+      "question": "在 Witty OpenCode 的 TUI 界面里，想要修改大模型提供商或切换模型，需要先按哪个快捷键打开配置面板？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.09/tools/ai/euler-copilot-framework/witty_assistant/witty_shell/user_guide/user_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.09/tools/ai/euler-copilot-framework/witty_assistant/witty_shell/user_guide/user_guide.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/tools/ai/euler-copilot-framework/witty_assistant/witty_shell/user_guide/user_guide.html",
+        "https://docs.openeuler.org/zh/docs/22.03_LTS_SP4/tools/ai/euler-copilot-framework/witty_assistant/witty_shell/deploy_guide/deployment.html",
+        "https://gitee.com/openeuler/euler-copilot-shell/issues/ID92B8"
+      ],
+      "gap_status": "community_content",
+      "primary_answer_url": "https://gitee.com/openeuler/euler-copilot-shell/issues/ID92B8",
+      "note": "官网文档逆向生成 (page: 二、安装步骤 | Witty OpenCode 使用介绍 | 文档 | openEuler社区 [m)"
+    },
+    {
+      "id": "q_doc_116",
+      "question": "在 openEuler 系统中，如何检查 sysBoost 服务是否正常运行？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/performance/cpu_optimization/sysboost/usage_instructions.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/server/performance/cpu_optimization/sysboost/usage_instructions.html",
+        "https://docs.openeuler.org/en/docs/25.03/server/performance/cpu_optimization/sysboost/sysboost.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/6061/1",
+      "note": "官网文档逆向生成 (page: sysBoost支持的功能特性 | 使用方法 | 文档 | openEuler社区 [md])"
+    },
+    {
+      "id": "q_doc_117",
+      "question": "我下载了一个Arch Linux的pkg.tar.zst软件包，请问如何使用x2epkg工具将其转换为epkg格式？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/25.03/tools/community_tools/epkg/epkg_use/x2epkg_usage-guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/25.03/tools/community_tools/epkg/epkg_use/x2epkg_usage-guide.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/tools/community_tools/epkg/x2epkg_usage_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5885/1",
+      "note": "官网文档逆向生成 (page: create_repo使用指南 | x2epkg 使用指南 | 文档 | openEuler社区 [)"
+    },
+    {
+      "id": "q_doc_118",
+      "question": "在 openEuler 上如何创建一个 ROS 2 workspace 并下载 ros_arm_tutorials 示例代码来测试服务通信？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/tools/application/ros/base_tutorials/create_workspace.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/tools/application/ros/base_tutorials/create_workspace.html",
+        "https://docs.openeuler.org/zh/docs/25.09/tools/application/ros/base_tutorials/create_workspace.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/3427/1",
+      "note": "官网文档逆向生成 (page: Testing the Service Communication Node | Workspace)"
+    },
+    {
+      "id": "q_doc_119",
+      "question": "Witty Assistant 平台集成的 LLM chat 和 Basic Operations Agent 这两个智能体分别侧重什么功能？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/tools/ai/euler-copilot-framework/witty_assistant/witty_shell/user_guide/agent_introduce.html",
+      "source_heat": "high",
+      "question_type": "comparison",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP3/tools/ai/euler-copilot-framework/witty_assistant/witty_shell/user_guide/agent_introduce.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/tools/ai/euler-copilot-framework/witty_assistant/witty_shell/user_guide/agent_introduce.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/agent-insight/issues/126",
+      "note": "官网文档逆向生成 (page: MCP Overview | Witty Assistant CLI Agent Introduct)"
+    },
+    {
+      "id": "q_doc_120",
+      "question": "我下载了 Baichuan2-13B-Chat 模型，怎么在 openEuler 容器化环境里把它转成 gguf 格式？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/tools/ai/euler-copilot-framework/ai_full_stack/ai_large_model_service_images_userguide/llm_service_image_user_guide.html",
+      "source_heat": "high",
+      "question_type": "how-to",
+      "difficulty": "intermediate",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/zh/docs/24.03_LTS_SP3/tools/ai/euler-copilot-framework/ai_full_stack/ai_large_model_service_images_userguide/llm_service_image_user_guide.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://forum.openeuler.org/t/topic/5885/1",
+      "note": "官网文档逆向生成 (page: 下载模型, 并转换为gguf格式 | 支持百川、chatglm、星火等AI大模型的容器化封装 | 文)"
+    },
+    {
+      "id": "q_doc_121",
+      "question": "使用Witty Assistant Web的用户需要具备哪些技能或经验？",
+      "question_raw": "",
+      "source": "docs-generated",
+      "source_url": "https://docs.openeuler.org/en/docs/25.09/tools/ai/euler-copilot-framework/witty_assistant/witty_web/user_guide/introduction.html",
+      "source_heat": "high",
+      "question_type": "concept",
+      "difficulty": "beginner",
+      "category_l1": "",
+      "official_urls": [
+        "https://docs.openeuler.org/en/docs/25.09/tools/ai/euler-copilot-framework/witty_assistant/witty_web/user_guide/introduction.html",
+        "https://docs.openeuler.org/en/docs/24.03_LTS_SP1/tools/ai/euler-copilot-framework/witty_assistant/witty_web/user_guide/introduction.html"
+      ],
+      "gap_status": "gap",
+      "primary_answer_url": "https://gitcode.com/openeuler/witty-diagnosis-agent/issues/30",
+      "note": "官网文档逆向生成 (page: Using Agents | Preface | Docs | openEuler [md])"
+    }
+  ],
+  "official_domains": [
+    "https://www.openeuler.openatom.cn",
+    "https://docs.openeuler.openatom.cn",
+    "https://forum.openeuler.org",
+    "https://gitcode.com/src-openeuler"
+  ]
+}
