@@ -1,0 +1,1310 @@
+[
+  {
+    "question_id": "q_doc_001",
+    "platform": "qwen-web",
+    "query": "LDAP登录BMC时提示账号密码正确但无法登录，Base DN和User DN Pattern域不匹配怎么解决？",
+    "timestamp": "2026-06-11T16:16:56Z",
+    "raw_response": "Thinking completed\n在 BMC（Baseboard Management Controller，如华为 iBMC、戴尔 iDRAC、惠普 iLO、联想 XCC 等）中配置 LDAP 登录时，如果提示“账号密码正确但无法登录”，且明确指出或日志显示 Base DN 和 User DN Pattern（用户 DN 模板/绑定 DN 模式） 不匹配，这通常是因为 BMC 在尝试向 LDAP 服务器发起绑定（Bind）或搜索（Search）请求时，构造的用户路径在 LDAP 目录树中不存在或无权访问。\n以下是系统性的排查和解决步骤：\n1. 核心原理：为什么会出现不匹配？\nBase DN：是 LDAP 搜索的起始根节点（例如 DC=example,DC=com 或 OU=IT,DC=example,DC=com）。\nUser DN Pattern：是 BMC 用来拼接或查找具体用户的完整路径模板。\n不匹配的后果：如果 User DN Pattern 没有正确包含 Base DN 的路径，或者指向了错误的 OU（组织单位），LDAP 服务器会返回“找不到对象 (No Such Object)”或“无效凭据”，即使你输入的密码是对的，BMC 也会因为无法完成 LDAP Bind 而拒绝登录。\n2. 标准解决步骤\n步骤一：获取用户在 LDAP/AD 中的真实完整 DN\n不要靠猜测，必须使用 LDAP 客户端工具确认该用户的准确路径。\n推荐工具：Apache Directory Studio（跨平台）、Windows 自带的 ldp.exe，或 Linux 下的 ldapsearch 命令。\n操作：使用具有查询权限的账号连接 LDAP 服务器，搜索该用户，复制其完整的 Distinguished Name (DN)。\nActive Directory 示例：CN=Zhang San,OU=Server Admins,OU=IT,DC=company,DC=com\nOpenLDAP 示例：uid=zhangsan,ou=people,dc=company,dc=com\n步骤二：正确配置 Base DN\nBase DN 应该设置为包含所有需要登录 BMC 的用户的公共父节点。范围越小，搜索效率越高，也越不容易出错。\n正确示例：如果所有管理员都在 OU=Server Admins,OU=IT,DC=company,DC=com 下，Base DN 就设为这个值。\n错误示例：设为 DC=company,DC=com（范围太大，且如果 User DN Pattern 没写全 OU，就会找不到人）。\n步骤三：修正 User DN Pattern (或 Bind DN Template)\n根据你使用的 LDAP 类型，修改 User DN Pattern，确保它逻辑上包含 Base DN 的路径。不同 BMC 的占位符可能不同，常见为 {username}、{0} 或 %s。\n场景 A：直接绑定模式 (Bind DN Pattern)\nBMC 会直接将 {username} 替换为你输入的账号，然后去 LDAP 验证。\nAD 配置示例：CN={username},OU=Server Admins,OU=IT,DC=company,DC=com\nOpenLDAP 配置示例：uid={username},ou=people,dc=company,dc=com\n注意：如果你的 BMC 支持自动拼接，User DN Pattern 可能只需写 CN={username}，但大多数企业级 BMC 要求写绝对完整路径。\n场景 B：先搜索后绑定模式 (Search Filter)\n部分 BMC（如较新的 iDRAC9 或 iLO5）推荐使用“搜索过滤器”而不是硬编码 DN Pattern。\nBase DN：OU=Server Admins,OU=IT,DC=company,DC=com\nUser Search Filter：(sAMAccountName={username}) （针对 AD） 或 (uid={username}) （针对 OpenLDAP）。\n优势：这种方式容错率更高，只要 Base DN 正确，BMC 会自动在该范围内找到用户并获取其真实 DN 进行绑定。\n3. 常见 BMC 厂商的特殊注意事项\n华为 iBMC：\n检查“用户搜索过滤器”是否填写正确（如 (sAMAccountName=${username})）。\n确保“用户 DN 属性”与 LDAP 服务器一致（AD 通常为 sAMAccountName，OpenLDAP 为 uid）。\n戴尔 iDRAC：\n在“Directory Services”设置中，如果使用“Standard Schema”，务必确保 Group Attribute 和 User Attribute 与 AD 匹配。\n推荐使用“Test Directory Services”功能，输入具体用户名和密码进行实时测试，它会返回详细的 LDAP 错误码（如 0x31 无效凭据，0x20 找不到对象）。\n惠普 HPE iLO：\niLO 对 LDAP 配置非常严格。如果使用“Directory User Account”，确保 User Context (即 Base DN) 和 Login Name 属性（通常是 sAMAccountName）配置无误。\n联想 XCC：\n检查“LDAP 搜索基础 (Search Base)”和“用户 ID 属性 (User ID Attribute)”。XCC 通常更倾向于使用 Search Filter 模式。\n4. 进阶排错方法（如果上述配置后仍失败）\n检查角色映射 (Role Mapping)：\n有时候 LDAP 认证其实已经成功了，但因为该用户在 LDAP 中所属的组，没有正确映射到 BMC 的本地角色（如 Administrator），BMC 会出于安全考虑拒绝登录，并可能抛出模糊的错误。请检查 BMC 中的“LDAP 组映射”或“角色分配”是否配置正确。\n查看 LDAP 服务器端日志：\n在尝试登录 BMC 的同时，查看 AD 的事件查看器（事件 ID 4776 或 4768）或 OpenLDAP 的 slapd.log。服务器日志会明确告诉你：BMC 是用哪个 DN 来请求绑定的，以及为什么拒绝（密码错、DN 不存在、或账户被锁定）。\n网络抓包分析：\n如果日志不清晰，可以在 BMC 所在网络或 LDAP 服务器端使用 tcpdump 或 Wireshark 抓取 389 (LDAP) 或 636 (LDAPS) 端口的流量。过滤 ldap 协议，查看 Bind Request 数据包中，BMC 实际发送的 name (即 User DN) 到底是什么，这能瞬间暴露拼接错误。\n总结检查清单：\n用户的真实 DN 是否已通过工具确认？\nBase DN 是否是该用户 DN 的真实父节点？\nUser DN Pattern 是否完整包含了 Base DN 的路径？\n占位符（如 {username}）是否与 BMC 界面要求的格式完全一致？\n是否已使用 BMC 自带的“测试连接/测试用户”功能验证？",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_002",
+    "platform": "qwen-web",
+    "query": "硬件自发现中，如何通过busctl命令查看所有硬件组件的ObjectGroup路径？",
+    "timestamp": "2026-06-11T16:20:14Z",
+    "raw_response": "Thinking completed\n在基于 D-Bus 的硬件自发现系统（如 OpenBMC 或定制的嵌入式 Linux 系统）中，busctl 是用于内省和查询 D-Bus 对象的核心工具。\n需要说明的是，“ObjectGroup” 并不是标准 D-Bus 规范中的固有术语。它通常有两种可能：\n它是特定厂商/系统定制硬件发现框架中的自定义接口或路径分组（例如用于对传感器、FRU 或 PCIe 设备进行分组）。\n它是对 OpenBMC 中标准的 Object Mapper (xyz.openbmc_project.ObjectMapper) 的误称或特定变体。\n以下提供几种通过 busctl 查找和验证硬件组件路径的常用方法，你可以根据实际系统环境选择使用：\n方法一：使用 Object Mapper 获取所有硬件 Inventory 路径（OpenBMC 标准做法）\n在大多数现代 BMC 系统中，硬件自发现的结果会注册在 /xyz/openbmc_project/inventory 路径下。你可以调用 ObjectMapper 的 GetSubTree 方法来获取所有硬件组件的完整路径及其提供的接口。\nbash\n1\n2\n# 查询 /xyz/openbmc_project/inventory 下的所有对象及其路径\nbusctl call xyz.openbmc_project.ObjectMapper /xyz/openbmc_project/object_mapper xyz.openbmc_project.ObjectMapper GetSubTree sias \"/xyz/openbmc_project/inventory\" 0 0\n参数解释：sias 代表参数类型 (string, int32, array of strings)。\"/xyz/openbmc_project/inventory\" 是根路径，0 表示无限深度，最后的 0 表示匹配所有接口（空数组）。\n方法二：通过 busctl tree 结合 grep 精确查找 \"ObjectGroup\"\n如果你确信系统中存在包含 \"ObjectGroup\" 字样的服务或路径，可以通过遍历 D-Bus 服务树来定位。\n首先，列出所有活跃的 D-Bus 服务，寻找与硬件或对象相关的服务名：\nbash\n1\nbusctl list | grep -iE 'inventory|hardware|object|mapper'\n然后，针对找到的服务名（假设服务名为 xyz.openbmc_project.ObjectMapper 或你的定制服务名），查看其对象树并过滤 \"ObjectGroup\"：\nbash\n1\nbusctl tree xyz.openbmc_project.ObjectMapper | grep -i objectgroup\n(如果找到了相关路径，例如 /xyz/openbmc_project/inventory/system/chassis/ObjectGroup，你可以继续向内查看)\n方法三：使用 D-Bus 标准的 ObjectManager 接口\n如果硬件组件是通过标准的 org.freedesktop.DBus.ObjectManager 接口进行自发现和管理的，你可以直接调用 GetManagedObjects 来列出该路径下的所有子对象及其接口。\nbash\n1\n2\n3\n# 假设你的硬件分组路径是 /xyz/openbmc_project/hardware/ObjectGroup\n# 请将 <service_name> 替换为实际的 D-Bus 服务名\nbusctl call <service_name> /xyz/openbmc_project/hardware/ObjectGroup org.freedesktop.DBus.ObjectManager GetManagedObjects\n方法四：内省 (Introspect) 特定路径以确认接口\n如果你已经知道某个硬件组件的大致路径，但不确定其是否属于某个 \"ObjectGroup\"，可以使用 introspect 查看该路径暴露的所有接口和属性：\nbash\n1\n2\n# 替换为你实际怀疑的硬件路径\nbusctl introspect xyz.openbmc_project.ObjectMapper /xyz/openbmc_project/inventory/system/chassis\n在输出结果中，查找是否有类似 com.xxx.Hardware.ObjectGroup 的自定义接口。\n💡 排查建议\n如果上述命令未返回预期结果，建议检查以下几点：\n确认服务是否已启动：硬件自发现守护进程（如 phosphor-mapper 或厂商定制的 discovery daemon）可能尚未完成扫描，可通过 systemctl status 检查相关服务状态。\n查阅系统日志：使用 journalctl -u <相关服务名> -f 查看硬件发现过程中是否报错，日志中通常会打印实际注册的 D-Bus 路径。\n确认术语：如果是特定厂商的设备，请查阅该厂商的 BMC/IPMI 开发者文档，确认 \"ObjectGroup\" 的确切 D-Bus 服务名称（Service Name）和对象路径（Object Path）。\n如果你能提供该系统的具体厂商、型号或 busctl list 的部分输出，我可以为你提供更精确的命令。",
+    "citations": [
+      "https://www.freedesktop.org/software/systemd/man/latest/busctl.html",
+      "https://dbus.freedesktop.org/doc/dbus-specification.html#standard-interfaces-objectmanager",
+      "https://github.com/openbmc/docs/blob/master/architecture/inventory.md",
+      "https://github.com/openbmc/phosphor-mapper",
+      "https://github.com/openbmc/phosphor-inventory-manager",
+      "https://github.com/openbmc/phosphor-dbus-interfaces",
+      "https://wiki.archlinux.org/title/D-Bus",
+      "https://unix.stackexchange.com/questions/433369/how-to-list-all-d-bus-services-and-their-objects"
+    ],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_003",
+    "platform": "qwen-web",
+    "query": "如何查看当前环境的RTOS版本和Qemu远程的RTOS版本是否一致？",
+    "timestamp": "2026-06-11T16:23:07Z",
+    "raw_response": "Thinking completed\n要查看当前环境的 RTOS 版本与 QEMU 中运行的 RTOS 版本是否一致，具体方法取决于你使用的是哪种 RTOS（如 RT-Thread、Zephyr、FreeRTOS 或 Linux PREEMPT_RT 等）。\n通常，我们可以通过 源码/构建系统 和 运行时输出 两个维度来进行比对。以下是通用的排查步骤和常见 RTOS 的具体操作方法：\n方法一：通过运行时终端/串口日志查看（最直观）\n如果当前环境和 QEMU 都能提供串口终端或 Shell，可以直接通过命令查看运行时的版本信息。\n1. RT-Thread\n当前环境/目标板：在 FinSH 控制台输入 version 或 list_version。\nQEMU 环境：启动 QEMU 后，在弹出的串口终端中同样输入 version。\n比对内容：对比输出的 RT-Thread version 字符串（如 4.1.1 build）以及编译时间。\n2. Zephyr RTOS\n当前环境/目标板：查看系统启动时的 Boot Banner，或者如果启用了 Zephyr Shell，输入 kernel version 或 kernel uptime。\nQEMU 环境：QEMU 启动时的串口日志第一屏通常会打印 Zephyr 的版本和构建信息（如 Zephyr version 3.5.0）。\n比对内容：对比 Zephyr 版本号及 Git commit hash（如果开启了 CONFIG_KERNEL_VERSION 和 CONFIG_BUILD_VERSION）。\n3. FreeRTOS\nFreeRTOS 默认没有交互式 Shell。你需要在代码中主动打印版本信息。\n操作：在代码中包含 #include \"FreeRTOS.h\"，并使用 printf 或串口打印宏 tskKERNEL_VERSION_NUMBER 和 tskKERNEL_VERSION_BUILD。\n比对：确保当前环境编译的固件和 QEMU 运行的固件都包含此打印，并比对输出的版本号（如 V10.5.1）。\n4. Linux (PREEMPT_RT)\n命令：在终端输入 uname -a 或 cat /proc/version。\n比对：对比内核版本号及是否带有 PREEMPT_RT 补丁标识。\n方法二：通过源码和构建系统查看（最准确）\n运行时的版本可能因为缓存或错误的镜像烧录导致不一致，最可靠的方法是比对源码版本和编译产物。\n1. 检查当前环境源码版本\nRT-Thread: 查看源码根目录下的 README.md 或 rtconfig.h 中的版本宏定义。\nZephyr: 查看源码根目录下的 VERSION 文件，或执行 git describe --tags 查看当前源码的 Git 提交哈希。\nFreeRTOS: 查看 FreeRTOS/Source/include/FreeRTOS.h 中的 tskKERNEL_VERSION_MAJOR 等宏定义。\n2. 检查 QEMU 运行的镜像来源\n你需要确认 QEMU 加载的 .elf、.bin 或 .hex 文件是由哪个源码编译出来的：\n查看编译输出目录：检查 QEMU 启动脚本（如 run.sh）中指定的 -kernel 或 -drive file= 路径，确认该镜像是否由当前环境的源码刚刚编译生成。\n提取镜像中的版本字符串：如果镜像中嵌入了版本信息，可以使用 Linux 工具提取比对：\nbash\n1\n2\n# 提取 ELF 文件中的可打印字符串，过滤版本关键字\nstrings your_firmware.elf | grep -i \"version\\|build\\|zephyr\\|rt-thread\"\n方法三：通过 QEMU 启动日志比对\nQEMU 在启动 Guest OS 时，通常会原样输出 Guest 的早期串口日志。\n记录当前环境目标板（或本地模拟）启动时的前 10 行串口日志。\n记录 QEMU 启动时的前 10 行串口日志。\n对比两者的 Banner 信息、编译时间戳（Build Time）和 Git Commit ID。如果编译时间戳不同，说明 QEMU 运行的是旧版本镜像，需要重新编译（执行 make clean 或 west build -p always）。\n🚀 推荐的标准排查 Checklist\n如果你发现两者行为不一致，请按以下顺序排查：\n清理缓存：在当前环境执行彻底清理（如 make clean 或删除 build/ 目录），防止旧的编译产物干扰。\n重新编译：重新编译生成 QEMU 所需的镜像文件。\n检查 QEMU 启动脚本：确认 QEMU 的 -kernel 或 -drive 参数指向的是刚刚编译生成的最新文件，而不是其他路径下的旧文件。\n比对 Git Commit：在当前源码目录执行 git rev-parse HEAD，并确保你的 CI/CD 或构建脚本将这个 Commit ID 编译进了固件中。\n运行时验证：启动 QEMU，通过串口输入版本查询命令，与源码中的版本声明进行最终核对。\n如果你能提供你具体使用的 RTOS 名称（如 RT-Thread, Zephyr 等）以及 QEMU 的启动命令，我可以为你提供更精确的命令和排查步骤。",
+    "citations": [
+      "https://www.rt-thread.org/document/site/programming-manual/finsh/finsh/",
+      "https://www.rt-thread.org/document/site/quick-start/qemu/qemu/",
+      "https://docs.zephyrproject.org/latest/services/kernel/version.html",
+      "https://docs.zephyrproject.org/latest/develop/test/qemu.html",
+      "https://www.freertos.org/a00110.html",
+      "https://www.freertos.org/FreeRTOS-simulator-for-Windows.html",
+      "https://docs.kernel.org/admin-guide/rt/",
+      "https://sourceware.org/binutils/docs/binutils/strings.html"
+    ],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_004",
+    "platform": "qwen-web",
+    "query": "在openUBMC中，如何通过dbus获取没有自定义接口的资源树子路径？",
+    "timestamp": "2026-06-11T16:25:45Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_005",
+    "platform": "qwen-web",
+    "query": "升级固件时出现verify signature error错误，怎么解决？",
+    "timestamp": "2026-06-11T16:26:30Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_006",
+    "platform": "qwen-web",
+    "query": "定制化脚本执行失败，打印SYS_NUM=NULL set SYS_NUM fail，是什么原因？",
+    "timestamp": "2026-06-11T16:27:16Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_007",
+    "platform": "qwen-web",
+    "query": "怎么看调速功能是否在运行，app.log里有哪些关键日志？",
+    "timestamp": "2026-06-11T16:28:00Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_008",
+    "platform": "qwen-web",
+    "query": "openUBMC文档中新增文件时，文件名能否包含括号，如果不行该怎么处理？",
+    "timestamp": "2026-06-11T16:28:54Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_009",
+    "platform": "qwen-web",
+    "query": "D-Bus 在 Linux 系统中是如何实现系统级进程和普通用户进程之间通信的？",
+    "timestamp": "2026-06-11T16:29:46Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_010",
+    "platform": "qwen-web",
+    "query": "openUBMC中Canbus初始化失败时如何通过错误引擎捕获异常信息？",
+    "timestamp": "2026-06-11T16:30:31Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_011",
+    "platform": "qwen-web",
+    "query": "在openUBMC的ASAN使用教程中，配置环境变量时如何设置日志路径和检测内存泄漏？",
+    "timestamp": "2026-06-11T16:31:13Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_012",
+    "platform": "qwen-web",
+    "query": "在openUBMC中，Lua语言的RPC方法参数应该使用哪种命名风格？",
+    "timestamp": "2026-06-11T16:31:57Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_013",
+    "platform": "qwen-web",
+    "query": "在openUBMC文档中新增一个MarkDown文件时，文件名有什么规则？",
+    "timestamp": "2026-06-11T16:34:38Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_014",
+    "platform": "qwen-web",
+    "query": "openUBMC中journald日志是如何通过journal_export.service和logrotate实现采集导出轮转的？",
+    "timestamp": "2026-06-11T16:37:19Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_015",
+    "platform": "qwen-web",
+    "query": "在openUBMC中，如何为对象的属性配置防抖，并且防抖器路径的格式是什么？",
+    "timestamp": "2026-06-11T16:40:00Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_016",
+    "platform": "qwen-web",
+    "query": "openUBMC中worker获取组件温度超时3秒后如何循环重试？",
+    "timestamp": "2026-06-11T16:42:39Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_017",
+    "platform": "qwen-web",
+    "query": "DiscreteEvent类中的Conversion属性如何配置才能避免误告警？",
+    "timestamp": "2026-06-11T16:45:21Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_018",
+    "platform": "qwen-web",
+    "query": "openUBMC 的 user interface 模块提供了哪些外部接口？",
+    "timestamp": "2026-06-11T16:48:03Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_019",
+    "platform": "qwen-web",
+    "query": "在openUBMC中，A模块如何通过client.lua订阅B模块的属性变化？",
+    "timestamp": "2026-06-11T16:50:45Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_020",
+    "platform": "qwen-web",
+    "query": "在 openUBMC 中，如何使用 BMC Studio 的 bingo new 命令创建一个组件？",
+    "timestamp": "2026-06-11T16:53:27Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_021",
+    "platform": "qwen-web",
+    "query": "在openUBMC开发中，如果我想在Windows上编译源码，应该选择哪种环境搭建方式？",
+    "timestamp": "2026-06-11T16:56:08Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_022",
+    "platform": "qwen-web",
+    "query": "openUBMC 182x大板管理特性中如何实现网口与光模块的指定映射？",
+    "timestamp": "2026-06-11T16:56:53Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_023",
+    "platform": "qwen-web",
+    "query": "openUBMC的Redfish规范校验和Schema更新工具特性设计文档在哪里可以找到？",
+    "timestamp": "2026-06-11T16:57:36Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_024",
+    "platform": "qwen-web",
+    "query": "openUBMC中连续型传感器和离散型传感器的主要区别是什么？",
+    "timestamp": "2026-06-11T16:58:22Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_025",
+    "platform": "qwen-web",
+    "query": "使用openUBMC Studio时，如何利用Docker容器管理功能快速搭建开发环境？",
+    "timestamp": "2026-06-11T16:59:06Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 8 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_026",
+    "platform": "qwen-web",
+    "query": "服务器出厂定制化配置中，如何设置本地用户密码的校验模式？",
+    "timestamp": "2026-06-11T16:59:48Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_027",
+    "platform": "qwen-web",
+    "query": "openUBMC的SSH和SFTP服务都使用端口22，它们的认证方式和加密方式有什么不同？",
+    "timestamp": "2026-06-11T17:00:33Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_028",
+    "platform": "qwen-web",
+    "query": "openUBMC的产品ID分配表中，华为鲲鹏和昇腾的产品ID分别是什么？",
+    "timestamp": "2026-06-11T17:01:18Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_029",
+    "platform": "qwen-web",
+    "query": "openUBMC中BT通信场景下IPMI命令的完整性校验推荐用什么算法？",
+    "timestamp": "2026-06-11T17:02:02Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_030",
+    "platform": "qwen-web",
+    "query": "PCA9555芯片在openUBMC中有什么功能，它是如何扩展IO口的？",
+    "timestamp": "2026-06-11T17:02:47Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_031",
+    "platform": "qwen-web",
+    "query": "S920X20的硬件CSR和软件CSR在合并时，如果对象属性重复，以哪个为准？",
+    "timestamp": "2026-06-11T17:03:32Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_032",
+    "platform": "qwen-web",
+    "query": "openUBMC测试指南中提供了哪些测试活动来保障代码交付质量？",
+    "timestamp": "2026-06-11T17:04:17Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_033",
+    "platform": "qwen-web",
+    "query": "如何通过ipmitool命令获取1号槽位电源的在位信息？",
+    "timestamp": "2026-06-11T17:05:09Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_034",
+    "platform": "qwen-web",
+    "query": "如何通过ipmitool命令获取BBU电池包放电次数？",
+    "timestamp": "2026-06-11T17:05:53Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_035",
+    "platform": "qwen-web",
+    "query": "如何设置系统软件处理过的最后一个事件的Record ID？",
+    "timestamp": "2026-06-11T17:06:36Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_036",
+    "platform": "qwen-web",
+    "query": "openUBMC中查询命令支持度的Operation参数里，标记为00b和01b分别对应什么命令范围？",
+    "timestamp": "2026-06-11T17:07:18Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_037",
+    "platform": "qwen-web",
+    "query": "如何使用Capture Screen命令进行屏幕截图并保存为screen0.jpeg？",
+    "timestamp": "2026-06-11T17:08:04Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_038",
+    "platform": "qwen-web",
+    "query": "如何通过IPMI获取openUBMC的瞬时功率读数？",
+    "timestamp": "2026-06-11T17:08:57Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_039",
+    "platform": "qwen-web",
+    "query": "在openUBMC中，如何通过Set System Boot Options命令只修改参数有效位而不影响现有参数设置？",
+    "timestamp": "2026-06-11T17:09:40Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_040",
+    "platform": "qwen-web",
+    "query": "Reserve SDR Repository 命令的 NetFn 和响应信息中 Reservation ID 的字节顺序是什么？",
+    "timestamp": "2026-06-11T17:10:24Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_041",
+    "platform": "qwen-web",
+    "query": "PICMG Identifier 为 00h 时，在 Compute Power Properties 中表示什么含义？",
+    "timestamp": "2026-06-11T17:11:06Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_042",
+    "platform": "qwen-web",
+    "query": "openUBMC中Set Power Restore Policy的power restore policy字段有哪些取值，分别代表什么行为？",
+    "timestamp": "2026-06-11T17:11:56Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_043",
+    "platform": "qwen-web",
+    "query": "如何通过ipmicmd命令获取SEL时间偏移？",
+    "timestamp": "2026-06-11T17:12:41Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_044",
+    "platform": "qwen-web",
+    "query": "获取设备信息时，如果返回80h错误码是什么意思？",
+    "timestamp": "2026-06-11T17:13:27Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_045",
+    "platform": "qwen-web",
+    "query": "如何通过ipmitool命令让DPU和服务器一起下电？",
+    "timestamp": "2026-06-11T17:14:12Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_046",
+    "platform": "qwen-web",
+    "query": "Get IP UDP RMCP Statistics 命令中 Clear Statistics 字段的 bit0 设置为 1 会有什么效果？",
+    "timestamp": "2026-06-11T17:14:57Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_047",
+    "platform": "qwen-web",
+    "query": "openUBMC的核心特性中，组件化设计具体采用了什么技术来管理组件？",
+    "timestamp": "2026-06-11T17:15:42Z",
+    "raw_response": "Oops! There was an issue connecting to Qwen3.7-Plus.\nYou have reached the daily usage limit. Please wait 7 hours before trying again.",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_048",
+    "platform": "qwen-web",
+    "query": "如何通过ipmicmd命令恢复CX220的出厂默认配置？",
+    "timestamp": "2026-06-11T17:16:27Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_049",
+    "platform": "qwen-web",
+    "query": "在openUBMC中，请求CPU信息时sub command字段应该填什么值？",
+    "timestamp": "2026-06-11T17:19:09Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_050",
+    "platform": "qwen-web",
+    "query": "Report DDR4 Fault Isolation Address 命令中，fault_type_1 为 0x01 和 0x02 分别表示什么含义？",
+    "timestamp": "2026-06-11T17:21:51Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_051",
+    "platform": "qwen-web",
+    "query": "在openUBMC的Set Info请求中，sub command为0x00时对应什么信息？",
+    "timestamp": "2026-06-11T17:24:32Z",
+    "raw_response": "",
+    "citations": [],
+    "model": "Qwen (web)",
+    "status": "timeout",
+    "error": "Response generation timed out"
+  },
+  {
+    "question_id": "q_doc_001",
+    "platform": "deepseek-web",
+    "query": "LDAP登录BMC时提示账号密码正确但无法登录，Base DN和User DN Pattern域不匹配怎么解决？",
+    "timestamp": "2026-06-12T00:01:13Z",
+    "raw_response": "Read 9 web pages\n\n这是一个很典型的问题。账号密码正确但登录失败，且确认是 Base DN 或 User DN Pattern 配置错误，根本原因在于：BMC 根据你配置的规则构造出的用户路径，与用户在 LDAP 服务器中的实际存储路径不一致-\n1\n。\n\n你可以按照以下步骤来定位并解决：\n\n第一步：获取用户在 LDAP 中的“真实路径”\n\n首先需要在 LDAP 服务器上查询该账号的完整 DN（Distinguished Name，可分辨名称）。\n\n如果你有 LDAP 服务器的访问权限，可以使用 ldapsearch 命令查询（以 uid=admin 为例）：\n\nbash\nCopy\nDownload\nldapsearch -x -h <LDAP服务器IP> -b \"dc=example,dc=com\" \"uid=admin\"\n\n示例输出：\n\ntext\nCopy\nDownload\ndn: uid=admin,ou=system_users,dc=corp,dc=com\n\n从结果可以看出，该用户的真实 DN 路径是 uid=admin,ou=system_users,dc=corp,dc=com，其中的组织单元（OU）是 system_users。\n\n第二步：修正 BMC 上的配置\n\n根据查到的真实 DN，你有两种修正方式，选择一种即可：\n\n方案一（推荐）：使用 Search DN + Filter\n\n这种方式更灵活，适合用户分布在多个 OU 的场景。你需要配置以下三个参数：\n\nUser Search Base DN：填写用户的搜索起点。例如 dc=corp,dc=com-\n3\n。\n\nUser Search Filter：填写匹配规则。例如对于 AD 域，通常是 (&(objectClass=user)(sAMAccountName=%s))-\n8\n。\n\nBind DN / Password（可选但推荐）：指定一个有权限搜索 LDAP 的服务账号，以避免匿名搜索被服务器拒绝-\n2\n-\n6\n。\n\n方案二：使用 User DN Pattern（直接匹配）\n\n当所有用户都位于同一个 OU 下时使用。直接在 BMC 的 User DN Pattern 字段中填写包含 %s 占位符的完整路径，%s 会在登录时自动替换为用户名-\n1\n。\n\n修正前（错误） ：uid=%s,ou=users,dc=corp,dc=com（用户实际在 system_users 下）\n\n修正后（正确） ：uid=%s,ou=system_users,dc=corp,dc=com\n\n第三步：检查其他可能的隐藏原因\n\n如果修正后仍然无法登录，请排查以下几点：\n\n大小写敏感问题：LDAP 标准在匹配路径时有时是大小写敏感的。请确保 BMC 配置中的 CN、OU、DC 等属性标签的大小写，与 LDAP 服务器返回的完全一致（如 ou=system_users 不要写成 OU=system_users）-\n9\n。\n\n特殊字符转义：如果你的 Base DN 中包含空格或逗号等特殊字符，记得在配置时需要进行转义处理-\n2\n。\n\n权限映射问题：注意，即使 LDAP 验证通过了，如果 BMC 没有将该用户对应的 LDAP 组映射到任何本地角色（如 Administrator、Operator），系统会认证成功但返回“无权限”或拒绝登录。请检查 LDAP 组到 BMC 角色的映射配置-\n7\n。\n\n为了帮你更精准地定位问题，方便告诉我你的 BMC 型号以及 LDAP 服务器的类型（如 Microsoft Active Directory 或 OpenLDAP）吗？我可以提供更具体的配置参数指导。\n\nThis response is AI-generated, for reference only.\n9 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/faq/security_management/ldap.html",
+      "https://docs.bmc.com/docs/display/rsso223/Configuring+LDAP+authentication?showComments=true&showCommentArea=true#addcomment",
+      "https://docs.bmc.com/docs/pdflibrary/files/671322994/671347517/1/1480412529527/478151.pdf#3#3",
+      "https://docs.bmc.com/docs/plugins/viewsource/viewpagesrc.action?pageId=363104819",
+      "https://docs.bmc.com/docs/plugins/viewsource/viewpagesrc.action?pageId=1108282519",
+      "https://issues.apache.org/jira/browse/KARAF-3711",
+      "https://redfishforum.com/thread/1171"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_002",
+    "platform": "deepseek-web",
+    "query": "硬件自发现中，如何通过busctl命令查看所有硬件组件的ObjectGroup路径？",
+    "timestamp": "2026-06-12T00:02:33Z",
+    "raw_response": "已阅读 10 个网页\n\n在硬件自发现中，使用 busctl tree 命令可以查看 bmc.kepler.hwdiscovery 服务下的所有 ObjectGroup 路径。\n\n核心命令\nbash\n复制\n下载\nbusctl --user tree bmc.kepler.hwdiscovery\n\n参数说明：\n\n--user：连接到用户 D-Bus 总线（硬件自发现服务通常运行在用户总线）-\n1\n\ntree：以树形结构显示服务的对象路径层级-\n2\n-\n5\n\nbmc.kepler.hwdiscovery：硬件自发现服务的 D-Bus 名称-\n1\n\n输出示例\n\n执行上述命令后，输出类似如下结构：\n\ntext\n复制\n下载\n└─/bmc\n  └─/bmc/kepler\n    ├─/bmc/kepler/Connector\n    │   └─ ... (连接器对象)\n    ├─/bmc/kepler/ObjectGroup\n    │   ├─/bmc/kepler/ObjectGroup/00\n    │   ├─/bmc/kepler/ObjectGroup/0001\n    │   ├─/bmc/kepler/ObjectGroup/000101\n    │   ├─/bmc/kepler/ObjectGroup/00010101\n    │   └─ ... (更多 ObjectGroup)\n    └─/bmc/kepler/hwdiscovery\n        └─/bmc/kepler/hwdiscovery/MicroComponent\n\n从输出中，所有以 /bmc/kepler/ObjectGroup/ 开头的路径即为硬件组件的 ObjectGroup 路径，每个路径末尾的数字（如 00、0001）是 Position 标识符，代表具体的硬件组件-\n1\n。\n\n深入查看特定 ObjectGroup\n\n获取到 ObjectGroup 路径后，可以使用 introspect 命令查看该对象组提供的接口和方法：\n\nbash\n复制\n下载\nbusctl --user introspect bmc.kepler.hwdiscovery /bmc/kepler/ObjectGroup/00\n\n这会显示该 ObjectGroup 的 D-Bus 接口信息，其中核心接口是 bmc.kepler.ObjectGroup，它提供了 GetObjects 方法，用于获取该 Position 下包含的所有硬件对象资源-\n1\n。\n\n调用 GetObjects 方法获取详细对象\nbash\n复制\n下载\nbusctl --user call bmc.kepler.hwdiscovery /bmc/kepler/ObjectGroup/00 bmc.kepler.ObjectGroup GetObjects 'a{ss}s' 0 'hwdiscovery'\n\n该方法调用会返回该 Position 对应的硬件组件所包含的所有对象信息，包括对象名、属性等-\n1\n-\n4\n。\n\n常用参数速查\n命令\t用途\nbusctl --user tree bmc.kepler.hwdiscovery\t查看所有 ObjectGroup 路径\nbusctl --user introspect <service> <path>\t查看指定对象的接口和方法\nbusctl --user call <service> <path> <interface> <method> <signature> <args>\t调用对象方法-\n8\n\n如果你的 BMC 环境中硬件自发现的服务名称不同（如非 openUBMC 方案），可以先执行 busctl --user list | grep -i hwdiscovery 查找正确的服务名。\n\n10 个网页",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/faq/security_management/ldap.html",
+      "https://docs.bmc.com/docs/display/rsso223/Configuring+LDAP+authentication?showComments=true&showCommentArea=true#addcomment",
+      "https://docs.bmc.com/docs/pdflibrary/files/671322994/671347517/1/1480412529527/478151.pdf#3#3",
+      "https://docs.bmc.com/docs/plugins/viewsource/viewpagesrc.action?pageId=363104819",
+      "https://docs.bmc.com/docs/plugins/viewsource/viewpagesrc.action?pageId=1108282519",
+      "https://issues.apache.org/jira/browse/KARAF-3711",
+      "https://redfishforum.com/thread/1171"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_003",
+    "platform": "deepseek-web",
+    "query": "如何查看当前环境的RTOS版本和Qemu远程的RTOS版本是否一致？",
+    "timestamp": "2026-06-12T00:04:02Z",
+    "raw_response": "Read 10 web pages\n\n根据 openUBMC 的官方文档，查看当前环境的RTOS版本和Qemu远程的RTOS版本是否一致，需要分别从环境目录和配置文件中获取版本信息进行比对-\n2\n。\n\n具体步骤：\n\n查看当前环境的RTOS版本：在终端中执行以下命令，显示的路径或内容中会包含版本号信息：\n\nbash\nCopy\nDownload\nls -l /opt/RTOS\n\n查看Qemu远程的RTOS版本：检查 manifest.yml 配置文件中的 qemu_rtos_version 字段。\n\n比对结果：将上述两步获取到的版本号进行比较，确认是否一致。\n\n如果不一致，文档中提到了解决方法，即需要删除 conan 缓存、重新初始化环境、重新出包并重启 Qemu-\n2\n。\n\n注意：如果你的开发环境或RTOS类型有所不同（例如使用MS-RTOS或LuatOS等），查看版本的命令可能会是 version 或 rtos.version()-\n5\n-\n9\n，建议优先参考你所使用的RTOS对应文档或上述 openUBMC 的标准方法。\n\n10 web pages",
+    "citations": [],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_004",
+    "platform": "deepseek-web",
+    "query": "在openUBMC中，如何通过dbus获取没有自定义接口的资源树子路径？",
+    "timestamp": "2026-06-12T00:05:16Z",
+    "raw_response": "Read 9 web pages\n\n在openUBMC中，获取没有特定接口过滤的资源树子路径，核心思路是在调用ObjectMapper的标准方法时，传入一个空接口列表。\n\n这里有几种实现方法，最常用的有 GetSubTreePaths 和 GetSubTree。\n\n🔧 主要方法：GetSubTreePaths (最推荐)\n\n这是最直接的方法，它会直接返回一个包含所有子对象路径的列表，非常适合你的需求。\n\n关键参数 interfaces：将其设为空列表 [] 即可，这样ObjectMapper就不会进行任何接口过滤，返回指定路径下的所有路径。\n\n方法定义:\n\n服务: xyz.openbmc_project.ObjectMapper\n\n路径: /xyz/openbmc_project/object_mapper\n\n接口: xyz.openbmc_project.ObjectMapper\n\n方法: GetSubTreePaths\n\n参数:\n\nsubtree (string): 你要查询的根路径，例如 /bmc/kepler。\n\ndepth (int32): 搜索深度，0 代表递归搜索整个子树。\n\ninterfaces (array[string]): 传入 [] 或 \"\"。\n\n使用 busctl 命令行工具示例\n\n你可以直接在openUBMC的shell环境中使用 busctl 命令来快速验证：\n\nbash\nCopy\nDownload\n# 从 /bmc/kepler 根路径开始，深度为0（无限），不进行任何接口过滤\nbusctl call xyz.openbmc_project.ObjectMapper \\\n    /xyz/openbmc_project/object_mapper \\\n    xyz.openbmc_project.ObjectMapper \\\n    GetSubTreePaths sias \"/bmc/kepler\" 0 0\n\n这个命令会输出一个包含所有子路径的数组。\n\n📜 替代方法：GetSubTree\n\n与 GetSubTreePaths 类似，但这个方法返回的信息更丰富。它会返回一个字典，包含每个路径、提供服务的名称以及该服务实现的所有接口。\n\n适用场景：当你不仅需要路径，还想了解每个路径下的具体接口和服务信息时，这个方法更合适。\n\n方法定义: 参数与 GetSubTreePaths 完全一致。\n\n服务: xyz.openbmc_project.ObjectMapper\n\n路径: /xyz/openbmc_project/object_mapper\n\n接口: xyz.openbmc_project.ObjectMapper\n\n方法: GetSubTree\n\n参数: 与GetSubTreePaths相同。\n\n🔍 关键实现原理：ObjectMapper\n\n这两种方法都依赖于OpenBMC的核心服务——ObjectMapper-\n3\n-\n4\n。它相当于一个全局的“黄页”，负责管理整个D-Bus总线上的所有对象路径-\n2\n-\n6\n。\n\n过滤机制：interfaces 参数是这些方法的关键。当传入空列表时，相当于告诉ObjectMapper“不要过滤，返回所有结果”，这正是你要的效果-\n3\n-\n4\n-\n9\n。\n\n🛠️ Lua API (mdb_service)\n\n如果你是在openUBMC的Lua开发环境中工作，可以使用封装好的mdb_service模块-\n1\n。\n\nlua\nCopy\nDownload\nlocal mdb_service = require 'mc.mdb.mdb_service'\n-- 获取指定路径下所有子对象，深度为0（无限），接口列表为空（不进行过滤）\nlocal sub_objects = mdb_service.get_sub_objects(bus, \"/bmc/kepler\", 0, \"\")\n-- 或者，如果你只需要路径列表\nlocal paths_result = mdb_service.get_sub_paths(bus, \"/bmc/kepler\", 0, \"\")\n\n总结一下，核心就是记住在调用 GetSubTreePaths 或 GetSubTree 时，将 interfaces 参数设置为一个空列表。\n\n如果还想探索这些路径下的具体接口或属性，可以留言告诉我具体场景，我帮你看看怎么进一步处理。\n\n9 web pages",
+    "citations": [
+      "https://grok.openbmc.org/raw/openbmc/docs/architecture/object-mapper.md?r=32b43e93fafb988300db0a76ea431d1549aa951a",
+      "https://grok.openbmc.org/raw/openbmc/docs/architecture/object-mapper.md?r=3dd9b31143b25b9500b41c6aede3e7a4aa82c7ac",
+      "http://git.raptorcs.com/git/phosphor-dbus-interfaces/plain/xyz/openbmc_project/ObjectMapper.interface.yaml?id=719ac45c838c31542df13822c8287fda2ea1ce02",
+      "http://git.raptorcs.com/git/phosphor-dbus-interfaces/plain/xyz/openbmc_project/ObjectMapper.interface.yaml?id=3350f3edfb8afa936d3571690b83397ffdf19f11",
+      "https://grok.openbmc.org/history/openbmc/phosphor-dbus-interfaces/yaml/xyz/openbmc_project/ObjectMapper.interface.yaml#8da396ca4e24c1831d5d8fc9c9afc208002032c1",
+      "https://www.openubmc.cn/docs/zh/development/api/framework_api/lua/mdb.html"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_005",
+    "platform": "deepseek-web",
+    "query": "升级固件时出现verify signature error错误，怎么解决？",
+    "timestamp": "2026-06-12T00:06:44Z",
+    "raw_response": "Read 9 web pages\n\n出现“verify signature error”错误，意味着你正在更新的固件包未通过设备的数字签名验证。这通常是出于安全考虑，设备阻止了未经认证或被篡改的固件安装。\n\n这个问题的根源，基本可以归结为以下几类。你可以根据自己的具体设备，对照下表快速定位：\n\n可能原因\t问题描述\t解决方法\n签名证书不匹配\t固件包的签名证书与设备内置的根证书（Root CA）不一致，或签名算法（如PSS vs PKCS#1）不兼容-\n1\n-\n3\n-\n7\n。\t从设备或固件提供商处获取正确的根证书；若在开发，可考虑使用同一证书对固件重新签名-\n3\n。\n签名文件损坏或缺失\t固件文件本身或与其配套的签名文件（如 .sig 文件）不完整，或者文件名不匹配-\n4\n。\t重新下载完整的固件包；检查签名文件是否与固件文件同名且在同一目录-\n4\n。\n证书过期\t用于签署固件的数字证书已经过了有效期，导致校验失败-\n6\n。\t从官网下载最新版本的固件进行手动更新，旧版本固件可能包含已过期的签名-\n6\n。\n安全启动（Secure Boot）冲突\t主要出现在电脑（PC）上。UEFI的Secure Boot功能检测到操作系统引导加载程序签名无效-\n2\n。\t暂时在BIOS中禁用Secure Boot进行测试；或使用系统安装盘修复引导文件-\n2\n。\n升级方式不对\t越级升级或使用了不支持的升级工具。例如，设备当前固件版本过旧，无法直接识别新版固件的签名算法（如从SHA-1到SHA-256）-\n8\n。\t按官方指导，分步进行升级，避免跨越版本过多-\n8\n；或尝试带内升级（如在操作系统内直接运行更新程序）-\n8\n。\n设备特定限制\t某些消费级设备（如3D打印机）只允许安装官方签名固件，如需安装自制固件，可能需要硬件改动（如破坏某个保修贴纸）-\n9\n。\t查阅你的设备官方文档，确认是否有特殊解锁流程-\n9\n。\n💡 通用排查步骤\n\n如果不确定具体原因，可以按照以下顺序尝试解决：\n\n核对版本来源：确认下载的固件文件是否来自设备官方网站，文件名是否完整。\n\n检查文件完整性：对比官网提供的文件大小（MD5/SHA256校验值），确保文件没有在下载过程中损坏。\n\n重试升级过程：清理临时目录（如BMC的 /tmp 空间），重启设备后再尝试一次升级-\n3\n。\n\n联系官方支持：如果以上方法均无效，建议将完整的错误日志（如错误代码 88200312 或 88200004）提供给设备厂商的技术支持-\n1\n-\n3\n-\n4\n。\n\n方便告诉我你具体是在升级什么设备（比如主板BIOS、路由器、NAS还是其他设备）吗？不同的设备，排查思路会稍有侧重。\n\nThis response is AI-generated, for reference only.\n9 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/faq/hardware/bios",
+      "https://discuss.openubmc.cn/t/topic/5153/1",
+      "https://www.hiascend.com/document/caselibrary/detail/case_92810",
+      "https://help.plc.abb.com/AB270_zh/dcac505353ce199c2111dd86d571e5c5_2_zh_cn.html",
+      "https://www.qnap.com/en-ph/how-to/faq/article/what-should-i-do-when-nas-show-the-digital-signature-has-expired-after-doing-firmware-auto-update",
+      "https://www.ninjaone.com/blog/fix-operating-system-loader-failed-signature-verification-error-in-windows-11/",
+      "https://www.dell.com/community/en/conversations/systems-management-general/the-update-package-security-signature-cannot-be-verified/69301e35b6e1ae3c6f9e149d?commentId=693059bf04bdbe7915d36476",
+      "https://help.prusa3d.com/article/signature-verification-failed-31606-core-one-35606-core-one-l-26606-mk4s-13606-mk4-27606-mk3-9s-21606-mk3-9-28606-mk3-5s-23606-mk3-5_401109#what-happened"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_006",
+    "platform": "deepseek-web",
+    "query": "定制化脚本执行失败，打印SYS_NUM=NULL set SYS_NUM fail，是什么原因？",
+    "timestamp": "2026-06-12T00:08:23Z",
+    "raw_response": "Read 7 web pages\n\n根据您提供的错误信息，SYS_NUM=NULL set SYS_NUM fail 的主要原因是：定制化配置文件（通常是 custom.ini 或 serial.ini）中，虽然开启了设置系统序列号（SYS_NUM）的功能，但没有提供具体的序列号值。\n\n以下是根据搜索结果对失败原因和解决方法的详细分析：\n\n故障原因分析\n\n从您提供的错误代码片段来看，脚本的逻辑是：\n\nbash\nCopy\nDownload\nif [ \"$IS_SET_SYS_NUM\" = \"on\" ] ; then\n    getini $CONFIGFILE Custom_SerialNUM\n    SYS_NUM=$parameter\n\n    if [ \"$SYS_NUM\" != \"\" ] ; then\n        # ... 执行设置序列号的逻辑\n    else\n        echo_fail \"SYS_NUM=NULL set SYS_NUM fail\"   # <--- 您遇到的错误正是这里\n        error_quit\n    fi\nfi\n\n这段脚本的逻辑清晰表明-\n1\n：\n\n功能开关已打开：脚本检查到 BMCSET_CustomerialNUM（或类似名称）的配置项被设置为 on，表示需要执行“设置系统序列号”这个定制化操作。\n\n值为空导致失败：脚本接着去读取 Custom_SerialNUM 这个配置项的值，并将其赋给变量 SYS_NUM。\n\n触发错误：如果 Custom_SerialNUM 这个配置项在配置文件中不存在，或者它的值为空，那么 SYS_NUM 变量就是 NULL。脚本判断此为无效状态，于是打印出您看到的错误信息，并中止执行-\n1\n。\n\n简单来说，您打开了“设置序列号”的功能，但没有告诉脚本要设置的具体序列号是多少。\n\n解决方案与排查步骤\n\n要解决这个问题，您需要检查并修正定制化脚本所依赖的配置文件。\n\n定位配置文件\n根据文档，定制化配置通常位于 customerset.ini 或 serial.ini 文件中-\n1\n。您需要找到实际使用的配置文件，这通常在脚本的开头部分有定义。\n\n检查并修正配置项\n打开配置文件，找到与序列号定制相关的两个关键配置项，确保它们的值设置正确。\n\n配置项\t作用\t检查要点\nBMCSET_CustomerialNUM\t功能开关\t如果此项为 on，表示激活序列号设置功能。\nCustom_SerialNUM\t具体数值\t此项不能被注释、删除或留空。必须提供一个合法的序列号字符串。\n\n正确配置示例：\n\nini\nCopy\nDownload\n[BMCSET]\nBMCSET_CustomerialNUM=on\nCustom_SerialNUM=JZ1234567890AB\n\n错误配置示例：\n\nini\nCopy\nDownload\n[BMCSET]\nBMCSET_CustomerialNUM=on\nCustom_SerialNUM=       # 此处为空，导致了 SYS_NUM=NULL 错误\n\n或者整行 Custom_SerialNUM 缺失。\n\n验证值合法性\n代码中还包含对序列号长度的检查：if [ \"${#SYS_NUM}\" -gt 32 ]，这意味着您设置的序列号字符串长度不能超过32个字符-\n1\n。设置时也请留意这一点。\n\n确认配套性\n最后，排除其他可能性。请确保您使用的定制化脚本版本与固件（BMC）版本是配套的，并且所有脚本依赖的文件都在正确的目录下。版本不匹配或缺少依赖文件也可能导致脚本行为异常-\n1\n。\n\n完成以上检查和修改后，重新运行定制化脚本即可。\n\n7 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/faq/equipment_customization_FAQ.html"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_007",
+    "platform": "deepseek-web",
+    "query": "怎么看调速功能是否在运行，app.log里有哪些关键日志？",
+    "timestamp": "2026-06-12T00:09:58Z",
+    "raw_response": "Read 9 web pages\n\n要判断调速功能是否正在运行，以及分析相关日志，需要根据你所用的设备或系统来定。\n\n不过，从搜索结果来看，你很可能是在使用基于 openUBMC（开放底板管理控制器） 的系统，因为这是目前搜索结果中提供相关日志细节最多的场景-\n1\n-\n3\n-\n5\n。\n\n🧐 如何判断调速功能是否在运行\n\n对于 openUBMC 系统，你可以通过查看 app.log 日志文件中的关键启动信息来确认。当系统成功启动风扇调速服务时，会出现以下明确的标志性日志-\n3\n：\n\nbasic cooling initializing：表示调速服务正在初始化。\n\nbasic cooling starting：表示调速服务正在启动中。\n\nbasic cooling started：表示调速服务已成功启动并完成初始化。\n\n此外，当你看到类似下面的日志时，表示系统正在向PID（比例-积分-微分）控制算法下发参与调速的设备配置-\n3\n：\nsend device config to pid, cmd: 42 0 0 2 40 0 1 1 1 0 0 20 2 2 2... 这条命令中列举了正在参与调速的风扇（如1、2、3、4号）和泵（ID为128+泵ID）。\n\n📊 app.log 中的其他关键日志与调速分析\n\n除了启动标志，app.log 和相关日志文件（如 cooling_control.log）还包含了更细致的调速行为和状态信息，可以帮助你判断当前是哪个器件主导调速、是否发生了异常等-\n3\n。\n\n调速器件的状态分析：在 cooling_control.log 中，可以找到类似这样的详细记录：\nDevID:0x101, Type:0, ... TarPWM:52, EnvPWM:94, PIDPWM:94, ...\n\nDevID:0x101：正在调速的设备ID，此处表示一个风扇。\n\nType:0：设备类型，0 代表风扇，1 代表泵。\n\nTarPWM:52：根据目标温度计算出的理论占空比，52/255 ≈ 20.4%。\n\nEnvPWM:94：根据环境温度曲线计算出的理论占空比，94/255 ≈ 36.9%。\n\nPIDPWM:94：最终下发给风扇的占空比（通常取目标调速和环温调速中的最大值），此处是94，说明环境温度影响占空比更高，从而占主导。\n\n异常调速情况：当遇到温度异常或风扇状态异常时，日志中会明确记录 异常调速，例如：\n\n温度异常：Add exception speed, key:(AbnormalRequirement:0x1e), policy(4:80 3:80 ...)，这表示某个温度监测点（ID为0x1e）异常，触发了异常调速策略，例如将3号和4号风扇的转速强制设为80%。\n\n风扇状态异常：Add exception speed, key:(AbnormalFan:...)，表示检测到某个风扇不在位或转速偏差过大，触发了异常调速。\n\n删除异常：Delete exception speed 表示异常状态消除，异常调速被移除。\n\n风扇状态告警：app.log 中也能看到风扇的实时状态和告警。例如：\nscan_fan_status: Scan fan31 rear speed error, real 51%(11776), expect 100% +- 25%; expected_pwm 255-\n3\n\n此日志表明，系统期望31号风扇后转子以100%的占空比（PWM值255）运转，但实际检测到的转速只有51%，偏差超过了25%的容忍阈值，因此产生了告警。\n\n💡 通用排查思路\n\n如果你使用的不是 openUBMC 系统，可以参考以下思路-\n9\n：\n\n分步升级：如果你的设备固件版本非常老旧，可能不支持新版固件的签名算法（例如从SHA-1到SHA-256）。请尝试先升级到某个中间版本，再升级到最新版。\n\n更换升级方式：尝试使用不同的升级方法，例如带内升级（直接在操作系统内运行更新程序），有时可以绕过带外（Out-of-Band）更新的签名验证逻辑。\n\n方便透露一下你具体是在排查什么设备吗（比如服务器、路由器、还是开发板）？告诉我设备型号，我可以帮你找到更精确的日志位置或判断标准。\n\n9 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/faq/hardware/bios",
+      "https://discuss.openubmc.cn/t/topic/5153/1",
+      "https://www.hiascend.com/document/caselibrary/detail/case_92810",
+      "https://help.plc.abb.com/AB270_zh/dcac505353ce199c2111dd86d571e5c5_2_zh_cn.html",
+      "https://www.qnap.com/en-ph/how-to/faq/article/what-should-i-do-when-nas-show-the-digital-signature-has-expired-after-doing-firmware-auto-update",
+      "https://www.ninjaone.com/blog/fix-operating-system-loader-failed-signature-verification-error-in-windows-11/",
+      "https://www.dell.com/community/en/conversations/systems-management-general/the-update-package-security-signature-cannot-be-verified/69301e35b6e1ae3c6f9e149d?commentId=693059bf04bdbe7915d36476",
+      "https://help.prusa3d.com/article/signature-verification-failed-31606-core-one-35606-core-one-l-26606-mk4s-13606-mk4-27606-mk3-9s-21606-mk3-9-28606-mk3-5s-23606-mk3-5_401109#what-happened"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_008",
+    "platform": "deepseek-web",
+    "query": "openUBMC文档中新增文件时，文件名能否包含括号，如果不行该怎么处理？",
+    "timestamp": "2026-06-12T00:11:22Z",
+    "raw_response": "Read 10 web pages\n\n根据 openUBMC 的官方写作规范，新增的文件名中不能包含括号。官方文档明确指出这一限制是为了“避免导致文件目录无法正常显示”-\n1\n。\n\n💡 解决方案\n\n最直接的解决方案是使用下划线 (_) 或中划线 (-) 来替代括号。官方文档中给出的示例是将 'BMC Studio 用户指南' 文档命名为 bmc_studio_tool.md-\n1\n。\n\n修改前（错误）：guide_(v1.0).md\n\n修改后（正确）：guide_v1.0.md 或 guide-v1-0.md\n\n这种规范不仅保证了系统兼容性，也符合技术文档追求简洁、准确的普遍原则-\n1\n。\n\n📝 补充建议\n\n除了括号，命名时最好也避开其他可能引发问题的特殊字符：\n\n通用禁用字符：在Windows或Linux系统中，文件名通常禁止包含 \\ / : * ? \" < > | 等字符，也最好不要使用空格，建议用下划线或中划线代替-\n3\n。\n\nopenUBMC的特殊限制：openUBMC的文档系统还存在其他限制，例如正文中不能使用双花括号 {{}}，因为会导致前端编译失败-\n5\n。\n\n简单总结，对于 openUBMC 项目，使用小写字母、数字、下划线和横线来命名你的 .md 文件是最稳妥的选择。\n\n10 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/document_develop_guide/documentation_writing_specifications.html",
+      "https://cn-support.waters.com/@api/deki/pages/6961/pdf/MassLynx%2b%25E4%25B8%25AD%25E7%259A%2584%25E6%2596%2587%25E4%25BB%25B6%25E5%2590%258D%25E4%25B8%258D%25E8%2583%25BD%25E4%25BD%25BF%25E7%2594%25A8%25E5%2593%25AA%25E4%25BA%259B%25E5%25AD%2597%25E7%25AC%25A6%25EF%25BC%259F%2b-%2bWKB2435.pdf#1#1",
+      "https://gitcode.com/openUBMC/docs/tree/1b92c5520e1815dde48b94f5e9d5873326ebd5be"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_009",
+    "platform": "deepseek-web",
+    "query": "D-Bus 在 Linux 系统中是如何实现系统级进程和普通用户进程之间通信的？",
+    "timestamp": "2026-06-12T00:12:36Z",
+    "raw_response": "Read 10 web pages\n\nD-Bus 实现系统级进程（如硬件服务）与普通用户进程之间通信的核心机制，是通过一个独立的、受到严格安全管控的“系统总线”（System Bus）作为中央转发枢纽，并依靠总线守护进程根据源和目标的身份凭证执行强制消息过滤策略-\n2\n-\n3\n-\n6\n。\n\n这个过程可以拆解为以下几个关键技术环节来理解：\n\n🚌 1. 基石：独立且受控的“系统总线”\n\n在 Linux 系统中，D-Bus 规范定义了两个全局的、众所周知的通信总线实例，它们互不干扰-\n5\n：\n\n系统总线：一个系统全局的、唯一的守护进程实例，由系统初始化时启动（通常在 init 或 systemd 阶段），是连接系统级服务与用户进程的桥梁-\n2\n-\n3\n。\n\n会话总线：每个用户登录会话一个的实例，仅用于该用户桌面环境内的普通进程间通信。这个总线与系统总线在逻辑和物理上都是完全隔离的-\n3\n-\n5\n。\n\n因此，跨越用户权限边界的通信必须经过“系统总线”，而不是用户的会话总线。\n\n📨 2. 媒介：标准化的“消息”与“服务”\n\n通信过程依赖于 D-Bus 定义的一套标准“语言”和“地址”体系：\n\n消息类型：主要有四种——方法调用（Method Call）、方法返回（Return）、错误（Error）和信号（Signal）。例如，用户进程会发送一个 “方法调用”消息来请求系统服务执行某个操作-\n3\n。\n\n寻址定位：为了精确找到目标，每条消息都包含三个标准化的标识符：\n\n服务名称：类似于网络中的“域名”，例如 org.freedesktop.NetworkManager，用于标识提供特定服务的总称-\n4\n。\n\n对象路径：类似于文件系统“路径”，例如 /org/freedesktop/NetworkManager/Devices/1，用于定位服务内部的特定对象实例-\n4\n-\n8\n。\n\n接口：类似于编程中的“接口名”，用于明确要调用的是对象上的哪个具体方法-\n8\n。\n\n🔀 3. 路由：守护进程的“转发”逻辑\n\n当用户进程尝试与系统服务通信时，具体的消息流转逻辑如下：\n\n用户进程调用函数发起通信。D-Bus 客户端库（libdbus）将请求参数打包成一个方法调用消息，并附上目标服务名称（如 org.freedesktop.NetworkManager）和具体的对象路径等元数据-\n3\n-\n9\n。\n\n消息被发送到系统总线守护进程。该守护进程接收并解析消息，检查其目标服务名称-\n3\n-\n10\n。\n\n守护进程路由消息：它查找到当前已注册并声明拥有该服务名称的对应进程（本例中为 NetworkManager 守护进程，通常以 root 或专有用户身份运行），然后将消息准确地转发过去-\n3\n。\n\n系统服务处理请求：目标进程收到消息，执行请求的操作，并生成一个方法返回消息（或出错消息）原路返回给用户进程-\n3\n。\n\n在整个过程中，消息的发送方和接收方都无需知道对方的具体进程 ID（PID）或通信地址，只需要知道目标服务名称即可。\n\n🛡️ 4. 核心：基于身份凭证的强制安全策略\n\n允许跨权限通信的关键在于严格的安全控制。系统总线守护进程本身就是一个安全边界，它会根据消息发送者和接收者的身份凭证来决定是否允许此次通信-\n2\n-\n6\n。这些策略定义在 D-Bus 的配置文件中，可以非常精细。\n\n例如，下面是一个配置文件片段，展示了如何设置策略，只允许来自 qemu 用户的进程向服务 org.qemu.Helper1 发送消息，并只允许来自 qemu-helper 用户的进程接收消息-\n6\n：\n\nxml\nCopy\nDownload\nRun\n<!-- 允许 qemu 用户将消息发送给该服务 -->\n<policy user=\"qemu\">\n   <allow send_destination=\"org.qemu.Helper1\"/>\n   ...\n</policy>\n\n<!-- 只允许 qemu-helper 用户接收该服务的消息 -->\n<policy user=\"qemu-helper\">\n   <allow receive_sender=\"org.qemu.Helper1\"/>\n   ...\n</policy>\n\n这套机制通过以下方式保障了安全性：\n\n严格的传输层访问控制：系统总线守护进程默认只允许 root 用户和本地登录用户的进程连接。守护进程能获取到每个连接进程的真实用户 ID（UID）-\n6\n。\n\n配置文件强制策略：管理员可以通过 XML 配置文件，精确地定义类似上例的规则，限制谁能发送消息给谁，或谁能声明（拥有）特定的服务名-\n6\n。\n\n与 MAC 系统集成：D-Bus 还可以与 SELinux 或 AppArmor 等强制访问控制系统集成，进行更细粒度的安全上下文检查-\n6\n。\n\n💎 总结\n\n总而言之，跨用户边界通信的成功，依赖于独立的系统总线作为可信路由中心，并辅以标准化的消息格式和严格的、基于用户身份的强制访问控制策略。这种架构使得一个由用户启动的普通应用（如系统设置工具），能够安全地向由 root 账户运行的核心系统服务（如 NetworkManager）发送请求，来更改系统的网络配置。\n\n10 web pages",
+    "citations": [
+      "https://browse.dgit.debian.org/dbus.git/plain/README",
+      "https://dbus.freedesktop.org/doc/dbus-tutorial.html",
+      "https://qemu-stsquad.readthedocs.io/en/doc-updates/interop/dbus.html",
+      "https://www.gnu.org/software/emacs/manual/html_node/dbus/Overview.html?_x_tr_sch=http",
+      "https://doc.qt.ac.cn/qt-6/qtdbus-overview.html",
+      "https://doc.qt.io/qt-6.8/zh/qtdbus-overview.html",
+      "https://doc.qt.io/qt-6.10/qtdbus-overview.html",
+      "https://cgit.freedesktop.org/dbus/dbus-mono/tree/mono/doc/en/DBus.xml?id=7867bb6ad9c41328cd8e64940cbc41f5836913a6"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_010",
+    "platform": "deepseek-web",
+    "query": "openUBMC中Canbus初始化失败时如何通过错误引擎捕获异常信息？",
+    "timestamp": "2026-06-12T00:14:06Z",
+    "raw_response": "Read 10 web pages\n\n在 openUBMC 中，CANbus 初始化失败属于“意外错误”的一种。处理的核心思路是：在关键代码段使用 pcall 保护执行，结合日志和 D-Bus 事件记录进行完整的信息捕获。\n\n以下是具体的操作步骤和方法：\n\n🛡️ 步骤一：使用 pcall 捕获 Lua 异常\n\n由于 openUBMC 使用 Lua 作为主要开发语言，未被捕获的异常会导致协程退出且无明确提示-\n9\n。因此，需要在初始化代码外部包裹 pcall。\n\nlua\nCopy\nDownload\n-- 在 main.lua 或 Canbus 初始化函数中\nlocal function init_canbus()\n    -- 这里放置 CANbus 初始化的实际逻辑\n    -- 例如：can_hardware:init() 或类似的调用\n    if hardware_check_failed then\n        error(\"CANbus hardware not responding\")  -- 模拟失败场景\n    end\nend\n\nlocal ok, err = pcall(init_canbus)\nif not ok then\n    -- 捕获并记录详细的错误信息\n    print(\"Canbus initialization failed: \" .. tostring(err))\n    -- 推荐将错误写入专门的应用日志\n    log_err(\"Canbus init critical failure: \" .. tostring(err))\nelse\n    print(\"Canbus started successfully\")\nend\n\n这种写法能够捕获 Lua 语法错误、nil 值调用或硬件上报的错误信息，避免组件因未处理异常而静默退出-\n5\n-\n9\n。\n\n📝 步骤二：结合错误引擎记录事件与附加数据\n\nopenUBMC 的错误处理机制通常基于 phosphor-logging 构建，其核心理念是：遇到无法恢复的错误时，应抛出异常或记录错误日志，而不是仅打印一条消息后继续运行-\n6\n-\n8\n。\n\n在初始化失败时，应遵循以下原则记录信息：\n\n明确关键信息：在错误日志中至少包含 CAN_ERR_INIT_FAILED 这样的明确标识符，以及具体的失败原因（如寄存器校验失败、超时等）。\n\n关联硬件信息：如果可能，在日志中附带相关的硬件标识符（如 CAN 通道号、设备地址），便于快速定位故障部件-\n8\n。\n\n触发事件上报：通过 D-Bus 接口调用错误创建方法，将异常写入系统的事件日志中，便于上层管理软件（如通过 Redfish）查询-\n8\n。\n\n错误日志的 D-Bus 路径通常位于 /xyz/openbmc_project/logging/entry/ 下，可通过 busctl 命令查看。\n\nbash\nCopy\nDownload\n# 查看最近产生的错误日志条目\nbusctl tree xyz.openbmc_project.Logging\nbusctl introspect xyz.openbmc_project.Logging /xyz/openbmc_project/logging/entry/1\n🔍 步骤三：调试与排查（若捕获异常后问题仍存）\n\n如果使用 pcall 捕获到了异常信息，但问题原因仍不明确，可以按照以下清单进行排查：\n\n检查 launch_control 配置：确认 /opt/bmc/conf/launch_control_00_ff.json 文件中，你的组件（如 power_mgmt）未被禁用，且启动顺序配置正确-\n9\n。\n\n验证依赖服务：CANbus 模块可能依赖其他 D-Bus 服务。检查 app.log 或 framework.log 中是否有 StartupCheck failed 或 ServiceUnknown 错误，这通常意味着依赖的接口未注册-\n9\n。\n\n临时禁用回滚机制：在调试阶段，可以修改 /opt/bmc/conf/mc_control.json，将 enable_rollback_on_exception 等选项设为 false，防止系统因反复重启组件而掩盖真实的错误日志-\n9\n。\n\n💡 补充建议\n\n区分错误等级：对于 CANbus 初始化失败这类严重错误，建议记录为 CRITICAL 级别，并在错误日志中包含能够支持“首次故障数据捕获”（First Failure Data Capture）的信息，如寄存器转储或驱动状态-\n6\n。\n\n参考硬件规范：不同的 CAN 控制器有其特定的错误码定义。例如，某些控制器会返回 SSP_ERR_CAN_INIT_FAILED 或指示进入“Error Passive”状态的总线严重错误码-\n1\n-\n7\n。查阅你所使用的 CAN 控制器数据手册有助于精确解码这些错误。\n\n为了更精确地定位你当前的问题，方便告诉我你使用的是哪款 CAN 控制器硬件，或者具体的错误日志内容吗？我可以帮你进一步分析。\n\n10 web pages",
+    "citations": [
+      "https://discuss.openubmc.cn/t/topic/4626/3",
+      "https://gitcode.com/openUBMC/power_mgmt/issues/61",
+      "http://yhbt.net/lore/openbmc/2a18b60a-f4d8-c6d7-6902-41b35082cd74@linux.ibm.com/T/#t",
+      "https://deepwiki.com/openbmc/docs/5.3-dump-management",
+      "https://www.renesas.com/ja/document/mas/renesas-synergy-software-package-ssp-v132#437#310",
+      "https://www.dzsc.com/uploadfile/company/293357/2010930152318979.pdf#19#10"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_011",
+    "platform": "deepseek-web",
+    "query": "在openUBMC的ASAN使用教程中，配置环境变量时如何设置日志路径和检测内存泄漏？",
+    "timestamp": "2026-06-12T00:15:18Z",
+    "raw_response": "Read 6 web pages\n\n在openUBMC中配置ASAN时，你可以通过ASAN_OPTIONS环境变量同时设置日志路径和开启内存泄漏检测。\n\n1. 设置日志路径\n\n使用log_path参数指定日志文件的前缀。运行时，ASAN会为每个进程生成一个独立的日志文件，命名格式为<prefix>.<pid>。\n\nbash\nCopy\nDownload\n# 例如，将日志文件设置为 /home/asan/asan.log.<进程号>\nexport ASAN_OPTIONS=\"log_path=/home/asan/asan.log\"\n2. 检测内存泄漏\n\n使用detect_leaks=1参数开启内存泄漏检测功能。该选项在Linux系统上默认是开启的，但为了确保万无一失，建议显式设置-\n3\n-\n4\n。\n\n3. 完整配置示例\n\n将日志路径和内存泄漏检测组合在一起，完整的配置命令如下：\n\nbash\nCopy\nDownload\n# 设置日志路径和开启泄漏检测\nexport ASAN_OPTIONS=\"log_path=/home/asan/asan.log:detect_leaks=1\"\n4. 在openUBMC中的实践参考\n\n结合openUBMC社区的实践，完整的操作流程可以总结如下-\n2\n：\n\n编译阶段：在编译目标组件时，添加编译选项-fsanitize=address -g。-g选项用于保留调试信息，以便在日志中输出清晰的代码行号。\n\n配置环境：设置上述ASAN_OPTIONS环境变量后，启动你的程序。\n\nbash\nCopy\nDownload\nexport ASAN_OPTIONS=\"log_path=/home/asan/asan.log:detect_leaks=1:halt_on_error=0\"\n# 此处 halt_on_error=0 可选，表示遇到错误时不立即停止，以便检测更多问题\n\n运行与触发：正常运行你的BMC服务。如果是对常驻进程（如devmon）进行检测，你可以通过发送特定信号来触发内存泄漏的检查并输出报告-\n2\n。\n\nbash\nCopy\nDownload\n# 假设 ASAN 注册的信号是 44，替换 <pid> 为实际进程ID\nkill -s 44 <pid>\n\n查看报告：根据你设置的log_path，在目标目录下（如/home/asan/）找到日志文件，分析其中的内存泄漏报告。\n\n其他常用ASAN选项\n\n为了更好地控制ASAN的行为，你可以参考下表将多个选项通过冒号:连接起来-\n2\n：\n\n选项\t作用\t示例值\nlog_path\t设置日志文件路径前缀\t/var/log/asan/error\ndetect_leaks\t启用内存泄漏检测\t1 (开启)\nhalt_on_error\t检测到错误时是否停止程序\t0 (不停止) 或 1 (停止)\nsuppressions\t指定一个抑制文件，用于过滤已知或误报的泄漏\tsuppressions=asan.supp\n\n通过合理配置这些参数，你可以有效地在openUBMC环境下利用ASAN精准定位内存问题。\n\n6 web pages",
+    "citations": [
+      "https://www.ibm.com/docs/en/SSRZSMX_17.1.3/pdf/Clang_document.pdf#page=245#202#124",
+      "https://www.nersc.gov/assets/Uploads/3-Sanitizers-and-Sanitizers4hpc.pdf#1#1",
+      "https://discuss.openubmc.cn/t/topic/6167"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_012",
+    "platform": "deepseek-web",
+    "query": "在openUBMC中，Lua语言的RPC方法参数应该使用哪种命名风格？",
+    "timestamp": "2026-06-12T00:16:34Z",
+    "raw_response": "Read 1 web page\n\n在 openUBMC 中，Lua RPC 方法的参数命名风格没有找到官方明确的规定。\n\n不过，结合常见的编码规范和实践，建议优先采用蛇形命名法（snake_case）。理由如下：\n\nLua 语言惯例：Lua 语言官方及社区普遍推荐使用蛇形命名法（如 device_name, set_speed），这与 Lua 自身的风格一致-\n1\n。\n\n保持一致性：建议查阅 openUBMC 源码或已有 Lua 脚本进行确认。如果现有代码多使用驼峰式（如 deviceName），则遵循项目现有风格会更合适。\n\n总结：建议优先使用 蛇形命名法，并参考项目现有代码的风格来确定。\n\n1 web page",
+    "citations": [
+      "http://infocenter.arm.com/help/topic/com.arm.doc.101196_0100_00_en/iris_developer_guide_101196_0100_00_en.pdf#15#3"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_013",
+    "platform": "deepseek-web",
+    "query": "在openUBMC文档中新增一个MarkDown文件时，文件名有什么规则？",
+    "timestamp": "2026-06-12T01:44:29Z",
+    "raw_response": "Read 10 web pages\n\n在 openUBMC 文档中新增 MarkDown 文件，其文件名需要遵循以下四条核心规则。\n\n📝 核心命名规则\n规则\t要求\t说明\n语言\t英文命名\t文件名必须使用英文单词-\n1\n。\n唯一性\t不得重名\t新增的文件名不能与所在目录下已有的文件名重复-\n1\n。\n禁用字符\t避免使用括号\t文件名中不能包含括号 ( )，否则可能导致文件目录无法正常显示-\n1\n。\n推荐分隔符\t使用连字符\t官方推荐使用下划线 _ 或中划线 - 来连接单词，例如 bmc_studio_tool.md-\n1\n。\n📂 补充说明：文件存放位置与文档头信息\n\n命名之外，还需要注意以下两点，确保文档能被正确集成：\n\n目录位置：新增的 MarkDown 文件需要放置在文档目录 docs/public/zh/development/ 下的对应位置，这个路径必须与 menu.json 配置文件中的节点定义保持一致-\n3\n。\n\n文件头部：每个文档开头都需要包含如下格式的元信息，用 --- 分隔-\n3\n：\n\nmarkdown\nCopy\nDownload\n---\ndate: 2025/04/01          // 最后修改日期\ntitle: 文档的显示标题       // 文档在页面中显示的标题\n---\n💡 示例与参考\n\n根据以上规则，假设你要新增一份关于“网络配置”的指南：\n\n推荐命名：network_configuration.md 或 network-configuration.md\n\n不推荐命名：网络配置.md (非英文) 或 network(config).md (含括号)\n\n为了方便查找和引用，也建议文件名能简洁且具有描述性。例如，创建一个“BMC Studio 用户指南”，可以命名为 bmc_studio_guide.md-\n1\n。\n\n如果还需要了解文档内的写作规范或 menu.json 的具体配置方法，可以继续提出。\n\n10 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/document_develop_guide/documentation_writing_specifications.html",
+      "https://gitcode.com/openUBMC/docs/tree/1b92c5520e1815dde48b94f5e9d5873326ebd5be"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_014",
+    "platform": "deepseek-web",
+    "query": "openUBMC中journald日志是如何通过journal_export.service和logrotate实现采集导出轮转的？",
+    "timestamp": "2026-06-12T01:46:30Z",
+    "raw_response": "Read 9 web pages\n\n在 OpenBMC 中，日志的采集、导出和轮转主要依靠 journal_export.service 和 logrotate 两个服务协同完成。前者负责持续将 systemd-journald 的二进制日志导出为通用的文本文件，后者则定时对这个文本文件进行轮转、压缩和清理，以防止其无限增长-\n2\n。\n\n🔄 协作流程概览\n\n下面的流程图清晰地展示了从日志生成到最终轮转归档的完整数据流向：\n\nDiagram\nCode\nDownload\nFullscreen\n\nLog Rotation\n\nLog Export\n\nGenerate Logs\n\nStores in binary format\n\nExecStart\njournalctl -f\n\nStandardOutput\n\nTriggers\n\nReads config\n\nPerforms\n\nReads from\n\nManaged by\n\nSystem Components & Kernel\n\nsystemd-journald\n\nJournal Binary Logs\n/var/log/journal/\n\njournal_export.service\n\nFollow new logs\n\nAppend to\n/var/log/journalctl.log\n\nlogrotate.timer\n\nlogrotate.service\n\n/etc/logrotate.d/配置\n\nRotate, Compress,\nClean Old Logs\n\n📤 第一步：日志导出 (journal_export.service)\n\njournal_export.service 是一个自定义的 systemd 服务，其核心任务是将 systemd-journald 维护的二进制日志持续转换为文本格式。\n\n核心导出命令：该服务通过执行 /bin/journalctl -f 命令来工作。-f (follow) 参数使其能够实时追踪并输出系统产生的最新日志-\n2\n。\n\n输出重定向：关键在于其 StandardOutput=append:/var/log/journalctl.log 的配置。它将 journalctl -f 原本输出到终端的日志流，直接追加（append）到 /var/log/journalctl.log 这个文本文件中，从而完成了从二进制日志到文本日志的持久化导出-\n2\n。\n\n启动与依赖：服务配置了 After=dbus.service 和 Requires=dbus.service，确保在 D-Bus 服务启动后才开始工作，这是因为它依赖 D-Bus 来获取系统状态-\n2\n。\n\n健壮性设计：服务设置了 Restart=on-failure 和 RestartSec=3，保证了在异常退出时能在3秒后自动重启，增强了日志导出的可靠性-\n2\n。\n\n✂️ 第二步：日志轮转 (logrotate)\n\n有了持续写入的 /var/log/journalctl.log 文件，第二步就是使用 logrotate 工具来防止其无限制地增长。\n\n触发机制：logrotate 本身是一个命令行工具，在 OpenBMC 中，它由 logrotate.timer 这个 systemd 定时器自动触发执行。这确保了轮转任务能按照既定周期（如每天）自动运行-\n7\n。\n\n核心配置：logrotate 的行为由其配置文件定义。主配置文件是 /etc/logrotate.conf，而针对不同服务的特定配置则放在 /etc/logrotate.d/ 目录下-\n4\n。\n\n一个典型的配置会定义轮转频率（如 daily）、保留份数（如 rotate 4，保留4个历史版本）、是否压缩（compress）以及大小阈值（size=10M，超过10MB即轮转）-\n3\n-\n4\n。\n\n优雅处理：logrotate 在轮转日志文件后，通常会在 postrotate 脚本中向相关服务发送信号，通知其重新打开日志文件，而不是继续写入已被重命名的旧文件。这保证了日志记录的连续性。\n\n⚙️ 关键配置速查\n\n为了让你更清晰地了解各组件的作用，下面整理了它们的关键配置信息：\n\n组件\t配置文件/位置\t关键指令/特性\t作用\njournal_export.service\t/etc/systemd/system/journal_export.service\tExecStart=/bin/journalctl -f\t实时追踪并导出journal日志-\n2\n。\n\t\tStandardOutput=append:/var/log/journalctl.log\t将导出的日志追加到指定文本文件-\n2\n。\nlogrotate\t/etc/logrotate.conf 或 /etc/logrotate.d/\tdaily / weekly\t定义日志轮转的执行周期-\n4\n。\n\t\trotate 4\t指定日志文件保留的历史份数-\n3\n。\n\t\tcompress\t对轮转后的旧日志文件进行压缩以节省空间-\n3\n-\n4\n。\n\t\tsize=10M\t当日志文件超过指定大小时，立即触发轮转-\n3\n-\n4\n。\n\t\tpostrotate ... endscript\t轮转操作后执行的命令，常用于通知服务重新打开文件-\n3\n。\n9 web pages",
+    "citations": [
+      "https://gitcode.com/openUBMC/rootfs_user/merge_requests/22#note_718222efda713ea14a5cbcffdc65d6140b7fb77c",
+      "https://gitcode.com/chenshengfan/rootfs_user_1077",
+      "https://documentation.suse.com/es-es/sle-micro/6.1/pdf/logging-managing-system-logfiles_es.pdf#3#1",
+      "https://opensource.com/sites/default/files/gated-content/osdc_cheatsheet-logrotate-2021.9.18.pdf#1#1"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_015",
+    "platform": "deepseek-web",
+    "query": "在openUBMC中，如何为对象的属性配置防抖，并且防抖器路径的格式是什么？",
+    "timestamp": "2026-06-12T00:21:14Z",
+    "raw_response": "Read 7 web pages\n\n在 openUBMC 中，为对象的属性配置防抖并不是在属性本身上直接操作，而是通过在数据采集源头——Scanner（扫描器）对象中配置 Debounce 属性来实现的-\n1\n。\n\n防抖器路径的格式是一个引用格式，指向一个预先定义的、包含具体防抖策略和参数的配置对象。\n\n⚙️ 如何为属性配置防抖\n\n防抖功能作用于数据进入系统之前，可以过滤掉硬件读取值中的瞬间毛刺或噪声，避免上层业务（如告警）产生误报-\n1\n。\n\n配置的完整步骤如下：\n\n定义防抖策略对象：首先需要创建一个对象，用于定义具体的防抖算法和参数。\n\n在 Scanner 中引用：在读取目标硬件的 Scanner 配置中，将 Debounce 属性的值设置为上一步定义的对象路径，格式为 \"#/<防抖对象名称>\"。\n\n连接上层传感器：ThresholdSensor（阈值传感器）等对象通过引用 Scanner 的输出值（\"<=/Scanner_TempSensor.Value\"），即可自动获取经过防抖处理后的稳定值-\n1\n。\n\n配置示例：\n假设需要对一个温度传感器的读数应用中值滤波防抖。\n\njson\nCopy\nDownload\n// 步骤1: 定义中值滤波防抖策略对象\n{\n  \"MedianDebounce_Temperature\": {\n    \"WindowSize\": 5,      // 滑动窗口大小，取最近5次采样\n    \"DefaultValue\": 25    // 初始默认值，窗口未满时使用\n  }\n}\n\n// 步骤2: 在Scanner中配置防抖\nScanner_TempSensor:\n{\n  Chip: \"#/LM75_TempChip\",   // 硬件地址\n  Offset: 0x00,\n  Period: 1000,              // 采样周期(ms)\n  Debounce: \"#/MedianDebounce_Temperature\",  // 引用防抖对象\n  ScanEnabled: 1\n}\n\n// 步骤3: 传感器使用Scanner的输出\nThresholdSensor_Temp:\n{\n  Reading: \"<=/Scanner_TempSensor.Value\", // 引用防抖后的值\n  UpperCritical: 95\n}\n📂 防抖器路径的格式\n\n在 openUBMC 中，防抖器路径的格式是一个引用格式，即 \"#/<防抖策略对象的名称>\"。这个路径被赋值给 Scanner 的 Debounce 属性，用于指明该 Scanner 使用哪个预定义的防抖策略来处理原始数据。\n\n💡 支持的防抖类型\n\nopenUBMC 支持多种防抖策略，您可以根据信号类型选择合适的算法。以下是推荐的策略选择-\n1\n：\n\n防抖类型\t描述\t适用场景\nMedian (中值滤波)\t取窗口内所有采样值的中位数作为输出。\t温度、电压等模拟量信号，能有效消除脉冲噪声。\nMidAvg (均值滤波)\t取窗口内所有采样值的平均数作为输出。\t需要平滑处理的模拟量信号，如温度、湿度。\nCont (持续一致)\t需要连续多次采样值一致才会改变输出状态。\t数字信号，如开关量、状态量，用于状态确认。\nContBin (二值持续)\tCont 策略的二进制版本。\t适用于高低电平信号。\nNone\t不进行任何防抖处理。\t需要快速响应的场景，如风扇调速。\n\n注意：WindowSize 参数（窗口大小）会直接影响响应延迟。例如，WindowSize: 5 表示需要采集5次数据后才能输出一个稳定的值。建议将其设置在 3 到 10 之间，以平衡稳定性和响应速度-\n1\n。\n\n💎 灵活应用：不同业务使用不同策略\n\n一个非常实用的功能是，您可以为一个物理硬件创建多个 Scanner，分别配置不同的防抖策略，从而满足不同业务对数据的差异化需求-\n1\n。\n\n用于告警的 Scanner：配置 Debounce: \"#/MedianDebounce\"，获得稳定的值，避免误报。\n\n用于风扇调速的 Scanner：配置 Debounce: \"None\"，获得更实时的原始值，确保系统能快速响应温度变化进行散热。\n\n通过这种方式，一个温度传感器的数据就能同时满足“稳定”和“灵敏”两个看似矛盾的需求。\n\n7 web pages",
+    "citations": [
+      "https://discuss.openubmc.cn/t/topic/4635"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_016",
+    "platform": "deepseek-web",
+    "query": "openUBMC中worker获取组件温度超时3秒后如何循环重试？",
+    "timestamp": "2026-06-12T01:49:10Z",
+    "raw_response": "Read 10 web pages\n\n在 openUBMC 中，当 worker 获取组件温度超时后，推荐采用带指数退避的重试机制，即在重试间隔中逐渐增加等待时间，同时配合最大重试次数限制和防抖逻辑，避免无限循环阻塞系统。\n\n以下为你整理的重试机制实现策略：\n\nDiagram\nCode\nDownload\nFullscreen\n\n成功\n\n超时/失败\n\n否\n\n是\n\n否\n\n是\n\n开始获取组件温度\n\n初始化: retry_count = 0\nmax_retries = 3\n\nworker执行温度读取\n超时时间3秒\n\n读取是否成功?\n\n返回温度值\n重置retry_count\n\nretry_count < max_retries?\n\n连续失败次数达阈值\n触发防抖失败计数\n\n连续失败 >= 5次?\n\n上报告警事件\n\n记录失败，等待下次周期\n\nretry_count + 1\n计算退避延迟\n\n延迟等待\ndelay = 2^retry_count * 间隔\n\n结束-失败\n\n结束-成功\n\n等待下个采集周期\n\n以下是基于 openUBMC 框架的具体实现建议。\n\n1. 基于 worker_core 的循环重试实现\n\n在 openUBMC 中，温度获取等阻塞性操作需要放在 worker 线程中执行，以避免阻塞主进程的资源树访问和导致心跳丢失-\n1\n。\n\nlua\nCopy\nDownload\nlocal worker = require \"worker_core\"  -- openUBMC worker框架库\n\n-- 推荐将worker对象定义为全局变量，避免被GC回收导致功能失效[citation:1]\nlocal g_worker = worker.new(0)  \n\nlocal MAX_RETRY_COUNT = 3      -- 最大重试次数\nlocal BASE_DELAY_MS = 1000     -- 基础延迟1秒\nlocal TIMEOUT_SEC = 3          -- 单次获取超时时间3秒\n\n-- 指数退避延迟计算函数\nlocal function calculate_backoff(retry_count)\n    -- 延迟时间 = 基础延迟 * 2^(retry_count-1)，如: 1s, 2s, 4s\n    return BASE_DELAY_MS * (2 ^ (retry_count - 1))\nend\n\n-- 带重试机制的温度获取函数\nlocal function get_temperature_with_retry(sensor_path)\n    local retry_count = 0\n    local last_error = nil\n    \n    while retry_count < MAX_RETRY_COUNT do\n        -- 在worker线程中执行实际的温度读取操作\n        local ok, result = pcall(function()\n            -- 假设call_redfish是获取温度的方法，设置3秒超时\n            -- 注意：超时错误会在pcall中捕获\n            return g_worker:sync_call(function()\n                return call_redfish(sensor_path, TIMEOUT_SEC)\n            end)\n        end)\n        \n        if ok and result then\n            -- 成功获取温度，重置计数并返回\n            log:info(\"Successfully get temperature for %s\", sensor_path)\n            return result\n        else\n            last_error = result or \"timeout\"\n            retry_count = retry_count + 1\n            \n            if retry_count < MAX_RETRY_COUNT then\n                local delay_ms = calculate_backoff(retry_count)\n                log:warning(\"Get %s timeout (attempt %d/%d), retrying after %d ms\",\n                    sensor_path, retry_count, MAX_RETRY_COUNT, delay_ms)\n                g_worker:sleep(delay_ms)  -- worker线程内sleep不会阻塞主进程\n            end\n        end\n    end\n    \n    -- 重试全部失败\n    log:error(\"Failed to get %s after %d retries, last error: %s\",\n        sensor_path, MAX_RETRY_COUNT, tostring(last_error))\n    return nil\nend\n2. 基于防抖机制的智能告警策略\n\n单纯的循环重试可能导致短时间内的多次失败上报大量告警。openUBMC 社区推荐结合防抖机制，仅在连续失败达到阈值后才触发告警-\n2\n-\n4\n。\n\nlua\nCopy\nDownload\n-- 为每个传感器维护独立的状态表\nlocal sensor_debounce_state = {}\n\n-- 检查是否需要上报失败告警\nlocal function should_report_failure(sensor_id, is_failure)\n    local now = os.time()\n    local state = sensor_debounce_state[sensor_id]\n    \n    if not state then\n        state = { continuous_failures = 0, last_failure_time = 0 }\n        sensor_debounce_state[sensor_id] = state\n    end\n    \n    if is_failure then\n        state.continuous_failures = state.continuous_failures + 1\n        state.last_failure_time = now\n        \n        -- 仅当连续失败达到阈值（如5次）时才上报告警[citation:2]\n        if state.continuous_failures >= 5 then\n            log:error(\"Sensor %s continuous failure count: %d, reporting alert\",\n                sensor_id, state.continuous_failures)\n            return true\n        end\n    else\n        -- 成功读取时重置失败计数\n        state.continuous_failures = 0\n    end\n    \n    return false\nend\n\n-- 在循环重试的最终失败处理中使用\nlocal function handle_failure_with_debounce(sensor_id)\n    if should_report_failure(sensor_id, true) then\n        -- 产生SEL日志或告警事件[citation:2]\n        generate_sensor_alert(sensor_id, \"Temperature read failed after retries\")\n    end\nend\n3. 启动阶段的特殊处理（规避误告警）\n\n在系统启动的60秒内，硬件可能尚未初始化完成，这期间的读取失败往往是瞬态问题-\n2\n。可以增加启动抑制窗口：\n\nlua\nCopy\nDownload\nlocal BMC_STARTUP_TIME = os.time()  -- 记录BMC启动时间\n\nlocal function is_in_startup_window()\n    local startup_duration = os.time() - BMC_STARTUP_TIME\n    return startup_duration < 60  -- 启动后60秒内视为启动窗口[citation:2]\nend\n\nlocal function get_temperature_safe(sensor_path, sensor_id)\n    local temp = get_temperature_with_retry(sensor_path)\n    \n    if not temp then\n        if is_in_startup_window() then\n            -- 启动窗口期内，仅记录调试日志，不上报告警\n            log:debug(\"Startup window: ignoring temp read failure for %s\", sensor_id)\n        else\n            -- 稳定运行期才应用防抖告警\n            handle_failure_with_debounce(sensor_id)\n        end\n    end\n    return temp\nend\n4. MCTP通信场景的深层阻塞应对\n\n对于通过 MCTP（如 MCTP over PCIe）获取网卡温度的场景，get_endpoint_and_transport 等闭源库函数可能因为无超时机制而彻底卡死-\n10\n。除了上述重试，还需要额外的超时保护：\n\nlua\nCopy\nDownload\n-- 为MCTP endpoint创建增加Lua层超时保护\nlocal function create_mctp_with_timeout(bus, phy_addr, timeout_sec)\n    local result = nil\n    local co = coroutine.create(function()\n        -- 闭源的mctp_lib调用可能永久阻塞[citation:10]\n        result = mctp_lib.get_endpoint_and_transport(bus, phy_addr)\n    end)\n    \n    local timer = setTimeout(timeout_sec * 1000, function()\n        if coroutine.status(co) == \"suspended\" then\n            log:error(\"MCTP endpoint creation timed out after %d seconds\", timeout_sec)\n            coroutine.close(co)  -- 强制终止卡住的协程\n            result = nil\n        end\n    end)\n    \n    coroutine.resume(co)\n    clearTimeout(timer)\n    return result\nend\n总结与建议\n策略\t实现要点\t适用场景\n指数退避重试\tdelay = base * 2^retry，最大重试3-5次\t应对网络抖动或设备瞬时无响应\n防抖告警\t连续失败N次（如5次）后再告警\t避免大量重复告警淹没日志-\n2\n\n启动抑制窗口\t启动后60秒内不上报告警\t解决AC上电/重启后的初始化时序问题-\n2\n\n超时保护\t用协程+定时器包裹可能阻塞的调用\t应对闭源SDK（如MCTP库）无超时机制的场景-\n10\n\n在实际实现中，建议将 worker 对象定义为全局变量，这是社区用户踩过的常见坑（局部变量导致worker失效）-\n1\n。如果闭源 SDK 的调用完全没有超时机制，务必在 Lua 层面增加协程超时保护，防止整个采集线程被卡死。\n\n10 web pages",
+    "citations": [
+      "https://discuss.openubmc.cn/t/topic/2628/2",
+      "https://discuss.openubmc.cn/t/topic/5898/2",
+      "https://gitcode.com/openUBMC/network_adapter/pull/306",
+      "https://discuss.openubmc.cn/t/topic/4085"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_017",
+    "platform": "deepseek-web",
+    "query": "DiscreteEvent类中的Conversion属性如何配置才能避免误告警？",
+    "timestamp": "2026-06-12T01:50:43Z",
+    "raw_response": "Read 1 web page\n\n关于DiscreteEvent类中的Conversion属性如何配置以避免误告警，需要说明的是，根据目前公开的技术资料，通常用来控制告警级别的是Severity属性而非Conversion属性。Conversion主要用于原始值到业务含义（如“严重告警”、“恢复正常”）的映射，而Severity直接决定是否告警及告警的严重程度-\n1\n。\n\n为了帮你理清思路，下面从两个维度来说明如何配置以避免误告警：\n\n1. 核心配置建议：使用 Severity 属性定制告警级别\n\n如果现有配置导致很多不必要的事件产生了告警（误告警），通常意味着某些事件级别的默认设置不够准确-\n1\n。\n\n定制告警级别：你可以在特定的定制配置仓中，通过配置Severity属性来覆盖系统默认的告警级别。将那些你认为不应触发告警的事件，将其Severity设置为“正常”或“无告警”级别-\n1\n。\n\n修改默认配置：如果某些传感器事件的公共默认配置确实不准确，且无法通过上层定制解决，也可以考虑直接修改公共仓中的基础配置文件（例如data.yaml），从根源上调整事件的Severity等级-\n1\n。\n\n2. 关于 Conversion 属性的说明\n\n虽然查询到的资料未直接详述Conversion的具体配置语法，但根据该类属性的通用逻辑，正确配置Conversion是避免逻辑误报的基础：\n\n映射必须完整且准确：请检查Conversion属性是否覆盖了传感器返回的所有可能状态值，并且每个值都正确映射到了预期的Severity。例如，需要确保“恢复正常”类的事件被映射到“清除”或“正常”级别，而不是“严重”级别，否则恢复事件也会被误判为告警。\n\n状态映射不重叠：确保同一个原始值不会同时映射到两个矛盾的告警级别，避免解析器产生混乱。\n\n3. 通用排查思路\n\n如果调整后仍有误告警，建议按以下步骤排查：\n\n确认当前生效的配置：检查运行时日志或配置加载记录，确认系统加载的是你定制的Severity值，而不是被默认值覆盖了。\n\n检查事件类型定义：结合具体传感器的数据手册，确认Conversion中的状态映射是否符合设备输出的物理意义。\n\n利用社区资源：参考openUBMC等技术社区中关于“离散事件等级定制功能”的专门文档，那里通常有更详细的配置示例-\n1\n。\n\n总结：为避免误告警，请重点检查并配置Severity属性，将不必要的事件级别调低；同时核对Conversion属性，确保事件状态到告警级别的映射逻辑是准确且完整的。\n\n如果你的Conversion配置有具体的报错日志或映射示例，可以提供出来，我可以帮你进一步排查逻辑是否有问题。\n\n1 web page",
+    "citations": [
+      "https://discuss.openubmc.cn/t/topic/1999/1"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_018",
+    "platform": "deepseek-web",
+    "query": "openUBMC 的 user interface 模块提供了哪些外部接口？",
+    "timestamp": "2026-06-12T00:25:58Z",
+    "raw_response": "Read 10 web pages\n\n根据openUBMC的官方技术文档，其用户界面模块主要通过以下三种方式对外提供接口：\n\n🖥️ Web用户界面（Web UI）\n\n作为最直观的外部接口，Web UI通过标准的HTTPS协议（通常是443端口）提供了一个图形化的管理门户-\n4\n。\n\n实现方式：主要由bmcweb Web服务器和基于Vue.js的webui-vue前端应用构成-\n4\n-\n7\n。\n\n后端API：Web前端通过调用bmcweb提供的RESTful API与BMC后台交互-\n5\n-\n7\n。\n\n实时通信：支持WebSocket服务，用于实现远程KVM（键盘、视频、鼠标）、虚拟媒体挂载和Web终端等功能-\n4\n。\n\n🔌 资源协作接口（RPC）\n\n这是openUBMC内部及对外提供能力核心的系统级接口，基于D-Bus总线协议实现，供开发者或其他服务调用组件功能-\n1\n。你可以通过以下命令行工具进行查看和调用：\n\n操作目的\t命令模板\n查看所有服务\tbusctl --user tree\n查看服务下的对象\tbusctl --user tree <service>\n查看对象提供的接口\tbusctl --user introspect <service> <object>\n调用接口方法\tbusctl --user call <service> <object> <interface> <method>\n\n注意：使用busctl命令需要环境中的软件包为debug类型。若为release类型，则该命令不可用-\n1\n。\n\n🌐 行业标准管理接口\n\n为满足不同运维场景的兼容性，openUBMC还支持多种标准化的管理协议接口-\n6\n：\n\nRedfish接口：当前服务器管理领域的主流标准协议，支持RESTful风格操作。\n\nWeb REST接口：提供基础的RESTful API服务。\n\nCLI接口：提供命令行界面，支持脚本化管理和维护。\n\nSNMP接口：支持简单网络管理协议，方便集成到传统的网管系统中。\n\n希望这些信息能帮助你全面了解openUBMC的用户接口能力。如果想深入了解某个特定接口（比如如何调用一个具体的RPC方法），可以随时告诉我。\n\n10 web pages",
+    "citations": [
+      "https://deepwiki.com/openbmc/docs/1.1-features-and-capabilities",
+      "https://deepwiki.com/ibm-openbmc/webui-vue/2-core-components",
+      "http://git.raptorcs.com/git/openbmc-docs/tree/development/web-ui.md?id=a69423d9b213d55b7380610ff4a49253f4d52b24",
+      "https://www.openubmc.cn/docs/zh/development/develop_guide/app_development/coding.html#%E8%B0%83%E7%94%A8%E8%B5%84%E6%BA%90%E5%8D%8F%E4%BD%9C%E6%8E%A5%E5%8F%A3rpc%E6%8E%A5%E5%8F%A3",
+      "https://www.openubmc.cn/docs/zh/development/faq/energy/energy_simple_faq.html"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_019",
+    "platform": "deepseek-web",
+    "query": "在openUBMC中，A模块如何通过client.lua订阅B模块的属性变化？",
+    "timestamp": "2026-06-12T00:27:03Z",
+    "raw_response": "Read 4 web pages\n\n在openUBMC中，A模块通过client.lua订阅B模块属性变化的核心方法是调用自动生成的信号订阅函数。根据service.json中配置的依赖关系，构建系统会为A模块生成包含订阅接口的client.lua文件。\n\n⚙️ 实现步骤\n\n配置模块依赖：在A模块的service.json文件中，使用required字段声明对B模块的依赖-\n1\n。\n\n生成客户端代码：完成配置后，构建系统会自动解析依赖关系，在gen/App名/目录下生成A模块的client.lua文件-\n1\n。该文件会包含用于订阅B模块属性变化的函数。\n\n编写订阅逻辑：在A模块的业务代码中，引入生成的client.lua并调用其中的订阅函数，通常需要指定B模块的对象路径和接口，并提供一个回调函数来处理属性变化的事件。\n\n💻 代码示例与解析\n1. 在A模块中订阅B模块属性变化\n\n以下示例展示了如何在A模块中通过client.lua订阅B模块的属性变化：\n\nlua\nCopy\nDownload\n-- 引入自动生成的客户端库\nlocal client = require \"gen.A.client\" -- 此处A为你的App名\n\n-- 订阅B模块某对象的属性变化\nfunction subscribe_b_property()\n    -- 获取B模块中目标对象的代理\n    local b_obj = client.get_object(\"B_module_path\", \"B_interface\")\n    \n    if b_obj then\n        -- 订阅属性变化信号\n        -- 参数1：属性名；参数2：变化时的回调函数\n        b_obj:subscribe_property(\"PropertyName\", function(old_value, new_value)\n            print(string.format(\"[A模块] B模块属性 %s 已变化: %s -> %s\", \n                               \"PropertyName\", tostring(old_value), tostring(new_value)))\n            -- 在此处编写A模块的响应逻辑\n        end)\n    end\nend\n2. 将订阅与对象生命周期绑定（推荐）\n\n对于复杂的硬件管理场景，推荐使用ORM对象管理框架。该框架能自动管理对象及其关联资源的生命周期，防止对象卸载时因协程或信号槽未清理导致的内存泄漏-\n3\n。\n\nlua\nCopy\nDownload\n-- 在ORM管理类中订阅信号\nfunction my_b_obj_manager:init()\n    -- 使用框架的connect_signal方法，确保对象析构时自动断开\n    self:connect_signal(self.on_b_obj_added, function()\n        local b_obj = self:get_b_object()\n        if b_obj then\n            b_obj:subscribe_property(\"Temperature\", function(_, new_temp)\n                self:handle_temperature_change(new_temp)\n            end)\n        end\n    end)\n    my_b_obj_manager.super.init(self)\nend\n\nfunction my_b_obj_manager:dtor()\n    -- 框架会自动清理此对象相关的所有信号监听和协程[citation:3]\nend\n⚠️ 生命周期管理（重要）\n\n务必注意，手动建立的信号订阅在B模块对象销毁时需要手动解除。如果未正确清理，对象卸载后其属性变化仍可能触发A模块的回调，导致Lua异常-\n3\n。建议优先使用ORM对象管理框架来管理跨模块的订阅关系。\n\n📌 补充说明\n\n如果你的场景是A模块（作为客户端）通过WebSocket订阅BMC后端服务的事件，则更接近标准的D-Bus机制。你需要向/subscribe端点发送包含paths和interfaces的JSON数据包，随后服务端会通过WebSocket推送属性变化等消息-\n2\n-\n4\n。\n\n希望以上信息能帮助你完成订阅功能的开发。如果还需要了解更多细节，欢迎继续交流。\n\n4 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/design_reference/key_feature/Auto_generate_lua.html",
+      "https://www.openubmc.cn/docs/zh/development/design_reference/key_feature/orm_obj_mgmt_guide.html",
+      "http://git.raptorcs.com/git/phosphor-rest-server/tree/module/obmc/wsgi/examples/websockets/client_simple.html?id=3a00b1fd769320ee4a0e95e26c0f688e30a920bc",
+      "https://grok.openbmc.org/xref/openbmc/phosphor-rest-server/module/obmc/wsgi/examples/websockets/client_simple.html?r=f01d0ba3e2da4944a811fc4f57815ac97ee062ed"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_020",
+    "platform": "deepseek-web",
+    "query": "在 openUBMC 中，如何使用 BMC Studio 的 bingo new 命令创建一个组件？",
+    "timestamp": "2026-06-12T00:28:45Z",
+    "raw_response": "Read 10 web pages\n\n在 openUBMC 中使用 BMC Studio 的 bingo new 命令创建一个组件，核心是通过命令行指定组件的名称、类型和编程语言。\n\n🚀 快速创建：bingo new 命令\n\nbingo new 是 BMC Studio 开发工具提供的一个CLI命令，用于快速创建一个符合 openUBMC 统一规范的标准组件代码仓-\n1\n。\n\n命令的基本格式如下-\n3\n：\n\nbash\nCopy\nDownload\nbingo new -n <组件名> -t <组件类型> -l <编程语言>\n\n命令的参数说明：\n\n参数\t说明\t可选值\t默认值\n-n, --name\t指定组件名称\t自定义，如 my_app\t无\n-t, --type\t指定组件类型\tapplication\tapplication\n-l, --language\t指定编程语言\tlua\tlua\n📝 操作示例：创建名为 my_app 的组件\n\n以下是一个完整的创建流程，按顺序操作即可：\n\n进入工作目录：将终端定位到您希望存放组件代码的目录-\n3\n。\n\nbash\nCopy\nDownload\ncd /home/workspace\n\n执行创建命令：运行 bingo new 命令创建名为 my_app 的组件-\n1\n-\n3\n。\n\nbash\nCopy\nDownload\nbingo new -n my_app -t application -l lua\n\n因为 -t 和 -l 参数的默认值就是 application 和 lua，在创建 Lua 应用组件时，也可以直接使用更简洁的命令：bingo new -n my_app-\n1\n。\n\n查看生成结果：命令执行成功后，会在当前目录下生成一个名为 my_app 的新文件夹。这个文件夹内已经包含了组件所需的基础代码框架、启动服务和构建配置-\n1\n-\n3\n。\n\n至此，一个标准组件框架就创建完成了。进入该目录后，就可以使用 bingo build 命令来构建组件的 Conan 包了-\n1\n。\n\n⚠️ 操作注意事项\n\n环境一致性：bingo 是命令行工具，而 BMC Studio 是图形界面。图形界面的操作在后台也是调用 bingo 命令。如果在图形界面遇到组件拉取或构建失败的问题，建议先在终端使用 bingo 命令进行验证，这是最直接的排查方式-\n9\n。\n\n认证与权限：确保终端环境已正确配置了 Conan 远程仓库和 Git 的登录凭证。BMC Studio 图形界面可能无法共享终端中的会话状态，若 GUI 操作失败，手动登录认证通常是有效的解决方法-\n9\n。\n\n使用帮助：bingo 命令支持详细的帮助信息，可以通过以下命令随时查看-\n1\n-\n8\n：\n\nbash\nCopy\nDownload\n# 查看 bingo 所有子命令\nbingo help\n# 查看 new 子命令的详细参数\nbingo new -h\n10 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/develop_guide/app_development/app_creation.html",
+      "https://www.openubmc.cn/docs/zh/development/quick_start/create_an_app.html",
+      "https://discuss.openubmc.cn/t/topic/4592/3",
+      "https://gitcode.com/xuhaijun/bingo"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_021",
+    "platform": "deepseek-web",
+    "query": "在openUBMC开发中，如果我想在Windows上编译源码，应该选择哪种环境搭建方式？",
+    "timestamp": "2026-06-12T00:30:17Z",
+    "raw_response": "Read 9 web pages\n\n在Windows上编译openUBMC源码，最推荐、最省心的方式是使用 Windows Subsystem for Linux (WSL2)。官方文档也明确指出，基于Linux文件权限的依赖性，直接在Windows原生环境或文件系统上是不可行的-\n4\n。\n\n目前主要有三种方案，我把它们的区别整理成了表格，方便你对比选择：\n\n搭建方式\t核心原理\t优缺点\t适用场景\n🥇 WSL2 (最推荐)\t在Windows中运行的轻量级Ubuntu虚拟机，与系统无缝集成-\n1\n-\n3\n。\t优点：既能用Linux环境编译，又能方便地使用Windows工具（如VSCode）-\n1\n。\n缺点：需注意将项目文件存放在WSL的Linux文件系统内，否则会因权限问题导致编译失败-\n4\n；编译过程（尤其是完整镜像）对磁盘空间要求较高，需预留50GB以上-\n3\n。\t绝大多数开发者，既需要Linux编译环境，又希望在Windows下进行其他工作。\n🖥️ 虚拟机 (传统方案)\t使用VirtualBox或VMware安装完整的Ubuntu桌面版-\n6\n-\n8\n。\t优点：环境隔离彻底，与原生Linux开发体验几乎一致-\n1\n-\n6\n。\n缺点：资源占用较高，启动和文件共享不如WSL便捷。\t希望获得最纯粹、隔离的Linux环境，或硬件资源充裕的开发者。\n🚀 BMC Studio (官方IDE)\topenUBMC官方推出的集成开发工具，提供图形化界面-\n2\n。\t优点：开箱即用，集成了开发所需的环境和工具，上手最快-\n2\n。\n缺点：请注意：其安装包（.exe）运行在Windows上，但核心编译环境仍需依赖Ubuntu 24.04-\n2\n。\t追求快速上手和便捷开发体验的新手或开发者。\n💡 方案详解与最佳实践\n🥇 路径一：使用WSL2 (强烈推荐)\n\n这是目前社区和官方都比较推崇的方式，兼顾了Linux的强大和Windows的便利。\n\n安装与配置：确保Windows 10版本1903以上，以管理员身份打开PowerShell，运行 wsl --install 安装Ubuntu。建议通过wsl --export/--import命令将WSL的虚拟硬盘（VHDX）迁移到非系统盘（如D盘），避免C盘空间爆满-\n3\n。\n\n关键避坑指南：这是最重要的一点。在WSL的Ubuntu系统中，务必执行以下操作：\n\n不要将代码放在 /mnt/c/ 或 /mnt/d/ 等Windows盘符目录下编译。\n\n一定要放在Linux自己的文件系统内，例如 /home/your_username/ 目录下。\n\n原因：Windows文件系统不支持Linux复杂的文件权限模型，这是导致编译失败的最常见原因-\n4\n。\n\n🚀 路径二：使用BMC Studio (官方IDE)\n\n如果你希望获得类似Keil、VS等传统IDE的一体化体验，这是最佳选择。\n\n核心要求：虽然BMC Studio可以在Windows 10/11上安装，但它依赖于后台的Ubuntu 24.04环境来执行实际的编译任务-\n2\n。\n\n实现方式：\n\n方式A：在WSL2中安装Ubuntu 24.04，然后在Windows中安装BMC Studio。Studio会自动检测并调用WSL中的工具链。\n\n方式B：在虚拟机中安装Ubuntu 24.04。\n\n🖥️ 路径三：使用传统虚拟机 (稳定可靠)\n\n如果你对虚拟机更为熟悉，或者想获得最纯粹的Linux体验，可以继续选择此方案。\n\n配置建议：使用 VirtualBox 或 VMware Workstation Player（两者均有免费版本）安装最新的 Ubuntu LTS版本-\n6\n-\n8\n。\n\n硬件要求：如果计划使用bitbake完整构建固件镜像，建议为虚拟机分配8线程CPU、16GB内存、200GB硬盘。如果只是进行SDK级别的应用开发，默认配置即可-\n6\n。\n\n📌 一些补充建议\n\n关于代码编辑：无论选择哪种方案，都可以在Windows上使用 VSCode 进行代码编辑。通过 Remote - SSH（连接虚拟机）或 Remote - WSL（连接WSL）插件，可以实现在Windows上编辑、在Linux环境中编译的无缝体验-\n1\n。\n\n关于磁盘空间：openUBMC基于Yocto项目，编译过程会产生大量中间文件，轻松占用几十GB空间-\n3\n。请提前为你的编译环境预留足够的磁盘容量。\n\n选择WSL2并在其Linux文件系统中进行编译，是目前在Windows平台开发openUBMC的最佳实践。如果你在配置过程中遇到任何问题，欢迎随时继续交流。\n\n9 web pages",
+    "citations": [
+      "https://discuss.openubmc.cn/t/topic/687/5",
+      "https://www.openubmc.cn/docs/zh/development/quick_start/prepare_environment/env_introduction.html",
+      "https://blog.csdn.net/weixin_29206669/article/details/158337907",
+      "http://git.raptorcs.com/git/openbmc-docs/plain/development/dev-environment.md?id=7d0b8686e98f606d20c0bf393bfe1dd8c3cd3388",
+      "http://git.raptorcs.com/git/openbmc-docs/commit/development/dev-environment.md?id=1dc181c44fddcaa4d644a4c7ec99662f4257140d",
+      "https://www.openubmc.cn/docs/zh/development/quick_start/prepare_environment/bmc_studio_installation.html#%E9%80%9A%E8%BF%87-apt-%E6%BA%90%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85%E4%BB%93%E9%A2%89%E5%B7%A5%E5%85%B7%E9%93%BE%E5%92%8C-bmc-studio"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_022",
+    "platform": "deepseek-web",
+    "query": "openUBMC 182x大板管理特性中如何实现网口与光模块的指定映射？",
+    "timestamp": "2026-06-12T00:31:44Z",
+    "raw_response": "Read 10 web pages\n\n在openUBMC 182x大板管理特性中，网口与光模块的指定映射是通过南向设备树（Device Tree） 与 CSR（Configuration and Status Register，配置状态寄存器）配置文件 静态绑定实现的，本质是一对一的逻辑关联。\n\n其核心机制与实现路径如下：\n\n⚙️ 核心机制：逻辑关系而非物理拓扑\n\n在BMC（Baseboard Management Controller，基板管理控制器）的管理模型中，光模块对象是网口对象的子节点-\n10\n。这种“网口下挂光模块”的层级关系，直接定义了一对一的指定映射，而非依赖物理总线的自动探测。\n\n🛠️ 具体实现流程\n\n映射的实现主要依赖以下三个关键环节：\n\nCSR文件定义静态映射（核心）\n系统在加载网卡时，会根据配置加载对应的CSR文件。在182x网卡的CSR配置中，会通过 Connector 关键字为每个 NicPort（网口对象）指定其关联的光模块CSR文件-\n2\n。\n\n当BMC识别到网卡处于2口模式时，会加载2端口的CSR文件，其中定义了端口1→光模块A、端口2→光模块B的映射。\n\n当切换至4口模式时，系统会加载4端口的CSR文件，此时端口3和4会映射到对应的新光模块。\n\n代码适配层（wx_port.cpp）实现对象挂载\n设计文档明确指出，要使光模块成功“挂载”到指定网口下，必须在代码层进行适配。\n\n根据社区问题排查记录，映射失败的一个常见原因是 wx_port.cpp 文件中缺少光模块对象的初始化函数（init）-\n1\n。\n\n正确的做法是参考标准的 hi182x_port.cpp 文件，补充光模块相关对象的初始化逻辑，确保驱动能成功构建并将光模块对象挂载到对应的 NicPort 下-\n1\n。\n\n信息查询与验证\n映射配置完成后，可以通过以下路径验证映射关系：\n\n日志查询：在BMC一键日志收集的 dump_info/AppDump/network_adapter/net_card_info 文件中，包含了网口与光模块信息的对应记录-\n4\n。\n\n动态信息：光模块的实时信息（如厂商、序列号、温度、功耗等）会通过 bmc.dev.OpticalModule 接口，在其所属的父网口（NicPort）对象下进行呈现-\n10\n。\n\n⚠️ 注意事项：网口数量动态切换与映射的关系\n\n182x大板支持网口数量动态切换（如2口与4口模式切换），这会直接影响映射关系-\n2\n-\n3\n。\n\n当通过Redfish或Web界面修改网口模式后，系统会卸载旧的网卡CSR文件，并加载新模式对应的CSR文件，从而实现映射关系的一键切换。\n\n若在代码适配或CSR加载过程中缺少对应的初始化函数，极易导致映射失败（即光模块对象无法在对应网口下“上树”）-\n1\n。\n\n如果你需要调试映射关系，建议先从 dump_info/AppDump/network_adapter/net_card_info 日志入手确认当前识别到的对应关系-\n4\n。如果发现光模块未能正确显示，可以重点检查 wx_port.cpp 中针对该网口的初始化代码是否完整-\n1\n。\n\n10 web pages",
+    "citations": [
+      "https://discuss.openubmc.cn/t/topic/1740/3",
+      "https://www.openubmc.cn/docs/zh/development/design_reference/release_designs/openUBMC%20182x%E5%A4%A7%E6%9D%BF%E7%AE%A1%E7%90%86%E7%89%B9%E6%80%A7%E8%AE%BE%E8%AE%A1%E8%AF%B4%E6%98%8E%E4%B9%A6.html",
+      "https://discuss.openubmc.cn/t/topic/3902/7",
+      "https://discuss.openubmc.cn/t/topic/2597",
+      "https://discuss.openubmc.cn/t/topic/4363"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_023",
+    "platform": "deepseek-web",
+    "query": "openUBMC的Redfish规范校验和Schema更新工具特性设计文档在哪里可以找到？",
+    "timestamp": "2026-06-12T00:32:55Z",
+    "raw_response": "Read 6 web pages\n\n根据公开信息，在 openUBMC 社区，似乎没有一个独立、完整的“Redfish 校验和 Schema 更新工具特性设计文档”。目前的相关信息主要散落在社区讨论和具体的设计文档中。\n\n不过，结合 DMTF 的官方标准，可以为你梳理出实现这两个特性的技术路径和关键参考。\n\n🛠️ 特性分析与实现路径\n特性\t核心功能\t关键工具/标准\t实现参考\nRedfish 规范校验\t用于检查 BMC 实现是否符合 Redfish 标准规范及特定功能集。\tDMTF Redfish Interop Validator: 一个开源的规范校验工具，可根据 Interoperability Profile（互操作性配置文件）检查服务的合规性-\n1\n-\n5\n。\t可以参考 openUBMC 社区的相关讨论，其中提到了应使用 DMTF 提供的 Protocol/Service/Interop validator 进行符合性检查-\n1\n。\nSchema 更新工具\t用于更新 BMC 系统所支持的 Redfish 数据模型（Schema），并生成 API 文档。\tDMTF Redfish-Tools：包含一个文档生成器，可结合 Schema 文件和 Interoperability Profile 生成用户文档-\n5\n。\t社区的讨论中提到，doc-generator 用于生成 Schema 文档，而 API 路径（endpoints）的文档通常通过 openapi.yaml 来描述-\n1\n。\n🔍 如何进一步获取信息\n\n由于缺乏独立的设计文档，可以尝试从以下几个途径获取更详细的信息：\n\n查阅现有设计文档：可以重点研究 openUBMC 中关于具体功能（如固件更新）的设计文档。这些文档会详细说明如何实现特定的 Redfish 功能，以及如何处理与标准规范的差异-\n2\n-\n3\n-\n4\n。\n\n关注社区讨论：技术社区（如 openUBMC 讨论区）是一个很好的信息来源，其中可能包含开发者关于校验和 Schema 工具的具体实施方案的讨论-\n1\n。\n\n参考上游项目：密切跟进 DMTF 的官方工具（如 Redfish-Interop-Validator 和 Redfish-Tools）的更新。openUBMC 的实现通常会与这些上游标准保持一致。\n\n你是准备在 openUBMC 上开发新功能，还是正在为自己的硬件做兼容性适配？告诉我你的具体目标，我可以帮你推荐最相关的代码仓库或技术文档。\n\n6 web pages",
+    "citations": [
+      "https://discuss.openubmc.cn/t/topic/4869/12",
+      "https://www.dmtf.org/sites/default/files/Redfish_Interoperability_Profiles_v1.0_0.pdf#1#1",
+      "https://git.raptorcs.com/git/openbmc-docs/commit/designs?id=458e3d98ca06306d60b53f2315d63778b4d4bf88",
+      "https://git.raptorcs.com/git/openbmc-docs/commit/designs/firmware-update-over-redfish.md?id=458e3d98ca06306d60b53f2315d63778b4d4bf88",
+      "http://git.raptorcs.com/git/openbmc-docs/plain/designs/firmware-update-over-redfish.md?id=e94a168cd5faf5f2489ccb7e1707018f9ed243dd"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_024",
+    "platform": "deepseek-web",
+    "query": "openUBMC中连续型传感器和离散型传感器的主要区别是什么？",
+    "timestamp": "2026-06-12T00:34:05Z",
+    "raw_response": "Read 9 web pages\n\n在 openUBMC 中，连续型传感器和离散型传感器的主要区别在于它们所监测的物理量性质、数据表达方式以及告警触发机制。\n\n核心区别主要体现在以下几个方面：\n\n对比维度\t连续型传感器\t离散型传感器\n监测对象\t连续、可量化的物理量-\n1\n-\n3\n\t非连续的状态或事件-\n1\n-\n3\n\n数据表达\t具体的数值（如 \"36.5°C\"）-\n1\n-\n3\n\t固定的状态（如 \"正常/故障\"）-\n1\n-\n3\n\n告警机制\t基于阈值比较（超过预设的门限值触发）-\n1\n-\n2\n-\n3\n\t基于状态变化（达到某个特定状态时触发）-\n1\n-\n2\n-\n3\n\n配置要点\t需配置门限值（Thresholds）-\n2\n\t需配置离散事件对象（DiscreteEvent）-\n2\n📊 监测对象与数据表达\n\n连续型传感器：用于监测可以无限细分的物理量，如温度、电压、电流、风扇转速等-\n1\n-\n3\n。它的输出是一个具体的数值，例如，CPU 的当前温度为 55.5°C-\n6\n。\n\n离散型传感器：用于监测只有两种或几种明确状态的对象，如设备的\"在位/不在位\"、电源的\"正常/故障\"、机箱的\"打开/关闭\"-\n1\n-\n3\n-\n5\n。它的输出是一个固定的状态值-\n1\n-\n3\n。\n\n⚙️ 告警与事件触发机制\n\n这是两者在功能上最关键的差异，主要体现在事件触发的方式上-\n2\n。\n\n连续型传感器：基于阈值（Threshold） 触发告警。开发人员会为其设置一个或多个门限值（如\"上临界值\"、\"下非临界值\"）-\n9\n。当传感器读数超过这些预设的门限时，系统就会生成相应的事件日志（SEL）-\n1\n-\n2\n。例如，当 CPU 温度超过 85°C 时，触发\"上临界\"告警。\n\n离散型传感器：基于具体状态触发告警。没有阈值的概念，而是当传感器检测到的状态变为特定值时触发事件-\n1\n-\n2\n。例如，当\"机箱\"传感器的状态从\"关闭\"变为\"打开\"时，系统会记录一条\"机箱被打开\"的告警事件-\n5\n。\n\n🛠️ 软件配置差异\n\n在 openUBMC 的适配配置中，两者的配置项也不同-\n2\n-\n3\n：\n\n配置连续型传感器：核心是配置其门限值（Thresholds），指定在什么数值下触发何种级别的告警-\n2\n。\n\n配置离散型传感器：核心是配置离散事件对象（DiscreteEvent），定义在哪个状态值需要生成告警-\n2\n。\n\n💡 总结\n\n简单来说，你可以这样理解：\n\n连续型传感器像是在观察一个温度计，回答的问题是\"现在是多少度？\"，当度数超过某个刻度（阈值）时就会报警。\n\n离散型传感器则像是观察一个开关，回答的问题是\"现在是开还是关？\"，当开关从一个状态切换到另一个状态（如关->开）时就会报警。\n\nThis response is AI-generated, for reference only.\n9 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/develop_guide/product_development/sensor_adaptation_guide",
+      "https://www.openubmc.cn/docs/zh/development/develop_guide/product_development/sensor_adaptation_guide.html#%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95",
+      "https://discuss.openubmc.cn/t/topic/450/5",
+      "https://deepwiki.com/ocp-hm-openbmc-opf-ami/phosphor-dbus-interfaces/6.1-sensor-values-and-types",
+      "https://lists.ozlabs.org/pipermail/openbmc/2021-January/024766.html",
+      "https://deepwiki.com/openbmc/entity-manager/5.1-sensor-type-reference"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_025",
+    "platform": "deepseek-web",
+    "query": "使用openUBMC Studio时，如何利用Docker容器管理功能快速搭建开发环境？",
+    "timestamp": "2026-06-12T00:35:35Z",
+    "raw_response": "Read 9 web pages\n\n使用 openUBMC Studio 的 Docker 容器管理功能搭建开发环境，主要是通过其图形化界面来简化拉取镜像、创建容器等步骤，无需手动执行复杂的命令行。\n\n下面是两种实现路径，你可以根据自己的偏好来选择。\n\n⚙️ 准备工作：安装 Docker 与 Studio 插件\n\n在开始之前，请确保你的电脑满足以下两个基本条件：\n\n安装 Docker：根据你的操作系统，从 Docker官网 下载并安装 Docker Desktop（推荐 Windows/Mac 用户）或 Docker Engine（Linux 用户）。\n\n安装 VS Code 插件：在 Visual Studio Code 的扩展市场中，安装 Dev Containers (ms-vscode-remote.remote-containers) 插件，这是 Studio 发现和管理容器的关键-\n1\n-\n9\n。\n\n完成这两步后，你的 VS Code 就具备了 Docker 容器管理的能力。\n\n🚀 路径一：在 Studio 内直接操作（推荐新手）\n\nopenUBMC Studio 为 Docker 管理提供了一个图形化界面，这是最便捷的方式，可以避免手动输入命令。\n\n连接 Docker 守护进程：\n确保 Docker Desktop 或 Docker 服务已在后台运行。通常情况下，Studio 插件会自动检测到本地的 Docker 环境。如果无法发现容器，请检查 Remote - Containers 插件是否已启用，Docker 服务是否正常运行-\n1\n-\n9\n。\n\n拉取官方镜像：\nStudio 可以帮你直接从云端拉取开发镜像。你不需要记住复杂的仓库地址，只需在插件提供的界面中找到拉取镜像的功能，并确认拉取。官方镜像预装了Conan、bingo等所有必要的开发工具链-\n4\n-\n2\n。\n\n创建并连接容器：\n在镜像列表中找到刚下载的镜像，通过 Studio 的界面创建容器。关键的一步是 配置端口映射，开发环境需要将容器的端口暴露给宿主机才能访问：\n\nBMC Studio 服务端口：10000 (必须)\n\nQEMU SSH 端口：10022 (推荐)\n\nWeb UI 端口：10443 (推荐)\n\nIPMI 服务端口：10623 (可选)-\n1\n-\n4\n\n确认配置后，点击“运行”。Studio 会自动执行 docker run 命令并建立连接。\n\n💻 路径二：手动配置命令行（适合定制）\n\n如果你需要对容器有更精细的控制（例如挂载自定义目录），也可以通过命令行创建，再交由 Studio 接管。\n\n拉取并运行容器：\n打开你的终端（Terminal），执行以下命令来拉取官方镜像并启动一个名为 openubmc 的容器。\n\nbash\nCopy\nDownload\n# 1. 拉取官方镜像（请以实际最新版本号为准）\ndocker pull swr.cn-north-4.myhuaweicloud.com/openubmc/ubuntu:24.04.2_26.03\n\n# 2. 创建并运行容器\ndocker run -itd \\\n  --privileged=true \\\n  -p 10000:10000 \\\n  -p 10022:22 \\\n  -p 10443:10443 \\\n  --mount type=bind,source=/path/to/your/workspace,target=/home/workspace \\\n  --restart=always \\\n  --name openubmc \\\n  swr.cn-north-4.myhuaweicloud.com/openubmc/ubuntu:24.04.2_26.03 \\\n  /bin/bash\n\n命令参数说明：\n\n--privileged=true：赋予容器内部完全的 root 权限，用于运行 QEMU 仿真-\n4\n。\n\n-p：进行端口映射，确保 10000 端口映射正确，这是后续连接的关键-\n3\n。\n\n--mount：将你电脑上的文件夹（如 /path/to/your/workspace）挂载到容器内，方便代码的持久化和编辑-\n4\n。\n\n在 Studio 中连接：\n容器启动后，回到 VS Code。在左侧活动栏中找到 \"远程资源管理器\"，你应该能在 \"Dev Containers\" 或 \"Containers\" 列表中看到刚刚创建的名为 openubmc 的容器。右键点击它，选择 \"在当前窗口附加\" (Attach to Container)，即可像在本地一样进行开发了。\n\n🔧 常见问题排查\n\n如果在使用过程中遇到问题，可以按照以下清单检查：\n\n常见问题\t可能的原因与解决方案\nStudio 无法发现容器\t1. 缺少插件：请检查 Remote - Containers 插件是否已安装并启用。\n2. 端口未映射：创建容器时，必须映射 10000 端口，这是 Studio 连接服务的必要条件-\n1\n。\n无法执行开发命令\t权限不足：部分操作（如仓库管理、特定调试）需要 root 权限。如果你在 Windows 的 WSL 中开发，可能需要将 WSL 默认用户设置为 root-\n6\n-\n7\n。\n页面无法打开\t服务未启动：进入容器终端，执行 bingo studio start 或 /usr/share/bmc_studio/bmc_studio.sh start 手动启动 Studio 后台服务-\n1\n-\n2\n。\n\n建议优先选择路径一（在 Studio 内直接操作），这是官方推荐的快速搭建方式，能让你跳过繁琐的命令行配置，把精力集中在核心的业务开发上-\n4\n。\n\n9 web pages",
+    "citations": [
+      "https://www.docker.com/products/docker-desktop/",
+      "https://discuss.openubmc.cn/t/topic/5281",
+      "https://discuss.openubmc.cn/t/topic/5281/2",
+      "https://www.openubmc.cn/docs/zh/development/quick_start/prepare_environment/docker_env.html#%E6%96%B9%E5%BC%8F%E4%BA%8C-%E9%80%9A%E8%BF%87docker%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F%E7%AB%99%E8%BF%9B%E8%A1%8C%E5%AE%89%E8%A3%85",
+      "https://discuss.openubmc.cn/t/topic/5141",
+      "https://gitcode.com/Cisy123/manifest_smoke_test/blob/main/README.md",
+      "https://discuss.openubmc.cn/t/topic/5578/7",
+      "https://discuss.openubmc.cn/t/topic/3310/1"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_026",
+    "platform": "deepseek-web",
+    "query": "服务器出厂定制化配置中，如何设置本地用户密码的校验模式？",
+    "timestamp": "2026-06-12T00:37:13Z",
+    "raw_response": "Read 10 web pages\n\n服务器出厂定制化配置中，本地用户密码的“校验模式”涉及两个层面：一是硬件层（BIOS/UEFI）的管理员密码验证，二是操作系统层的用户密码加密算法。\n\n首先需要明确您的具体需求是配置BIOS级别的启动/设置密码，还是操作系统（如Linux）的本地用户登录密码。\n\n一、配置BIOS级别的密码校验（硬件层）\n\n在服务器出厂定制化时，常需在BIOS中设置管理员或系统密码。现代服务器（以Dell PowerEdge、宝德等为例）的BIOS并非简单地存储明文密码，而是内置了安全的哈希算法。\n\n1. 核心配置路径\n\n通常在开机自检时按 F2 进入 System Setup，导航至 System BIOS -> System Security 菜单-\n2\n-\n5\n。\n\n2. 关键设置项与加密逻辑\n\n虽然BIOS界面不直接让用户选择“SHA256”或“SHA512”算法（这些是底层固件决定的），但您可以通过以下关键参数控制密码的校验行为和安全性：\n\n参数名称\t功能说明\t推荐配置\nSystem Password\t设置开机进入操作系统前需要输入的密码。\t设置强密码。密码加密算法通常启用使用SHA256散列值和Salt-\n3\n。\nSetup Password\t设置进入BIOS设置界面修改配置所需的密码。\t必须设置。这是防止硬件配置被篡改的关键。\nPassword Status\t选项为 Unlocked（解锁） 或 Locked（锁定）。当设置为 Locked 时，系统密码将无法被修改或禁用。\t建议设为 Locked 以增强安全性-\n2\n-\n3\n。\nSet Lock Count/Time\t设置密码尝试次数锁定策略。例如：默认值为尝试 3次 失败后，锁定设备 5分钟。\t按需设置，防止暴力破解-\n1\n。\nPassword Minimum Length\t强制密码最小长度（通常为8-16位）。\t建议设为 8 或更高-\n1\n-\n7\n。\nSecure Boot\t利用数据库中的证书（如SHA256哈希）校验引导加载程序。\t设置为 Enable，确保只启动可信操作系统-\n3\n-\n10\n。\n\n注：对于宝德等基于鲲鹏的服务器，BIOS还支持弱口令字典检测和密码过期策略（默认180天过期），可在Security菜单中开启-\n1\n。\n\n二、配置操作系统的密码加密算法（系统层）\n\n出厂定制化时，若需预装操作系统（如Red Hat、Ubuntu等Linux发行版），应配置密码加密算法。现代Linux系统通常使用 SHA512 作为默认算法。\n\n1. 查看当前配置\n\n在定制系统镜像或通过自动化脚本配置时，可以使用以下命令确认加密方式：\n\nbash\nCopy\nDownload\n# 查看当前生效的加密算法配置\nauthconfig --test | grep \"password hashing algorithm\"\n# 或直接查看配置文件\ngrep \"ENCRYPT_METHOD\" /etc/login.defs\n2. 配置为SHA512（推荐）\n\n如果服务器使用RHEL/CentOS 7及以上版本，应使用 authconfig 或 authselect 工具将密码哈希算法设置为 SHA512：\n\nbash\nCopy\nDownload\n# 使用authconfig命令（RHEL/CentOS 7）\nauthconfig --passalgo=sha512 --update\n\n执行该命令后，系统会更新 /etc/login.defs 和 PAM 模块配置。此后，所有新创建的用户或修改密码的用户，其密码将使用SHA512算法进行哈希运算并存储在 /etc/shadow 文件中（特征为哈希值以 $6$ 开头）-\n6\n-\n8\n。\n\n3. 配合复杂性策略\n\n仅设置高强度的加密算法还不够，应同时配置密码复杂性：\n\nbash\nCopy\nDownload\n# 示例：密码最小长度9，至少包含3种字符类，大写字母和特殊字符必须包含\nauthconfig --passminlen=9 --passminclass=3 --enablerequpper --enablereqother --update\n\n这比单纯修改 /etc/login.defs 更可靠，因为它同时处理了PAM配置-\n8\n。\n\n三、总结对比\n对比维度\tBIOS/UEFI 密码\t操作系统密码\n作用对象\t硬件启动、BIOS设置界面\t登录操作系统（本地登录/SSH）\n加密算法\t固件内置（如SHA256 with Salt）\t配置文件定义（SHA512 为最佳实践）-\n3\n-\n6\n\n校验控制\t锁定次数、锁定时间、密码状态锁定\t密码复杂度、过期时间、PAM模块控制\n配置位置\t开机F2 -> System Security 菜单\t/etc/login.defs, /etc/pam.d/\n建议\n\n在服务器出厂定制化流程中，建议采取双重加固：\n\nBIOS层：开启Secure Boot，设置Setup Password并将Password Status设为Locked，设置错误锁定阈值-\n1\n-\n10\n。\n\n系统层：强制使用 SHA512 加密算法，并配置9位以上的复杂密码策略-\n6\n-\n8\n。\n\n如果您能提供更具体的服务器品牌（如Dell、HPE、浪潮）及预装操作系统版本，我可以为您提供更精准的路径或命令。\n\n10 web pages",
+    "citations": [
+      "https://www.dell.com/support/kbdoc/zh-hk/000191860/13g-14g%e6%9c%8d%e5%8a%a1%e5%99%a8bios%e8%ae%be%e7%bd%ae%e8%af%a6%e8%a7%a3-%e9%85%8d%e7%bd%ae%e7%b3%bb%e7%bb%9f%e5%ae%89%e5%85%a8%e8%ae%be%e7%bd%ae-%e4%b8%ad%e8%8b%b1%e5%af%b9%e7%85%a7?lang=zh",
+      "https://www.manualslib.com/manual/3747666/Dell-Poweredge-R6615-Xngr4.html?page=55#manual",
+      "https://www.dell.com/support/manuals/zh-cn/idrac9-lifecycle-controller-v7.x-series/idrac9_scg_tta/%e5%ae%89%e5%85%a8%e5%9c%b0%e9%85%8d%e7%bd%ae-bios-%e7%b3%bb%e7%bb%9f%e5%ae%89%e5%85%a8?guid=guid-4227b092-7404-4aac-8ff8-e057877f7823&lang=zh-cn",
+      "https://www.powerleader.com.cn/static/upload/file/20240926/1727330880929805.pdf#35#17",
+      "https://docs.oracle.com/en/industries/food-beverage/compact-workstation-3-series/latest/cwssu/c_bios_config_system_security_settings.htm",
+      "https://www.dell.com/support/manuals/zh-cn/poweredge-r7425/per7425_ism/system-security-settings%ef%bc%88%e7%b3%bb%e7%bb%9f%e5%ae%89%e5%85%a8%e8%ae%be%e7%bd%ae%ef%bc%89%e8%af%a6%e7%bb%86%e4%bf%a1%e6%81%af?guid=guid-e217811b-ed01-40b2-ae8d-d2b0d9b3bcac&lang=zh-cn",
+      "https://blog.csdn.net/L162476/article/details/155094161",
+      "https://docs.redhat.com/zh-cn/documentation/Red_Hat_Enterprise_linux/7/html/system-level_authentication_guide/authconfig-pwd#authconfig-pwd-complexity"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_027",
+    "platform": "deepseek-web",
+    "query": "openUBMC的SSH和SFTP服务都使用端口22，它们的认证方式和加密方式有什么不同？",
+    "timestamp": "2026-06-12T00:38:31Z",
+    "raw_response": "Read 7 web pages\n\n根据openUBMC的官方技术文档，SSH和SFTP服务在认证方式和加密方式上没有本质区别。这是因为SFTP并不是一个独立的网络协议，而是SSH协议的一个子系统-\n4\n。因此，当您通过端口22访问openUBMC时，无论是进行命令行操作（SSH）还是文件传输（SFTP），服务端都使用完全相同的安全机制。\n\n具体的认证与加密细节如下表所示：\n\n服务\t认证方式\t加密方式\nSSH\t用户名/密码 -\n1\n-\n3\n\tSSH （特指SSH协议传输层提供的加密） -\n1\n-\n3\n\nSFTP\t用户名/密码 -\n1\n-\n3\n\tSSH （复用SSH协议的安全隧道） -\n1\n-\n3\n-\n4\n🔐 认证方式：两者完全一致\n\n根据openUBMC官方的“通信矩阵”文档，SSH和SFTP在连接建立时的认证方式均为“用户名/密码”-\n1\n-\n3\n。这意味着：\n\n统一的身份验证：您在openUBMC上为SSH访问设置的用户名和密码，同样适用于SFTP登录。\n\n密码安全存储：openUBMC使用高安全性的SHA512算法对用户密码进行哈希存储，以确保系统中密码凭证的安全性-\n2\n。\n\n🛡️ 加密方式：SSH协议的全链路保护\n\n两者在加密方式上都标识为“SSH”，这可能会引起一些误解，但它实际上包含了多层安全保障：\n\n传输层加密：SFTP并不自己处理加密，而是完全依赖其底层的SSH协议。在建立连接时，SSH协议会通过密钥交换、公钥/私钥等技术，协商出一个临时的会话密钥，用于对后续所有传输的数据（无论是命令还是文件）进行强加密-\n4\n-\n6\n。\n\n加密算法：openUBMC的SSH服务支持当前主流的强加密算法，包括用于数据加密的aes128-gcm、aes256-ctr等，以及用于数据完整性校验的hmac-sha2-256等算法-\n2\n-\n5\n。这些算法确保了数据在传输过程中的机密性和完整性。\n\n💡 核心要点总结\n\n总结来说，两者关系可以这样理解：\n\nSSH是安全基础：SSH提供了一个安全、加密的网络通道。\n\nSFTP是应用扩展：SFTP利用这个现成的安全通道，在其上实现了文件访问、传输和管理功能-\n4\n。\n\n结论：它们是同一把锁保护的两扇门，因此认证和加密方式是一样的。\n\n希望这个解释能帮助你理解。如果你对openUBMC的其他安全特性有疑问，欢迎继续交流。\n\nThis response is AI-generated, for reference only.\n7 web pages",
+    "citations": [
+      "https://api.media.atlassian.com/file/a5133bac-6ab5-440a-ac32-fcea4f1e0aeb/binary?token=eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI0MjRmYTJlYS1jODRmLTQzYTctYjk2Ni0xNTNlNjBhODYwODQiLCJhY2Nlc3MiOnsidXJuOmZpbGVzdG9yZTpmaWxlOmE1MTMzYmFjLTZhYjUtNDQwYS1hYzMyLWZjZWE0ZjFlMGFlYiI6WyJyZWFkIl19LCJleHAiOjE3MzcyNzg2MjcsIm5iZiI6MTczNzE5NTcwN30.D07ZoX83oBQ2F5S3gGG4r3D8enVrYPidPnko27n-6MM&client=424fa2ea-c84f-43a7-b966-153e60a86084&name=spiceworks.com-SFTP%20vs%20FTPS%20Understanding%20the%208%20Key%20Differences.pdf&dl=true#1#1",
+      "https://discuss.openubmc.cn/t/topic/1405/1",
+      "https://www.openubmc.cn/docs/zh/development/specifications/security/communication_matrix.html",
+      "https://www.openubmc.cn/assets/openUBMC%20%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E7%99%BD%E7%9A%AE%E4%B9%A6.BHJnWTOK.pdf#4#4",
+      "http://www-03.ibm.com/support/techdocs/atsmastr.nsf/002573f7000ac64286256c71006d2e0a/1cd029c5acdd2e078625749a0076e58a/$FILE/Comparison_SSL_IPSec_SSH_02.pdf#2#1",
+      "https://docs.aws.amazon.com/es_es/transfer/latest/userguide/transferfamily-ug.pdf#81#66"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_028",
+    "platform": "deepseek-web",
+    "query": "openUBMC的产品ID分配表中，华为鲲鹏和昇腾的产品ID分别是什么？",
+    "timestamp": "2026-06-12T00:39:33Z",
+    "raw_response": "Read 4 web pages\n\n根据华为官方的openUBMC产品ID分配表，华为鲲鹏的产品ID是 0x11，华为昇腾的产品ID是 0x12-\n1\n。\n\n完整的相关分配表信息如下：\n\n产品\t产品ID分配\t备注\nopenUBMC\t0\topenUBMC社区通用产品\n华为-鲲鹏\t0x11\t对应鲲鹏计算产品\n华为-昇腾\t0x12\t对应昇腾AI产品\n\n这一分配表源自华为《鲲鹏服务器主板 BMC IPMI 接口参考 03》文档，是openUBMC开源项目中对不同厂商和产品类型的官方标识规范-\n1\n。\n\n4 web pages",
+    "citations": [
+      "https://support.huawei.com/enterprise/zh/doc/EDOC1100372760/415250a1"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_029",
+    "platform": "deepseek-web",
+    "query": "openUBMC中BT通信场景下IPMI命令的完整性校验推荐用什么算法？",
+    "timestamp": "2026-06-12T00:40:37Z",
+    "raw_response": "Read 9 web pages\n\n在 openUBMC (OpenBMC) 的 BT 通信场景下，为 IPMI 命令做完整性校验，最推荐使用 HMAC-SHA256-128 算法，同时确保兼容性支持 HMAC-SHA1-96-\n1\n-\n7\n。\n\n这是基于 IPMI v2.0 规范和 OpenBMC 实际代码实现得出的结论，具体理由和数据如下：\n\n1. 权威规范与实现依据\n\nIPMI v2.0 规范明确规定了以下完整性算法，其中 HMAC-SHA1-96 是所有实现必须支持的，而 HMAC-SHA256-128 是推荐支持的可选算法-\n2\n：\n\n算法编号\t算法名称\t要求\n00h\tNone\t强制\n01h\tHMAC-SHA1-96\t强制\n02h\tHMAC-MD5-128\t可选\n03h\tMD5-128\t可选\n04h\tHMAC-SHA256-128\t可选\n\nOpenBMC 源代码实现（phosphor-net-ipmid）中完全遵循了规范。代码中定义了包含 HMAC_SHA256_128 在内的算法接口，并明确注释 HMAC_SHA1_96 是默认选择，而 HMAC_SHA256_128 是“最佳可用”算法-\n1\n-\n7\n。\n\n2. 推荐 HMAC-SHA256-128 的核心优势\n\n安全性更强：SHA-1 算法近年来已被证实存在理论上的碰撞攻击漏洞，安全性持续走低。SHA-256 提供了更高的安全强度，能更有效地抵御现代攻击手段。\n\n输出长度更优：HMAC-SHA256-128 生成 16 字节的校验码（AuthCode），而 HMAC-SHA1-96 生成 12 字节-\n1\n。这在保证安全性的同时，兼顾了传输效率。\n\n3. 兼容性考量：必须保留 HMAC-SHA1-96\n\n尽管 HMAC-SHA256-128 更安全，但在实际部署中，必须保留对 HMAC-SHA1-96 的支持。\n\n行业标准：这是 IPMI v2.0 规范的强制要求，也是绝大多数现有 BMC 和客户端工具（如 ipmitool）的默认行为-\n3\n-\n7\n。\n\n互操作性：为了保证 openUBMC 能无缝对接各类旧版服务器、硬件和软件工具，HMAC-SHA1-96 是确保连接成功的基础。\n\n总结\n\n在 openUBMC 的 BT 通信中进行 IPMI 命令完整性校验，最佳的实践组合是：\n\n默认或新开发环境：优先使用 HMAC-SHA256-128，以获得最佳安全性。\n\n兼容性模式：同时实现并支持 HMAC-SHA1-96，用于与仅支持该算法的传统设备通信。\n\n9 web pages",
+    "citations": [
+      "https://git.raptorcs.com/git/phosphor-net-ipmid/commit/integrity_algo.hpp?id=77531db5b33db5a0dd70e5e8839da57c9c99ce5f",
+      "https://git.raptorcs.com/git/phosphor-net-ipmid/plain/integrity_algo.hpp?id=cbccb05ab1ea1a9ad23cd8204722044122a49595",
+      "https://www.intel.pl/content/dam/www/public/us/en/documents/product-specifications/ipmi-v2-rev1-1-spec-errata-6-markup.pdf#109#31",
+      "https://manpages.ubuntu.com/manpages/resolute/man7/openipmi_conparms.7.html"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_030",
+    "platform": "deepseek-web",
+    "query": "PCA9555芯片在openUBMC中有什么功能，它是如何扩展IO口的？",
+    "timestamp": "2026-06-12T00:41:56Z",
+    "raw_response": "Read 9 web pages\n\n在openUBMC系统中，PCA9555芯片的核心功能是作为GPIO扩展器，解决BMC主控芯片自身IO接口数量不足的问题-\n1\n-\n4\n。它通过I2C总线，为主控芯片扩展出16个通用的输入/输出引脚，用于监控服务器硬件状态或控制简单外设。\n\n🛠️ PCA9555在openUBMC中的具体用途\n\n基于其GPIO扩展能力，PCA9555在服务器管理中主要负责两类任务：\n\n状态监控与告警：利用其输入功能，实时检测服务器机箱的入侵开关状态、风扇是否在位、电源的Power Good信号等。当这些引脚电平变化时，芯片通过INT中断引脚通知BMC，实现快速响应-\n2\n-\n5\n。\n\n硬件控制：利用其输出功能，控制服务器前面板的状态指示灯（LED）、复位系统或实现其它简单的开关控制-\n2\n。\n\n⚙️ 它是如何扩展IO口的？\n\nPCA9555将复杂的并行IO操作，转化为简单的I2C总线读写命令。下图展示了它在系统中的连接方式：\n\nDiagram\nCode\nDownload\nFullscreen\n\n外部硬件\n\nPCA9555 芯片\n\nI2C 总线\n\nopenUBMC 主控芯片\n\n控制\n\n数据读写\n\n输出控制信号\n\n输入状态信号\n\n中断信号\n\nI2C 控制器\n\nSCL 时钟线\n\nSDA 数据线\n\nI2C 接口\n\n寄存器组\n配置/输入/输出\n\n中断逻辑\n\nLED指示灯\n风扇/电源\n\n按键/开关\n机箱入侵探测\n\n其扩展原理主要通过以下三步实现：\n\n硬件连接：将PCA9555芯片的SCL和SDA引脚连接到BMC的I2C总线上，并为A0、A1、A2三个地址引脚设置高低电平，为该芯片分配一个唯一的I2C地址（范围0x20-0x27）-\n2\n-\n4\n。芯片的16个IO引脚（P00-P07, P10-P17）再连接到具体的外设上。\n\n软件配置（通过寄存器）：BMC通过I2C总线对PCA9555内部的8位寄存器进行读写，来实现精细控制。以下是几个关键寄存器及其在openUBMC中的作用-\n3\n-\n4\n：\n\n寄存器类型\t寄存器地址（16位设备）\t功能说明\topenUBMC中的典型用法\n配置寄存器\t06h (Port 0), 07h (Port 1)\t配置每个引脚是输入还是输出。写0设为输出，写1设为输入-\n3\n。\t在CSR配置文件中为设备指定IO方向，初始化硬件抽象层。\n输出寄存器\t02h (Port 0), 03h (Port 1)\t控制设为输出引脚的电平高低（写1输出高，写0输出低）-\n3\n。\t执行控制命令，如点亮一个LED。\n输入寄存器\t00h (Port 0), 01h (Port 1)\t只读，反映外部信号在当前引脚的实际电平-\n3\n。\t周期性扫描或中断触发时读取，获取传感器或按键状态。\n极性反转寄存器\t04h (Port 0), 05h (Port 1)\t对输入引脚的逻辑电平进行翻转（如将1读为0）-\n3\n。\t适配不同硬件设计中对\"有效电平\"的差异化定义。\n\nopenUBMC集成：在openUBMC中，开发者通过CSR（组件自描述记录） 配置文件来描述PCA9555芯片。配置完成后，系统会生成标准的D-Bus接口，上层应用通过这些接口即可方便地读取输入状态或控制输出，无需再直接操作I2C命令-\n4\n。\n\n💡 总结\n\n核心功能：为openUBMC扩展16个GPIO引脚。\n\n扩展原理：将复杂的并行IO控制，转化为通过I2C总线进行的一系列简单的寄存器读写操作。\n\n配置方式：通过CSR文件进行声明和初始化。\n\n需要进一步了解如何在CSR文件中具体配置PCA9555设备，或者如何通过D-Bus接口在应用层控制这些GPIO吗？\n\n9 web pages",
+    "citations": [
+      "https://www.openubmc.cn/assets/openUBMC%20%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E7%99%BD%E7%9A%AE%E4%B9%A6.BHJnWTOK.pdf#4#1",
+      "https://discuss.openubmc.cn/t/topic/4937",
+      "https://store.nxp.com/products/interfaces/ic-spi-i3c-interface-devices/general-purpose-i-o-gpio/16-bit-ic-bus-and-smbus-i-o-port-with-interrupt:PCA9555",
+      "https://www.ti.com/document-viewer/pca9555/datasheet",
+      "https://assets.nexperia.com/documents/data-sheet/PCA9555.pdf#5#1"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_031",
+    "platform": "deepseek-web",
+    "query": "S920X20的硬件CSR和软件CSR在合并时，如果对象属性重复，以哪个为准？",
+    "timestamp": "2026-06-12T00:43:40Z",
+    "raw_response": "Read 3 web pages\n\n关于S920X20平台硬件CSR和软件CSR合并时重复属性的处理规则，搜索结果中没有提供明确的官方说明。\n\n不过，结合相关技术社区的讨论，可以梳理出一些核心原则和处理逻辑：\n\n⚙️ 核心原则：数据源决定冲突处理规则\n\n当硬件CSR和软件CSR中存在同名属性时，系统并非简单地以某一方为准，而是根据该属性的数据来源特性来决定：\n\n若属性为“同步值”属性：其数据由硬件持续同步而来，应以硬件CSR为准。此时如果在软件CSR中配置该属性，会因写操作冲突导致对象加载失败-\n1\n。\n\n若属性为“持久化”属性：其值会被保存并在重启后恢复。如果同时在硬件CSR中配置了同步关系，同样会因操作冲突导致加载失败-\n1\n。\n\n📝 实际操作中的注意事项\n\n避免冗余与冲突：对于硬件能主动上报或同步的属性，不应在软件CSR中重复定义，尤其要避免配置持久化特性-\n1\n。\n\n排查配置问题：如果出现设备（如RAID卡）加载失败，通常是因为软件CSR所需的_soft.sr文件未在profile.txt中正确配置，而非与硬件CSR冲突-\n3\n。\n\n使用配置工具：建议使用BMCStudio工具进行配置管理，该工具支持CSR打包并能在一定程度上检查配置问题-\n2\n。\n\n💎 总结与建议\n\n简单来说，解决重复问题的关键在于理解属性的“归属”：\n\n硬件主导：来自硬件、实时同步的属性，让硬件CSR负责，软件CSR不要触碰。\n\n软件补充：软件CSR主要负责硬件无法提供的逻辑配置或初始化参数。\n\n建议在开发中严格遵守这一原则，以避免因属性配置冲突导致的模块加载失败-\n1\n。\n\n3 web pages",
+    "citations": [
+      "https://discuss.openubmc.cn/u/baominmin/activity/replies",
+      "https://discuss.openubmc.cn/t/topic/1848/#main-container",
+      "https://discuss.openubmc.cn/t/topic/1431/2"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_032",
+    "platform": "deepseek-web",
+    "query": "openUBMC测试指南中提供了哪些测试活动来保障代码交付质量？",
+    "timestamp": "2026-06-12T00:44:58Z",
+    "raw_response": "Read 10 web pages\n\n根据openUBMC测试指南及相关社区文档，其代码交付质量通过一套覆盖开发全流程的测试活动来保障。这些活动主要分为以下四大类，贯穿于从需求到版本发布的各个环节：\n\n🧪 一、开发与单元测试阶段\n\n此阶段在代码合入前进行，旨在从源头保障代码质量。\n\n测试活动\t具体说明\n单元测试\t开发者对自己编写的代码进行测试，验证其功能正确性，是质量保障的基础-\n2\n-\n6\n。\n代码覆盖率检查\t通过工具检查新增代码的测试覆盖率。对于无法测试的代码（如硬件相关C代码），CI门禁支持使用--coverage_exclude参数进行代码屏蔽，但需要经过人工审核批准-\n6\n。\n静态分析与构建验证\t提交代码时，CI系统会自动执行代码风格检查、静态分析和编译构建，确保代码符合规范且能成功编译-\n7\n。\n🤝 二、需求与特性验收阶段\n\n代码合入后，需要由提交方和特性团队进行系统性验证。\n\n测试活动\t具体说明\n需求自验与验收\t代码合入前，开发者需提供自验证报告；合入后，由伙伴方或测试团队进行验收测试，通过后才能关闭需求-\n2\n。\n测试设计与用例评审\t开发者需同步进行测试设计分析并输出测试用例，这些用例需要在QA-SIG组的会议上进行评审-\n1\n-\n2\n。\n测试用例分级管理\t社区的测试用例分为L0、L1、L2、L3四个等级，并向合作伙伴开放参考-\n4\n。\n🚀 三、集成与系统测试阶段\n\n在版本发布前，会进行全面的集成和系统级测试，覆盖功能、性能、稳定性等各个方面。主要包含以下两大类型：\n\n性能测试：模拟不同负载场景，验证系统的响应速度、并发处理能力和资源占用情况。具体包含响应时间测试、并发处理测试、资源占用监控等细分场景，并有明确的测试通过标准-\n3\n。\n\nDFX测试：涵盖系统在长时间运行、高压力下的稳定性、可靠性、可服务性等非功能属性测试-\n4\n。\n\n📦 四、版本发布与准入控制阶段\n\n在进入集成测试和版本发布前，需要满足明确的入口标准。\n\n检查项\t具体标准\n需求交付率\t必须达到90% 以上-\n5\n。\n遗留问题数\t严重问题必须为0，累计遗留问题总数需小于60个-\n5\n。\n特性测试结论\t必须获得SIG-QA负责人的“通过”评估意见-\n5\n。\n冒烟测试\t包含约50个核心用例的冒烟测试套件，可在QEMU仿真环境中10分钟左右完成，用于快速验证版本的基础可用性-\n8\n。\n\n最后，需要补充的是，社区的CI系统已实现了流程自动化，并与代码评审平台打通，为上述测试活动提供了技术支撑-\n7\n-\n8\n。同时，所有相关的测试资产和报告也都会归档到QA-SIG组进行统一管理-\n2\n。\n\n你的团队目前在哪个测试环节遇到了挑战？如果需要更详细的指导，例如具体的性能测试通过标准或代码覆盖率门禁配置，可以随时告诉我。\n\n10 web pages",
+    "citations": [
+      "https://discuss.openubmc.cn/t/topic/522/3",
+      "https://discuss.openubmc.cn/t/topic/4620/#p-14604-h-2",
+      "https://jisem-journal.com/index.php/journal/article/download/13327/6229/22503#2#2",
+      "https://www.openubmc.cn/docs/zh/development/test_guide/introduction.html",
+      "https://discuss.openubmc.cn/t/topic/1500/1",
+      "https://discuss.openubmc.cn/t/topic/6296/3",
+      "https://gitcode.com/openUBMC/release_management/issues/11",
+      "https://discuss.openubmc.cn/t/topic/2776"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_033",
+    "platform": "deepseek-web",
+    "query": "如何通过ipmitool命令获取1号槽位电源的在位信息？",
+    "timestamp": "2026-06-12T00:46:23Z",
+    "raw_response": "Read 10 web pages\n\n你可以通过以下四种 ipmitool 命令来获取1号槽位电源的在位信息，推荐优先使用 sdr 或 sensor 命令，因为它们的输出对用户最友好。\n\n命令\t说明\t输出示例\nipmitool sdr type \"Power Supply\"\t推荐。从传感器数据仓库读取，会直接显示\"Presence detected\"。-\n2\n-\n6\n\tPS2 Status | 51h | ok | 10.2 | Presence detected\nipmitool sensor get \"PS2 Status\"\t获取特定传感器的详细信息，包含状态。-\n1\n\tSensor Reading : 0x1 (其中0x1通常表示存在且正常)\nipmitool sensor list | grep -i ps2\t快速过滤所有传感器输出中的PS2相关信息。-\n3\n\tPS2 Status | 0x1 | discrete | 0x0180\nipmitool raw 0x3a 0x71 0x01\t高级命令。直接发送原始IPMI命令，返回十六进制数据，需要解析。-\n8\n\t01 00 30 2e 32 35 30... (其中01表示槽位号，00通常表示正常)\n💡 详细说明与注意事项\n\n命名规则差异\n\nPS1 vs PSU0：大部分服务器（如Dell, HP）的槽位从1开始编号，PS1对应槽位1，PS2对应槽位2-\n2\n-\n7\n。\n\n槽位0 vs 槽位1：在一些服务器（主要是Supermicro）和原始IPMI命令中，编号从0开始，此时PSU0对应槽位1，PSU1对应槽位2-\n8\n。因此，查询槽位1时请先尝试PS1，若无效再试PSU0。\n\n理解命令输出\n\nsdr和sensor命令：如果电源在位且工作正常，状态通常显示为ok或Presence detected。如果电源未安装或故障，可能会显示0x0、na或直接不显示该条目-\n2\n-\n3\n。\n\nraw命令解析：该命令通常返回一系列十六进制数据。其中，第3个字节（即索引2）通常代表电源状态，00通常表示正常-\n8\n。这个命令主要用于调试或OEM定制功能，如果你对IPMI协议不熟悉，建议优先使用前面的命令-\n4\n。\n\n权限与接口\n\n执行这些命令通常需要管理员权限（sudo）。\n\n这些是本地执行命令。如果需要在远程机器上执行，需要加上-H <BMC_IP> -U <用户名> -P <密码>参数，并指定接口如-I lanplus。\n\n希望这些信息能帮到你。如果你在执行中遇到任何问题，可以告诉我具体的服务器型号或错误提示，我再帮你进一步排查。\n\n10 web pages",
+    "citations": [
+      "https://www.dell.com/community/assets/community/687062f5-603c-4f5f-ab9d-31aa7cacb376/KB_457761-ed261818-f0d1-4a34-88ac-8be81326d000-2078932872.pdf#1#1",
+      "https://techdocs.broadcom.com/us/en/symantec-security-software/email-security/messaging-gateway/10-9-1/administering-smg-through-commline/commands_commands/commands_ipmitool.html",
+      "http://yisuapi.yisu.com/ask/75618576.html",
+      "https://serverfault.com/feeds/tag/ipmitool+monitoring+ubuntu",
+      "https://www.cnblogs.com/dadong616/p/5572101.html",
+      "https://public.dhe.ibm.com/systems/power/docs/hw/p8/p8eis_8001_problem_analysis_system_parts_locations.pdf#17#11",
+      "https://ask.csdn.net/questions/8914730"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_034",
+    "platform": "deepseek-web",
+    "query": "如何通过ipmitool命令获取BBU电池包放电次数？",
+    "timestamp": "2026-06-12T00:47:37Z",
+    "raw_response": "Read 5 web pages\n\n通过 ipmitool 直接获取BBU（备用电池单元，通常用于RAID卡）的放电次数，没有通用的标准命令-\n1\n-\n5\n。这主要是因为BBU的放电次数属于OEM（原始设备制造商）自定义数据，不同厂商的服务器（如Dell、Huawei、Supermicro）通过IPMI暴露此数据的方式不同。\n\n根据现有资料，最常见的实现方式是通过原始命令（raw command）发送特定字节码来读取。\n\n核心尝试方案：使用 ipmitool raw 命令\n\n你需要向BMC（基板管理控制器）发送一个特定格式的十六进制指令包。虽然不同厂商命令不同，但有一类常见路径是尝试从传感器或SDR（传感器数据记录）存储中读取。\n\n以下是基于现有资料解析出的一个可尝试的命令模板：\n\nbash\nCopy\nDownload\n# 这是一个尝试获取BBU运行时间的命令示例（华为iBMC规范）\n# 注意：不同厂商此命令不同，此例仅供参考格式\nipmitool raw 0x32 0x45 0x00 0x20 0x00 0x00 0x20\n\n命令解析：0x32是NetFn（网络功能码），0x45是命令码，后续字节是参数（如FRU ID、Device ID等）-\n4\n。\n\n局限性：这个特定命令示例是用来读取运行时间（小时）的，而不是放电次数-\n4\n。但它说明了一个关键思路：你需要找到你服务器对应厂商的技术手册，查找OEM命令中关于BBU状态读取的部分。\n\n备选方案与背景信息\n\n由于搜索结果中未能提供放电次数的直接命令，建议你尝试以下通用方法，这些是系统管理员常用的排查手段-\n3\n-\n5\n：\n\n查看完整传感器列表：运行以下命令，查看输出中是否有包含 Cycle Count、Discharge Cycle 或类似字样的条目。\n\nbash\nCopy\nDownload\nipmitool sensor list | grep -i bbu\nipmitool sdr list | grep -i bbu\n\n检查系统事件日志：某些服务器会在BBU完成一次完整充放电周期时记录事件。\n\nbash\nCopy\nDownload\nipmitool sel list | grep -i bbu\n\n查询服务器制造商文档：对于专业运维场景，最可靠的方式是查找你的服务器（如Dell PowerEdge、HP ProLiant、Supermicro）的IPMI或BMC命令参考手册，查找关于BBU或Storage Management的OEM命令集。\n\n总结\n\n目前无法直接给出一个通用的放电次数查询命令。你可以优先尝试 ipmitool sensor list 查看是否直接暴露该数据；如果需要更底层的读取，必须参考服务器硬件厂商的官方技术文档来确定正确的 raw 命令参数。\n\n5 web pages",
+    "citations": [
+      "https://braincraze.net/ipmitool-server-management-and-bmc-control-tool/",
+      "https://support.exxactcorp.com/hc/en-us/articles/22012127116695--Linux-IPMITool-Cheat-Sheet",
+      "https://support.huawei.com/enterprise/zh/doc/EDOC1100078642/ebb2766b",
+      "http://nuclear.unh.edu/wiki/index.php?title=Ipmitool&diff=5083&oldid=4656"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_035",
+    "platform": "deepseek-web",
+    "query": "如何设置系统软件处理过的最后一个事件的Record ID？",
+    "timestamp": "2026-06-12T00:48:40Z",
+    "raw_response": "I need more context to give you an accurate answer, because “Record ID” and “last event processed by system software” can mean different things depending on the platform, framework, or programming language you’re using.\n\nCould you clarify:\n\nWhat system or software are you referring to? (e.g., a database, an ETL tool, a message queue, a custom application, Salesforce, SAP, Windows Event Log, etc.)\n\nIn what language or environment are you working? (e.g., SQL, C#, Java, Python, Node.js, PowerShell)\n\nWhat do you mean by “system software processed event”? Is this a log entry, a message from a queue, a database record, or something else?\n\nWhere do you want to set the Record ID — in a variable, a database table, a file, or as a return value?\n\nIf you are asking generically about tracking the last processed event in a system that processes records sequentially, a common solution is:\n\nStore the last processed Record ID in persistent storage (database table, file, or cache) after successfully processing an event.\n\nRetrieve that stored ID before processing the next batch to know where to resume.\n\nUpdate the stored ID to the current event’s ID only after processing is complete and successful.\n\nExample pseudocode (Python with database):\n\npython\nCopy\nDownload\nlast_id = get_last_processed_record_id_from_db()  # Retrieve\nrecords = fetch_records_with_id_greater_than(last_id)\nfor record in records:\n    process(record)\n    set_last_processed_record_id(record.id)  # Update after success\n\nIf you can provide more details, I’ll give you a precise, step-by-step answer.",
+    "citations": [],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_036",
+    "platform": "deepseek-web",
+    "query": "openUBMC中查询命令支持度的Operation参数里，标记为00b和01b分别对应什么命令范围？",
+    "timestamp": "2026-06-12T00:49:57Z",
+    "raw_response": "Read 10 web pages\n\n在openUBMC中，与查询命令支持度相关的Operation参数里，00b 和 01b 分别对应以下命令范围：\n\n00b：对应命令代码（Command Code）范围为 00h 到 7Fh（即 0 到 127）。\n\n01b：对应命令代码（Command Code）范围为 80h 到 FFh（即 128 到 255）。\n\n🔍 详细解释\n\n在IPMI（智能平台管理接口）规范中，为了高效地查询或配置大量的命令（共256个），会将命令代码空间分为低、高两个128位的范围。Operation字段的这两个值正是用于选择这两个半区：\n\n核心机制：命令查询和配置通常涉及一个128位的掩码（Mask）-\n1\n-\n6\n。通过Operation参数选择半区后，返回或设置的掩码位就能精确对应所选范围内的每一个命令。\n\n对应关系：以Get Command Support（获取命令支持度）或Get Configurable Commands（获取可配置命令）这类操作为例，响应的16字节掩码与命令代码的对应方式如下-\n6\n-\n10\n：\n\n当选择 00b 时，第1字节第0位对应命令 00h，第16字节第7位对应命令 7Fh。\n\n当选择 01b 时，第1字节第0位对应命令 80h，第16字节第7位对应命令 FFh。\n\n注意：10b 和 11b 在当前规范中被标记为“保留”（reserved），暂未使用-\n1\n-\n6\n-\n10\n。\n\n10 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/specifications/ipmi/details/App-06h/60h.html",
+      "https://gitcode.com/openUBMC/docs/blob/main/docs/zh/development/specifications/ipmi/details/App-06h/61h.md",
+      "https://www.intel.pl/content/dam/www/public/us/en/documents/product-specifications/ipmi-v2-rev1-1-spec-errata-6-markup.pdf#109#47"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_037",
+    "platform": "deepseek-web",
+    "query": "如何使用Capture Screen命令进行屏幕截图并保存为screen0.jpeg？",
+    "timestamp": "2026-06-12T00:50:57Z",
+    "raw_response": "Read 9 web pages\n\n要使用 CaptureScreen 命令将截图保存为 screen0.jpeg，核心是调用该函数并正确指定保存路径和文件格式。该函数是 AutoHotkey 社区中用于屏幕捕捉的常用脚本-\n1\n-\n4\n-\n9\n。\n\n以下是具体的使用方法。\n\n核心命令用法\n\nCaptureScreen 函数的标准调用格式如下：\n\nautohotkey\nCopy\nDownload\nCaptureScreen(区域, 是否包含鼠标, 保存路径, 图片质量)\n\n要直接保存为 screen0.jpeg，你需要将保存路径参数设置为包含 .jpeg 扩展名的完整文件路径。这是一个具体的代码示例-\n3\n-\n7\n：\n\nautohotkey\nCopy\nDownload\n; 截取整个屏幕，不包含鼠标，并保存为 screen0.jpeg\nCaptureScreen(0, 0, \"C:\\Users\\你的用户名\\Pictures\\screen0.jpeg\")\n参数详细说明\n\nCaptureScreen 函数的参数非常灵活，你可以通过调整它们来满足不同的截图需求-\n1\n-\n4\n。\n\n参数位置\t作用\t常用值及说明\n参数1\t截取区域\t0 = 整个桌面\n1 = 活动窗口\n2 = 活动窗口的客户区\n3 = 活动显示器\n\"左, 上, 右, 下\" = 自定义矩形区域\n参数2\t是否包含鼠标\t0 = 不包含鼠标指针\n1 = 包含鼠标指针\n参数3\t保存路径\t要保存的完整文件路径。文件扩展名（如 .jpeg, .png, .bmp）决定了保存的图片格式-\n4\n。\n参数4\t图片质量\t仅对 JPEG 格式有效，取值范围是 0 到 100，数字越大质量越高。\n操作步骤\n\n获取脚本：首先，你需要拥有 CaptureScreen 函数的完整代码。你可以从 AutoHotkey 社区（如 true_mogician 或 Linear Spoon 发布的版本）复制其代码，并保存为一个 .ahk 文件（例如 Screenshot.ahk）-\n1\n-\n9\n。\n\n编写调用代码：在你的脚本中，按照上述示例调用 CaptureScreen 函数。\n\n运行脚本：直接运行你的 .ahk 文件即可。\n\n代码实例\n\n以下是一个更完整的示例，展示了不同的调用方式：\n\nautohotkey\nCopy\nDownload\n; 示例1：截取整个屏幕，保存为 screen0.jpeg，质量为 85%\nCaptureScreen(0, 0, \"screen0.jpeg\", 85)\n\n; 示例2：截取当前活动窗口，包含鼠标，保存为 PNG 格式\nCaptureScreen(1, 1, \"active_window.png\")\n\n; 示例3：截取屏幕上一个自定义的矩形区域（左,上,右,下），并保存\nCaptureScreen(\"100, 100, 500, 400\", 0, \"selected_area.jpeg\")\n注意事项\n\nAutoHotkey 版本：请注意，CaptureScreen 函数有适用于 AutoHotkey v1.1 和 v2.0 的不同版本，请确保下载使用与你的 AHK 版本相匹配的代码-\n1\n-\n9\n。\n\n文件路径：如果只提供文件名（如 screen0.jpeg），图片将默认保存在脚本文件所在的目录。建议使用绝对路径（如 C:\\Users\\...\\screen0.jpeg）以确保文件保存在你期望的位置-\n3\n。\n\n图片质量：保存为 JPEG 格式时，可以通过第四个参数 nQuality 来控制输出图片的质量和文件大小-\n1\n-\n4\n。\n\n9 web pages",
+    "citations": [
+      "https://www.autohotkey.com/boards/viewtopic.php?style=8&f=83&t=123212&sid=c072ab23397db6dc0eefbe478b99ed0a",
+      "https://www.autohotkey.com/board/topic/16677-screen-capture-with-transparent-windows-and-mouse-cursor/page-14?langid=2&setlanguage=1",
+      "https://www.autohotkey.com/boards/viewtopic.php?p=199191&sid=18016a35d3d872f7cb291a7814e5fb19#p199191",
+      "https://www.autohotkey.com/boards/viewtopic.php?style=8&p=316862&sid=29c82a4e7ffd95bdad2434afff6a8827",
+      "https://www.autohotkey.com/boards/viewtopic.php?f=76&t=109794&sid=482d412719e655c5393e18f46c0c7c57&view=print"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_038",
+    "platform": "deepseek-web",
+    "query": "如何通过IPMI获取openUBMC的瞬时功率读数？",
+    "timestamp": "2026-06-12T00:52:17Z",
+    "raw_response": "Read 9 web pages\n\n在openUBMC系统中，获取瞬时功率读数最标准、最简单的方法是使用IPMI的DCMI (Data Center Management Interface) 命令。同时，如果DCMI命令因故不可用，也可以尝试使用OEM原始命令作为备选方案。\n\n📊 方案一：使用DCMI命令 (推荐)\n\nDCMI是IPMI的扩展标准，专门用于数据中心的电源和散热管理，openUBMC通过phosphor-host-ipmid服务完整实现了此功能-\n2\n。\n\n命令行：\n\nbash\nCopy\nDownload\nipmitool -I lanplus -H <BMC_IP> -U <用户名> -P <密码> dcmi power reading\n\n说明：请将<BMC_IP>、<用户名>、<密码>替换为你的BMC实际信息。-I lanplus表示使用IPMI v2.0加密的远程连接方式-\n9\n。\n\n执行示例：\n\ntext\nCopy\nDownload\n[user@server ~]$ ipmitool -I lanplus -H 192.168.1.100 -U admin -P password dcmi power reading\nInstantaneous power reading:                    138 Watts\nMinimum during sampling period:                137 Watts\nMaximum during sampling period:                138 Watts\nAverage power reading over sample period:      137 Watts\nIPMI timestamp:                                Mon May  5 02:52:35 2025\nSampling period:                               00000005 Seconds.\nPower reading state is:                        activated\n\n如上所示，命令输出中的Instantaneous power reading即为当前的瞬时功耗值-\n1\n。\n\n⚙️ 方案二：使用OEM原始命令 (备选)\n\n在某些特殊情况下，如果DCMI命令无法返回数据，可以尝试使用IPMI的OEM（厂商自定义）命令，直接从传感器读取数据。此方法已在多款服务器上被验证有效-\n6\n。\n\n原理：通过OEM网络功能码（0x3E）和获取传感器数据命令（0x0B）来读取特定传感器的原始值-\n6\n。\n\n命令行：\n\nbash\nCopy\nDownload\nipmitool -I lanplus -H <BMC_IP> -U <用户名> -P <密码> raw 0x3e 0x0b\n\n执行与计算示例：\n\ntext\nCopy\nDownload\n[user@server ~]$ ipmitool -I lanplus -H 192.168.1.100 -U admin -P password raw 0x3e 0x0b\n4c 00\n\n说明：返回的4c 00是两个十六进制字节的数据，需要组合并转换为十进制才能得到以瓦特为单位的功率值-\n6\n。\n计算方法：将第二个字节作为高字节，第一个作为低字节组合。\n\n原始数据：4c 00\n\n组合为十六进制数：0x004c\n\n转换为十进制：76\n\n结果：76 Watts\n\n📝 关键注意事项\n\n首选DCMI命令：对于openUBMC，dcmi power reading是官方支持的标准接口，应当优先使用-\n2\n-\n4\n。\n\nOEM命令作为备选：如果DCMI命令无法获取数据，可以再尝试raw 0x3e 0x0b命令，但最终显示的功率值可能需要手动计算-\n6\n。\n\n硬件依赖：请确保服务器的电源和传感器硬件正常工作。如果IPMI无法获取到功率数据，命令可能会返回错误，例如OEM命令可能返回0xC1或0xC8的补全代码（completion code）-\n6\n。\n\n本地访问：如果你有服务器的SSH访问权限，在服务器上直接执行sudo ipmitool dcmi power reading（无需指定IP和密码）将更加便捷-\n9\n。\n\n9 web pages",
+    "citations": [
+      "https://deepwiki.com/openbmc/phosphor-host-ipmid/7-special-features",
+      "https://www.aicipc.com/image/images/psg/Server%20Boards/Common_IPMI_User_Manual_v1_0.pdf#3#1",
+      "https://www.aicipc.com/image/images/psg/Server%20Boards/Common_IPMI_User_Manual_v1_0.pdf#3#3",
+      "http://www.58support.nec.co.jp/global/download/pdf/R120e/R120e-xM_MG.pdf#18#18",
+      "https://discuss.openubmc.cn/t/topic/3077"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_040",
+    "platform": "deepseek-web",
+    "query": "Reserve SDR Repository 命令的 NetFn 和响应信息中 Reservation ID 的字节顺序是什么？",
+    "timestamp": "2026-06-12T00:54:06Z",
+    "raw_response": "Read 9 web pages\n\n根据 IPMI 规范，Reserve SDR Repository 命令的 NetFn 和 Reservation ID 字节顺序如下：\n\n📡 命令 NetFn\n\nNetFn 值：0x0A。该值属于 Storage (0x0A) NetFn 类别-\n2\n-\n3\n-\n7\n。\n\n命令码 (CMD)：0x22-\n1\n-\n3\n-\n7\n。\n\n📝 响应信息字节顺序\n\n响应信息中的 Reservation ID 遵循 小端字节顺序（Little-Endian），即低字节在前，高字节在后-\n1\n-\n3\n-\n4\n。\n\n这意味着，如果收到的响应字节为 [Reservation ID Low, Reservation ID High]，你需要将其组合为 (Reservation ID High << 8) | Reservation ID Low 来获取完整的 ID 值-\n1\n-\n3\n。\n\n下表总结了这两项关键信息：\n\n项目\t字节顺序 / 值\t说明\nNetFn\t0x0A\t对应 Storage NetFn，在一些旧文档中也可能标记为 S/E 04h，但0x0A是更通用和标准的表示-\n1\n-\n3\n-\n6\n。\nReservation ID\t小端字节顺序\t响应消息的第2字节为低字节(LSB)，第3字节为高字节(MSB)-\n1\n-\n3\n-\n4\n。\n\n希望这些信息对你有帮助。如果想了解在代码中如何解析这个 Reservation ID，我可以为你提供示例。\n\n9 web pages",
+    "citations": [
+      "https://support.huawei.com/enterprise/zh/doc/EDOC1100078642/29a46f1f",
+      "https://rtx.powerleader.com.cn/static/upload/file/20250402/1743581352433679.pdf#136#68",
+      "https://manualzz.com/doc/o/2kvjn5/abaco-cpci-7055rc--vmicpci-7055-hardware-reference-manual-marvell-discovery-iii--mv64460--chipset",
+      "https://support.huawei.com/enterprise/zh/doc/EDOC1100372760/a204a100",
+      "https://www.openubmc.cn/docs/zh/development/specifications/ipmi/details/Storage-0Ah/22h.html",
+      "https://rtx.powerleader.com.cn/static/upload/file/20250402/1743581352433679.pdf#136#67"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_041",
+    "platform": "deepseek-web",
+    "query": "PICMG Identifier 为 00h 时，在 Compute Power Properties 中表示什么含义？",
+    "timestamp": "2026-06-12T00:55:11Z",
+    "raw_response": "Read 3 web pages\n\n根据 PICMG 规范，当 PICMG Identifier 为 00h 时，在 Compute Power Properties 命令中代表标准计算功率属性。\n\n具体解释如下：\n\n命令标识：Compute Power Properties 命令的编号为 10h-\n2\n。该命令用于查询有效功率等级、当前功率等级和功率信息结构等属性-\n1\n-\n3\n。\n\n00h 的含义：PICMG Identifier（PICMG 标识符）是命令扩展号。当该值为 00h 时，表示执行的是基础标准命令，即标准的“计算功率属性”-\n1\n-\n3\n。\n\n3 web pages",
+    "citations": [
+      "https://www.kontron.com/download/download?filename=/downloads/manuals/1022-2948_10_sk-man-am5010-ipmi-fw-um.pdf&product=88718#5#3",
+      "https://www.manualslib.com/manual/3981325/Kontron-Am4910.html?page=82#manual",
+      "https://www.manualslib.com/manual/1646243/Emerson-Axp-1410.html?page=117#manual"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_042",
+    "platform": "deepseek-web",
+    "query": "openUBMC中Set Power Restore Policy的power restore policy字段有哪些取值，分别代表什么行为？",
+    "timestamp": "2026-06-12T00:56:17Z",
+    "raw_response": "Read 7 web pages\n\n在openUBMC中，Set Power Restore Policy 命令的 power restore policy 字段有以下三个有效取值，分别对应不同的电源恢复行为：\n\n取值 (数值/二进制)\t策略名称\t行为描述\n0 (000b)\tStay powered off (保持断电)\t电源恢复后，系统将保持关闭状态，不会自动开机。-\n1\n-\n2\n\n1 (001b)\tRestore previous state (恢复先前状态)\t电源恢复后，系统将恢复到断电前的最后已知状态。如果断电前是开机状态，则自动开机；如果是关机状态，则保持关机。-\n1\n-\n2\n-\n3\n\n2 (010b)\tAlways power up (总是开机)\t电源恢复后，无论断电前状态如何，系统都将自动开机。-\n1\n-\n2\n-\n3\n\n注：当该字段设置为 3 (011b) 时，命令将变为查询模式。此时它不会修改策略，而是返回BMC当前支持的策略集合。-\n1\n-\n2\n\n7 web pages",
+    "citations": [
+      "https://discuss.openubmc.cn/t/topic/4532/#p-14065-h-4",
+      "https://discuss.openubmc.cn/t/topic/4532/3",
+      "https://git.raptorcs.com/git/phosphor-dbus-interfaces/commit/xyz/openbmc_project/Control/Power/RestorePolicy.interface.yaml?h=05-18-2018&id=4b271e18b96bbb45492b098591bc8d7525a1522f"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_043",
+    "platform": "deepseek-web",
+    "query": "如何通过ipmicmd命令获取SEL时间偏移？",
+    "timestamp": "2026-06-12T00:57:52Z",
+    "raw_response": "Read 10 web pages\n\n通过 ipmicmd 获取 SEL 时间偏移，需要发送一条特定的“原始”IPMI 命令帧。该命令属于 Storage (0x0a) NetFn，命令号为 0x5c。\n\n以下是具体的操作方法和参数解析。\n\n核心命令：发送原始IPMI命令帧\n\n在大多数Linux系统中，可以使用 ipmicmd 工具（通常由厂商BMC工具包提供）通过发送“原始”（raw）命令字节序列来执行此操作。\n\n命令格式如下：\n\nbash\nCopy\nDownload\nipmicmd -k \"0a 5c\"\n\n参数说明：\n\n0a：这是 NetFn，代表 Storage/Repository（存储/仓储）功能，这是 IPMI 规范中 SEL 相关命令所在的功能组-\n1\n-\n2\n。\n\n5c：这是 CMD (命令) 的十六进制值，对应“获取 SEL 时间偏移 (Get SEL Time UTC Offset)”-\n1\n。\n\n如何解读返回结果\n\n命令成功执行后，BMC 会返回一个包含完成代码和数据的响应帧。\n\n典型响应格式：<Completion Code> <Data Low Byte> <Data High Byte>\n\n示例：如果你收到 5c 00 e0 2c 这样的返回：\n\n第一个字节 5c：这是你发送的命令号（CMD），在某些实现中，响应会回显命令号。\n\n第二个字节 00：完成代码 (Completion Code)。00 表示命令成功执行-\n1\n。\n\n第三、四字节 e0 2c：时间偏移值，以小端序（LSB first）排列，即低字节在前-\n1\n。\n\n如何将小端序偏移量转换为可读数值\n\n返回的偏移量是 小端序（LSB first） 的，需要转换为人类可读的整数。转换方法如下：\n\n重组字节顺序：将 e0 2c 从低字节在前转换为高字节在前，即 2c e0。\n\n转换为十进制：将十六进制数 0x2ce0 转换为十进制。0x2ce0 等于 11504。\n\n结果解读：\n获取到的偏移值 11504 的单位通常是分钟。这个值表示 SEL 中记录的时间戳相对于 UTC 的偏移量。\n\n正数：表示本地时间晚于 UTC（东时区）。\n\n负数：表示本地时间早于 UTC（西时区）。通常用其补码形式表示。\n\n0x7FFF (32767)：表示“未指定”或该功能不受支持，意味着 SEL 可能运行在本地时间模式-\n4\n-\n8\n。\n\n重要技术说明\n\n区分 Get SEL Time 与 Get SEL Time UTC Offset：\n\nGet SEL Time (0x48)：返回的是 BMC 当前的绝对时间戳（自1970年1月1日以来的秒数），通常为本地时间-\n3\n。\n\nGet SEL Time UTC Offset (0x5c)：返回的是 偏移量。你需要将这个偏移量应用到 Get SEL Time 获取的时间戳上，才能将其转换为协调世界时（UTC），或者反过来用本地时间减去这个偏移量得到 UTC 时间-\n1\n-\n4\n。\n\n命令支持性：\nGet SEL Time UTC Offset 是 IPMI 2.0 规范中的一个可选命令。并非所有 BMC（基板管理控制器）固件都实现了该命令。如果你的 BMC 不支持此命令，可能会返回错误码（如 0xc1，无效命令），或返回 0x7FFF 作为偏移值-\n4\n。\n\n总结\n步骤\t命令/操作\t说明\n1. 发送命令\tipmicmd -k \"0a 5c\"\t0a=NetFn Storage，5c=Get SEL Time Offset CMD\n2. 处理返回\t提取第2-3字节（如 e0 2c）\t第1字节通常为完成代码，00 表示成功。\n3. 计算偏移\t将小端字节序转换（e0 2c -> 0x2ce0）\t结果为偏移量，单位通常是分钟。\n4. 解读结果\t0x2ce0 = 11504 分钟\t将该值除以 60 (11504 / 60 ≈ 191.7 小时) 以换算，但这仅用于理解其数量级。\n10 web pages",
+    "citations": [
+      "https://support.huawei.com/enterprise/zh/doc/EDOC1100372760/deeaf3eb",
+      "https://rtx.powerleader.com.cn/static/upload/file/20250402/1743581352433679.pdf#136#69",
+      "https://lists.nongnu.org/archive/html/freeipmi-devel/2013-05/msg00001.html",
+      "https://lists.nongnu.org/archive/html/freeipmi-devel/2013-05/msg00003.html",
+      "https://support.huawei.com/enterprise/zh/doc/EDOC1100372760/d922c12d"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_044",
+    "platform": "deepseek-web",
+    "query": "获取设备信息时，如果返回80h错误码是什么意思？",
+    "timestamp": "2026-06-12T00:59:15Z",
+    "raw_response": "Read 10 web pages\n\n80h 错误码的含义完全取决于你所处的具体技术场景。在计算机底层硬件、工业现场总线和传统磁盘操作中，它代表的意义完全不同。\n\n根据搜索结果，80h 主要有以下几种可能的含义：\n\n1. 电脑主板 BIOS 自检：保留代码 (POST Code)\n\n如果这是在电脑启动时，通过诊断卡（POST卡）从 I/O port 80h 读取到的代码，那么 80h 本身不是一个错误，而是一个状态标识。\n\n含义：80h 到 8Fh 这个范围在 BIOS POST 码中被保留供将来使用-\n1\n-\n6\n-\n9\n。\n\n实践意义：如果你在主板的 POST 诊断卡上看到了 80，这通常表示 BIOS 已经完成或跳过了对输出设备的初始化，正在按预期流程执行。但如果启动过程卡在这个代码上，可能意味着 BIOS 进入了未定义的保留范围，通常与较新的硬件或 BIOS 设置有关。\n\n2. 工业自动化与嵌入式设备 (如 IO-Link)：设备应用错误\n\n在自动化技术（如 Beckhoff 的 ADS 通信或 IO-Link 协议）中，0x80 是一个通用错误类别的标识。\n\n含义：Device Application Error (设备应用错误)-\n2\n。\n\n具体含义：这代表设备（传感器、执行器等）收到了请求，但应用层拒绝了该请求。它通常伴随着一个子代码以提供更多细节，例如：\n\n0x8011：访问了一个不存在的索引 (Index not available)。\n\n0x8020：服务暂时不可用 (Service temporarily not available)。\n\n0x8030：写入的参数值超出范围 (Parameter value out of range)-\n2\n。\n\n3. 传统磁盘与驱动操作：设备未就绪或超时\n\n在较底层的磁盘操作或旧的系统中断调用（如 Int 13h 磁盘服务）中，80h 是一个经典的错误代码。\n\n含义：Drive not ready (驱动器未就绪) 或 Timeout (超时)-\n4\n-\n7\n。\n\n常见场景：\n\n系统尝试读写软盘或硬盘时，驱动器没有响应。\n\n硬盘电机未能达到额定转速。\n\n数据线或电源线接触不良导致设备未被激活。\n\n4. 其他特定场景中的 80h\n技术领域\t错误码含义\t说明\nEISA 配置\t80h：无效的插槽号 (Invalid slot number)-\n3\n\t在读取 EISA 总线设备配置信息时，调用者指定的插槽号无效。\nZigbee 协议\t0x80：无效的请求类型 (Invalid request type)-\n8\n\t在 ZDP 协议层，当接收到的服务请求格式不正确时会返回此值。\nEPON 协议\t0x80：无错误 (No Error)-\n5\n\t注意：在极少数标准中(如某些OAM定义)，0x80 代表操作成功完成，这是一个例外情况。\n总结\n\n要准确判断 80h 的含义，你需要明确当前的操作环境：\n\n电脑开机卡住：80h 通常是 BIOS 流程中的保留代码，可能表示正常执行中或进入了未定义区域。\n\nPLC/工业传感器报错：0x80 代表设备应用层拒绝服务，需检查参数或设备状态。\n\n老式系统或磁盘读写失败：80h 代表磁盘未就绪。\n\n如果你能提供更多关于你是在什么设备（如某型号主板、PLC、特定软件）以及什么操作下看到这个代码的信息，我可以帮你分析得更具体。\n\n10 web pages",
+    "citations": [
+      "https://www.alldatasheet.jp/html-pdf/395494/INTEL/D945GNT/14034/90/D945GNT.html",
+      "https://www.asus.com/us/support/faq/1052538/",
+      "https://www.manualshelf.com/manual/intel/blkd946gzabl/datasheet-english-swedish-russian-modern-greek-1453/page-74.html",
+      "https://infosys.beckhoff.com/content/1033/epp6228/12699952651.html?id=6770215528252616023",
+      "https://www.cs.ubbcluj.ro/~forest/HtmlFolder/AC/NG/ng789c4.html",
+      "http://mirror.math.princeton.edu/pub/oldlinux/Linux.old/docs/interrupts/int-html/rb-0606.htm#Table234",
+      "http://mirror.math.princeton.edu/pub/oldlinux/Linux.old/docs/interrupts/int-html/rb-1640.htm",
+      "https://mcuxpresso.nxp.com/mcuxsdk/latest/html/middleware/wireless/zigbee/Docs/JNUG3130/topics/zdp_codes.html",
+      "https://www.ieee1904.org/4/meeting_archive/2021/10/tf4_2110_kramer_1.pdf#1#1"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_045",
+    "platform": "deepseek-web",
+    "query": "如何通过ipmitool命令让DPU和服务器一起下电？",
+    "timestamp": "2026-06-12T01:00:52Z",
+    "raw_response": "Read 9 web pages\n\n要让DPU（数据处理器）和服务器主机一起下电，核心思路是先通过操作系统安全关闭主机，再通过IPMI命令关闭DPU的电源。具体操作步骤如下：\n\n⚙️ 操作步骤\n\n安全关闭服务器主机\n首先，需要安全地关闭服务器主机上的操作系统，以避免数据损坏。这通常通过SSH登录到服务器并执行关机命令来完成：\n\nbash\nCopy\nDownload\nshutdown -h now\n\n注意：ipmitool chassis power off命令会直接切断电源，相当于拔掉电源线，可能导致文件系统损坏或数据丢失，不建议直接对运行中的主机使用-\n1\n。\n\n关闭DPU电源\n在主机安全关闭后，通过IPMI命令来关闭DPU的电源。由于不同厂商的DPU实现方式不同，主要分为以下两种情况：\n\n情况一：使用NVIDIA BlueField DPU\n对于NVIDIA BlueField系列的DPU，可以使用标准的ipmitool命令来管理其电源状态-\n2\n：\n\n检查DPU当前电源状态：\n\nbash\nCopy\nDownload\nipmitool -H <DPU_BMC_IP> -U <用户名> -P <密码> chassis power status\n\n执行硬重置（包含ARM核心与NIC）：\n\nbash\nCopy\nDownload\nipmitool -H <DPU_BMC_IP> -U <用户名> -P <密码> chassis power cycle\n\n注意：power cycle命令会先关闭再开启电源。对于BlueField-2和BlueField-3，执行硬重置需要主机端已发出特定的就绪信号（PERST或ALL_STANDBY）-\n2\n。\n\n执行软关机 (仅适用于BlueField-3)：\n\nbash\nCopy\nDownload\nipmitool -H <DPU_BMC_IP> -U <用户名> -P <密码> power soft\n\n注意：power soft命令会尝试优雅地关闭DPU ARM核心上的操作系统，但此命令仅当DPU OS运行时有效。关机成功后，DPU ARM会进入待机（Standby）状态，而非常见的完全断电状态-\n4\n。\n\n情况二：使用其他厂商（如华为）DPU\n对于其他厂商的DPU，可能需要使用OEM（Original Equipment Manufacturer，原始设备制造商）的raw命令来实现精确控制。例如，根据鲲鹏社区的文档，关闭某型号DPU的命令格式如下-\n6\n：\n\nbash\nCopy\nDownload\nipmitool -H <BMC_IP> -I lanplus -U <用户名> -P <密码> raw 0x30 0x93 0xdb 0x07 0x00 0x3c 0x39 0x1d 0x00 0x01 0x00 0x00 0x00 0x00 0x01 0x00\n\n注意：OEM命令是厂商自定义的，不同品牌和型号的命令差异巨大，使用时务必参考你所用DPU的官方技术文档-\n6\n。\n\n⚠️ 重要注意事项\n\n区分BMC地址：操作中需要明确你正在访问的是服务器主机的BMC IP还是DPU卡的BMC IP，两者通常是不同的-\n6\n。确保你的-H参数指向了正确的设备。\n\n使用OEM命令的风险：使用raw命令（尤其是涉及十六进制字节码的）风险较高，错误的命令可能导致设备行为异常。请严格按照厂商文档中的说明操作-\n6\n。\n\n将命令整合为脚本：为了方便日常运维，可以将上述步骤（SSH登录主机关机、再执行IPMI命令关闭DPU）编写成一个自动化脚本，这样可以大大提升操作效率和准确性-\n5\n。\n\n希望以上信息能帮助到你的工作。如果你能提供更具体的DPU型号（例如，是NVIDIA BlueField-2/3还是其他厂商的），我可以为你提供更精确的命令指导。\n\n9 web pages",
+    "citations": [
+      "https://wiki.nikhef.nl/grid/index.php?title=Shutting_Down_WorkerNodes&diff=prev&oldid=2589",
+      "https://docs.nvidia.com/networking/display/bluefieldbmcv2309/reset%2bcontrol",
+      "https://docs.nvidia.com/nvidia-bluefield-bmc-software-v24-04-documentation.pdf#18#14",
+      "https://www.hikunpeng.com/doc_center/source/zh/dpu/ug/sp900ug/SP900_dpu_06_0346.html",
+      "https://lists.openhpc.community/g/users/message/5091?p=%2C%2C%2C20%2C0%2C0%2C0%3A%3ACreated%2C%2C%2C20%2C2%2C260%2C101363701"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_046",
+    "platform": "deepseek-web",
+    "query": "Get IP UDP RMCP Statistics 命令中 Clear Statistics 字段的 bit0 设置为 1 会有什么效果？",
+    "timestamp": "2026-06-12T01:02:38Z",
+    "raw_response": "Read 2 web pages\n\n将 Get IP/UDP/RMCP Statistics 命令中 Clear Statistics 字段的 bit 0 设置为 1，效果是 清空所有已统计的 IP、UDP 及 RMCP 协议计数器。\n\n具体的命令数据结构如下-\n1\n：\n\n数据位置\t字段名\tBit位\t描述\n请求数据字节 2\tclear statistics\tbit 0\t清空统计\n将此位设为 1，将触发所有统计数据的重置/清零操作。\n\t\tbits [7:1]\t保留位\n这些位在标准规范中通常不使用。\n⚠️ 重要说明\n\n根据相关信息，部分 BMC（基板管理控制器）固件实现（例如基于 phosphor-network 的版本）可能并未实际实现这些统计数据的收集与清零功能-\n1\n。因此，在执行该命令前，建议先确认具体硬件平台及固件版本的支持情况。\n\n是否需要我为你列出该命令可以清空的具体统计项名称（如“收到的IP数据包数量”等）？\n\n2 web pages",
+    "citations": [
+      "https://lists.ozlabs.org/pipermail/openbmc/2016-October/004750.html"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_047",
+    "platform": "deepseek-web",
+    "query": "openUBMC的核心特性中，组件化设计具体采用了什么技术来管理组件？",
+    "timestamp": "2026-06-12T01:04:03Z",
+    "raw_response": "Read 10 web pages\n\nopenUBMC实现组件化设计主要采用了 Conan 包管理与 MDS (微组件描述模型) 这两项核心技术，分别从构建集成和业务实现两个维度来管理组件-\n2\n-\n5\n-\n7\n。\n\n它们的具体分工与技术特点如下：\n\n技术维度\t核心技术\t主要作用\t技术特点 / 实现方式\n🎯 构建与集成\tConan\t管理组件的依赖、构建、版本和二进制包\t业界主流的C/C++包管理器，支持组件独立发布和版本控制-\n2\n-\n5\n-\n7\n\n🧩 业务实现\tMDS (微组件描述模型)\t标准化定义组件的接口、数据和生命周期\t通过 model.json 声明式文件定义，并可自动生成代码框架-\n1\n-\n4\n-\n8\n🎯 构建与集成：基于Conan的包管理\n\nopenUBMC使用Conan来管理组件的生命周期，这解决了“组件如何被构建、分发和集成”的问题-\n7\n。\n\n独立构建与发布：每个组件都是一个独立的Conan包，拥有自己的conanfile.py构建脚本，可以单独完成构建、测试和打包。最终，一个完整的BMC固件由manifest.yml文件统一声明，像点菜一样，将各个Conan组件集合而成-\n2\n-\n4\n。\n\n版本管理：Conan的包管理机制为组件提供了精确的版本控制能力-\n5\n。\n\n开发工具集成：社区提供的命令行工具bingo底层封装了Conan和CMake命令，让开发者通过简单的bingo build就能完成整个构建流程-\n2\n。\n\n🧩 业务实现：基于MDS的模型驱动\n\n如果说Conan管的是组件的“外壳”，那MDS（Microcomponent Description Source）就是组件的“内核”，它定义了组件“有什么功能”以及“如何被访问”-\n1\n。\n\n声明式定义：开发者无需编写大量胶水代码，只需在组件的mds/model.json文件中，用声明式语言定义好对外提供的接口（如RPC方法）和属性即可-\n3\n-\n8\n。\n\n代码自动生成：定义好model.json后，执行bingo gen命令，开发框架会自动生成D-Bus接口代码、服务框架等繁琐的基础代码，让开发者能专注于业务逻辑的实现-\n3\n-\n4\n。\n\n核心管理能力：MDS框架还内置了一系列高级管理功能-\n1\n：\n\n生命周期管理：统一管理组件的初始化、运行和停止。\n\n依赖管理：显式声明组件间的依赖关系，确保系统可以按正确顺序启动。\n\n插件扩展：支持插件机制，允许在不修改组件原始代码的情况下，通过覆写特定方法来实现功能定制，这对于满足不同产品的差异化需求非常关键-\n8\n。\n\n此外，openUBMC还通过标准化的资源协作接口（基于D-Bus协议）让这些独立组件能高效通信。组件只需关注自己model.json中定义的接口，框架会自动将其注册到D-Bus总线上，供其他组件调用-\n2\n-\n3\n。\n\n如果对某个技术点（比如如何编写 model.json 或创建一个新组件）感兴趣，可以随时告诉我。\n\n10 web pages",
+    "citations": [
+      "https://www.openubmc.cn/docs/zh/development/develop_guide/app_development/introduction.html",
+      "https://discuss.openubmc.cn/t/topic/186",
+      "https://discuss.openubmc.cn/t/topic/6015",
+      "https://www.openubmc.cn/docs/zh/development/design_reference/architecture.html",
+      "https://www.openubmc.cn/docs/zh/development/quick_start/create_an_app.html",
+      "https://www.openubmc.cn/docs/zh/development/develop_guide/feature_development/MDS_plugin.html",
+      "https://www.openubmc.cn/docs/zh/development/develop_guide/app_development/coding"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_048",
+    "platform": "deepseek-web",
+    "query": "如何通过ipmicmd命令恢复CX220的出厂默认配置？",
+    "timestamp": "2026-06-12T01:52:52Z",
+    "raw_response": "Read 5 web pages\n\n根据现有信息，ipmicmd 命令本身并没有一个专门用于恢复出厂设置的通用参数。恢复出厂配置通常需要通过发送特定的原始IPMI命令（Raw Command）来实现，而不同厂商（如戴尔、惠普、浪潮等）的服务器，其用于恢复设置的“魔法”命令字串是不同的。\n\n以下是为您整理的通用操作方法，以及如何结合已知命令进行恢复的建议。\n\n🛠️ 通用恢复尝试方法\n\n如果没有特定于CX220的现成命令，可以尝试通过发送以下在部分IPMI系统中通用的原始命令来冷重启BMC。请注意，这不会清除所有用户配置（如密码），但可能解决部分功能异常。\n\n连接并发送命令：\n通用命令格式为 0f <netfn> <cmd> [data...]。一个常见的BMC冷重启命令如下，可以尝试执行：\n\nbash\nCopy\nDownload\nipmicmd -k \"0f 06 02\"\n\n注：此命令的作用是请求BMC执行冷重启，可能会清除某些临时状态。\n\n预期结果：\n如果该命令有效，BMC通常会重启，这会导致网络连接短暂中断（约1-2分钟），之后需要重新连接。\n\n🔍 如何找到正确的命令\n\n要准确恢复CX220的出厂设置，最可靠的方法是查阅该设备或服务器的官方文档。\n\n查阅官方文档：访问设备制造商（可能是浪潮或其他OEM厂商）的官方支持网站，搜索“CX220”、“BMC 用户手册”或“IPMI 命令指南”，文档中通常会包含恢复出厂配置的明确指令或Raw Command。\n\n使用专用工具：部分服务器厂商提供了专用的命令行工具（例如戴尔的racreset或惠普的hponcfg），这些工具相比通用的ipmicmd能实现更完善的配置重置功能，建议优先使用这些工具。\n\n⚠️ 重要注意事项\n\n高权限要求：执行恢复操作通常需要管理员（Administrator/Admin）权限。如果当前用户权限不足，命令会被拒绝执行-\n1\n。\n\n谨慎操作：恢复出厂设置将重置所有BMC配置（包括网络设置、用户账户、密码、告警配置等），请确保您有其他方式（如现场物理访问）在重置后重新管理服务器。\n\n后果自负：由于缺乏针对CX220的确切命令，直接发送未知的Raw Command有风险，请务必以官方资料为准。\n\n如果您能提供CX220设备的具体品牌，我可以帮您进一步查找更精确的恢复命令。\n\n5 web pages",
+    "citations": [
+      "https://linux.die.net/man/1/ipmicmd"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_049",
+    "platform": "deepseek-web",
+    "query": "在openUBMC中，请求CPU信息时sub command字段应该填什么值？",
+    "timestamp": "2026-06-12T01:07:05Z",
+    "raw_response": "Read 9 web pages\n\n在 openUBMC 中，请求 CPU 信息时没有名为 \"sub command\" 的通用固定字段。具体的命令字段取决于你通过哪种方式（IPMI 命令或 Redfish 接口）以及获取哪类 CPU 信息（静态配置或动态读数）。\n\n以下是针对不同场景的具体字段值说明：\n\n1. IPMI 直接命令场景\n\n如果你是通过 IPMI 命令直接获取 CPU 的动态信息（如温度、功耗），需要在请求的特定字节位置填入对应的命令码（Command）或子命令（SubCmd）。\n\n获取 CPU 动态读数（温度、功耗）：根据 openUBMC 官方文档，获取 CPU 实时数据需要调用不同的命令码，搜索结果中列出了以下相关的 IPMI OEM 命令 -\n6\n：\n\nGet CPU Reading（获取 CPU 读数）：0x0D\n\nGet CPU Capabilities（获取 CPU 能力信息）：0x5F\n\nSet CPU Tcontrol（设置 CPU 温度控制参数）：0x01\n\n注意：请查阅你使用的 openUBMC 版本对应的 IPMI 命令规范，确认具体需要上述哪个命令，以及是作为主命令（Cmd）还是子命令（SubCmd）填入。\n\n查询 BIOS 配置场景：如果你需要通过 IPMI 命令查询与 CPU 相关的 BIOS 配置项，需要按照以下格式填充请求数据包 -\n2\n：\n\nNetFn：0x30\n\nCmd：0x93\n\nSubCmd（第 4 个字节）：固定为 0x8B\n\nType（第 6 个字节）：0x00（待生效值）或 0x01（已生效值）\n\nProperty（末尾可变字段）：填写具体的 CPU 配置项名称（字符串形式）。\n\n2. SMBIOS 信息上报流程（BIOS 上报 CPU 静态信息）\n\n如果你提到的“请求”是指底层 BIOS 向 BMC 上报 CPU 静态信息（如型号、ID），这个过程是通过特定的 IPMI 命令触发的，此时字段值对应的是 WriteSmbiosData 协议 -\n3\n-\n5\n：\n\n命令名称：WriteSmbiosData\n\n作用：BIOS 使用此命令将填充好的 SMBIOS 表格（包含 CPU 信息）上报并写入 BMC 的文件系统中。\n\n注意：在这个场景下，该命令本身的字段设计并非用于外部查询，而是用于内部数据同步。\n\n3. Redfish 接口场景（推荐用于查询）\n\n如果你是在编写脚本查询 CPU 信息，并且不想处理复杂的 IPMI 原始码，openUBMC 官方推荐使用 Redfish 接口 -\n3\n。\n\n请求方法：GET\n\nURI 路径：/redfish/v1/Systems/Processor/<CPU_ID>\n\n说明：通过标准的 RESTful API 即可直接获取 CPU 的温度（TemperatureCelsius）、功耗（PowerWatt）等结构化数据，无需填入特定的 sub command 字段 -\n3\n。\n\n总结建议\n\n如果是开发调试：请优先查看 openUBMC 文档中 IPMI OEM 命令 (0x30 NetFn) 章节，找到 Get-CPU-Reading 或 Get-CPU-Capabilities 对应的命令码。\n\n如果是脚本开发：强烈建议使用 Redfish 接口，通过 HTTP GET 请求获取 CPU 信息，这比组合 IPMI 原始码要简单得多。\n\n官方资源：在 openUBMC 官方文档中，Cmd-92h 和 Cmd-93h 目录下包含了 CPU 相关命令的详细字段定义 -\n2\n-\n6\n。\n\n9 web pages",
+    "citations": [
+      "https://gitcode.com/openUBMC/docs/tree/main/docs/zh/development/specifications/ipmi/details/OEM-30h/Cmd-92h/18h.md",
+      "https://www.openubmc.cn/docs/zh/development/specifications/ipmi/details/OEM-30h/Cmd-93h/8Bh.html",
+      "https://www.openubmc.cn/docs/zh/development/faq/hardware/compute.html",
+      "https://discuss.openubmc.cn/t/topic/2130",
+      "https://www.openubmc.cn/docs/"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_050",
+    "platform": "deepseek-web",
+    "query": "Report DDR4 Fault Isolation Address 命令中，fault_type_1 为 0x01 和 0x02 分别表示什么含义？",
+    "timestamp": "2026-06-12T01:08:28Z",
+    "raw_response": "Read 1 web page\n\n关于 fault_type_1 在 DDR4 Fault Isolation Address 命令中的含义，目前搜索结果未提供相关信息。\n\n根据获取到的资料，其中关于 0x01 的描述与 USB 音频设备的格式类型有关，并非你查询的 DDR4 内存故障隔离场景-\n1\n。因此，无法依据现有信息确认这两个值在该特定命令中的具体定义。\n\n建议你优先查阅相关 DDR4 内存控制器的官方数据手册或 JEDEC 标准文档，这些技术资料通常会详细定义故障类型字段的具体编码含义。\n\n1 web page",
+    "citations": [
+      "https://mcu.eetrend.com/files/2018-09/wen_zhang_/100014338-48781-4.pdf#11#6"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  },
+  {
+    "question_id": "q_doc_051",
+    "platform": "deepseek-web",
+    "query": "在openUBMC的Set Info请求中，sub command为0x00时对应什么信息？",
+    "timestamp": "2026-06-12T01:09:48Z",
+    "raw_response": "Read 1 web page\n\n根据公开的社区讨论信息，在 openUBMC 的 Set Info 请求中，sub command 为 0x00 时，对应的具体信息暂未明确提及。\n\n搜索结果主要涉及另一个 sub command 的值 0x35，具体情况如下：\n\n可确认的 Sub Command：根据 openUBMC 社区的讨论，在 NetFn=0x30, Cmd=0x93 的 OEM 命令中，Sub command = 0x35 被用于 SetInfo（设置信息） 操作，例如设置 Web 界面显示的版权字符串-\n1\n。\n\n关于 0x00 的说明：在本次获取的资料中，没有找到关于 Sub command = 0x00 对应何种信息的说明。\n\n如果您能提供更多关于该命令的上下文（如所属的 NetFn 和 Cmd），或许能帮助进一步查找相关信息。\n\n1 web page",
+    "citations": [
+      "https://discuss.openubmc.cn/t/topic/3977"
+    ],
+    "model": "DeepSeek (web)",
+    "status": "success"
+  }
+]
